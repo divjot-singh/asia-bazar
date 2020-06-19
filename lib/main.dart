@@ -1,6 +1,17 @@
-import 'package:asia/screens/home/index.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//add all the imports here
+
+import 'dart:async';
+import 'dart:io';
+
+import 'package:asia/blocs/auth_bloc/bloc.dart';
+import 'package:asia/index.dart';
+import 'package:asia/route_generator.dart';
+import 'package:asia/services/error_tracker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+import 'package:logger/logger.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,173 +45,56 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+  String title;
+  MyHomePage({this.title});
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _phoneController = TextEditingController();
-  final _passController = TextEditingController();
-  final _codeController = TextEditingController();
-  var smsCode, _credential;
-  Future registerUser(String mobile, BuildContext context) async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
-
-    _auth.verifyPhoneNumber(
-        phoneNumber: mobile,
-        timeout: Duration(seconds: 60),
-        verificationCompleted: ((AuthCredential authCredential) {
-          _credential = authCredential;
-          _auth.signInWithCredential(authCredential).then((AuthResult result) {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomeScreen(user: result.user)));
-          }).catchError((e) {
-            print(e);
-          });
-        }),
-        verificationFailed: (AuthException authException) {
-          print(authException.message);
-        },
-        codeSent: (String verificationId, [int forceResendingToken]) {
-          //show dialog to take input from the user
-          showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => AlertDialog(
-                    title: Text("Enter SMS Code"),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        TextField(
-                          controller: _codeController,
-                        ),
-                      ],
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text("Done"),
-                        textColor: Colors.white,
-                        color: Colors.redAccent,
-                        onPressed: () {
-                          FirebaseAuth auth = FirebaseAuth.instance;
-
-                          smsCode = _codeController.text.trim();
-
-                          _credential = PhoneAuthProvider.getCredential(
-                              verificationId: verificationId, smsCode: smsCode);
-                          auth
-                              .signInWithCredential(_credential)
-                              .then((AuthResult result) {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomeScreen(user: result.user)));
-                          }).catchError((e) {
-                            print(e);
-                          });
-                        },
-                      )
-                    ],
-                  ));
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          verificationId = verificationId;
-          print(verificationId);
-          print("Timout");
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-        ),
-        body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Invoke "debug painting" (press "p" in the console, choose the
-            // "Toggle Debug Paint" action from the Flutter Inspector in Android
-            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-            // to see the wireframe for each widget.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey[200])),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey[300])),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    hintText: "Phone Number"),
-                controller: _phoneController,
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                    enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey[200])),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide(color: Colors.grey[300])),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    hintText: "Password"),
-                controller: _passController,
-              ),
-              SizedBox(
-                height: 16,
-              ),
-              Container(
-                width: double.infinity,
-                child: FlatButton(
-                  child: Text("Login"),
-                  textColor: Colors.white,
-                  padding: EdgeInsets.all(16),
-                  onPressed: () {
-                    //code for sign in
-                    final mobile = _phoneController.text.trim();
-                    registerUser(mobile, context);
-                  },
-                  color: Colors.blue,
-                ),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          tooltip: 'Increment',
-          child: Icon(Icons.add),
-        ), // This trailing comma makes auto-formatting nicer for build methods.
-      ),
+    return Container(
+      child: Text(widget.title),
     );
   }
 }
+// void main() {
+//   // enable network traffic logging
+//   HttpClient.enableTimelineLogging = true;
+
+//   //Crashlytics.instance.enableInDevMode = true;
+//   //FlutterError.onError = recordFlutterError;
+
+//   FluroRouter.setupRouter();
+//   //runZoned(
+//   //() => {
+//         runApp(
+//           MultiBlocProvider(
+//             providers: [
+//               BlocProvider<AuthBloc>(
+//                 create: (BuildContext context) => AuthBloc(),
+//               ),
+//             ],
+//             child: App(),
+//           ),
+//         );
+//       //};
+//   //onError: recordDartError,
+//   //);
+// }
+
+// class BlocHolder {
+//   BlocHolder._internal();
+//   static final BlocHolder _inst = BlocHolder._internal();
+
+//   factory BlocHolder() {
+//     return _inst;
+//   }
+
+//   // ChatBloc chatBloc() {
+//   //   if (_inst._chatBloc == null) _inst._chatBloc = ChatBloc();
+//   //   return _inst._chatBloc;
+//   // }
+
+// }
