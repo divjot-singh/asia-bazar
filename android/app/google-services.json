@@ -1,48 +1,48 @@
 {
-  "project_info": {
-    "project_number": "1015303003769",
-    "firebase_url": "https://asia-bazar-app.firebaseio.com",
-    "project_id": "asia-bazar-app",
-    "storage_bucket": "asia-bazar-app.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1015303003769:android:34a839bd71d2cc9a2c3ea8",
-        "android_client_info": {
-          "package_name": "com.bazar.asia"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1015303003769-fgifpk1nc84qvq1mg4od1ccpr4hgs64c.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.bazar.asia",
-            "certificate_hash": "fd6aa334766f2ccdfb198808b6cc88cc676a4f1e"
-          }
-        },
-        {
-          "client_id": "1015303003769-0t048fcg14krfmhsbkt7bn7qitcq5qhl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAtluEQrBEFPrX4BynbMqQlEbZ1M4eTsLs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1015303003769-0t048fcg14krfmhsbkt7bn7qitcq5qhl.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+	"project_info": {
+		"project_number": "1015303003769",
+		"firebase_url": "https://asia-bazar-app.firebaseio.com",
+		"project_id": "asia-bazar-app",
+		"storage_bucket": "asia-bazar-app.appspot.com"
+	},
+	"client": [
+		{
+			"client_info": {
+				"mobilesdk_app_id": "1:1015303003769:android:34a839bd71d2cc9a2c3ea8",
+				"android_client_info": {
+					"package_name": "com.bazar.asia"
+				}
+			},
+			"oauth_client": [
+				{
+					"client_id": "1015303003769-fgifpk1nc84qvq1mg4od1ccpr4hgs64c.apps.googleusercontent.com",
+					"client_type": 1,
+					"android_info": {
+						"package_name": "com.bazar.asia",
+						"certificate_hash": "fd6aa334766f2ccdfb198808b6cc88cc676a4f1e"
+					}
+				},
+				{
+					"client_id": "1015303003769-0t048fcg14krfmhsbkt7bn7qitcq5qhl.apps.googleusercontent.com",
+					"client_type": 3
+				}
+			],
+			"api_key": [
+				{
+					"current_key": "AIzaSyAtluEQrBEFPrX4BynbMqQlEbZ1M4eTsLs"
+				}
+			],
+			"services": {
+				"appinvite_service": {
+					"other_platform_oauth_client": [
+						{
+							"client_id": "1015303003769-0t048fcg14krfmhsbkt7bn7qitcq5qhl.apps.googleusercontent.com",
+							"client_type": 3
+						}
+					]
+				}
+			}
+		}
+	],
+	"configuration_version": "1"
 }
