@@ -1,3 +1,5 @@
+import 'package:asia/screens/home/index.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
+        // This is the theme of your applicationx.
         //
         // Try running your application with "flutter run". You'll see the
         // application has a blue toolbar. Then, without quitting the app, try
@@ -34,15 +36,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -50,68 +43,164 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final _phoneController = TextEditingController();
+  final _passController = TextEditingController();
+  final _codeController = TextEditingController();
+  var smsCode, _credential;
+  Future registerUser(String mobile, BuildContext context) async {
+    FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+    _auth.verifyPhoneNumber(
+        phoneNumber: mobile,
+        timeout: Duration(seconds: 60),
+        verificationCompleted: ((AuthCredential authCredential) {
+          _credential = authCredential;
+          _auth.signInWithCredential(authCredential).then((AuthResult result) {
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => HomeScreen(user: result.user)));
+          }).catchError((e) {
+            print(e);
+          });
+        }),
+        verificationFailed: (AuthException authException) {
+          print(authException.message);
+        },
+        codeSent: (String verificationId, [int forceResendingToken]) {
+          //show dialog to take input from the user
+          showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => AlertDialog(
+                    title: Text("Enter SMS Code"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextField(
+                          controller: _codeController,
+                        ),
+                      ],
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        child: Text("Done"),
+                        textColor: Colors.white,
+                        color: Colors.redAccent,
+                        onPressed: () {
+                          FirebaseAuth auth = FirebaseAuth.instance;
+
+                          smsCode = _codeController.text.trim();
+
+                          _credential = PhoneAuthProvider.getCredential(
+                              verificationId: verificationId, smsCode: smsCode);
+                          auth
+                              .signInWithCredential(_credential)
+                              .then((AuthResult result) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        HomeScreen(user: result.user)));
+                          }).catchError((e) {
+                            print(e);
+                          });
+                        },
+                      )
+                    ],
+                  ));
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          verificationId = verificationId;
+          print(verificationId);
+          print("Timout");
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
         ),
+        body: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+            // Column is also a layout widget. It takes a list of children and
+            // arranges them vertically. By default, it sizes itself to fit its
+            // children horizontally, and tries to be as tall as its parent.
+            //
+            // Invoke "debug painting" (press "p" in the console, choose the
+            // "Toggle Debug Paint" action from the Flutter Inspector in Android
+            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+            // to see the wireframe for each widget.
+            //
+            // Column has various properties to control how it sizes itself and
+            // how it positions its children. Here we use mainAxisAlignment to
+            // center the children vertically; the main axis here is the vertical
+            // axis because Columns are vertical (the cross axis would be
+            // horizontal).
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(color: Colors.grey[200])),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(color: Colors.grey[300])),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    hintText: "Phone Number"),
+                controller: _phoneController,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(color: Colors.grey[200])),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        borderSide: BorderSide(color: Colors.grey[300])),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    hintText: "Password"),
+                controller: _passController,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Container(
+                width: double.infinity,
+                child: FlatButton(
+                  child: Text("Login"),
+                  textColor: Colors.white,
+                  padding: EdgeInsets.all(16),
+                  onPressed: () {
+                    //code for sign in
+                    final mobile = _phoneController.text.trim();
+                    registerUser(mobile, context);
+                  },
+                  color: Colors.blue,
+                ),
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+          tooltip: 'Increment',
+          child: Icon(Icons.add),
+        ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

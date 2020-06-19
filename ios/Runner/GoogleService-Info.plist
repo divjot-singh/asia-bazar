@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1015303003769-qdh2lhakbrsgbiitgcl3dg1ct452t48m.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1015303003769-qdh2lhakbrsgbiitgcl3dg1ct452t48m</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1015303003769-fgifpk1nc84qvq1mg4od1ccpr4hgs64c.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA44if2p7nnYIy76PyUDawczq_gJk5u1hQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1015303003769</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bazar.asia</string>
+	<key>PROJECT_ID</key>
+	<string>asia-bazar-app</string>
+	<key>STORAGE_BUCKET</key>
+	<string>asia-bazar-app.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1015303003769:ios:adbb7a8c172857af2c3ea8</string>
+	<key>DATABASE_URL</key>
+	<string>https://asia-bazar-app.firebaseio.com</string>
+</dict>
+</plist>
