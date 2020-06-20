@@ -21,7 +21,7 @@ class AuthRepo {
           callback(AuthCallbackType.completed, authCredential);
         }),
         verificationFailed: (AuthException authException) {
-          callback(AuthCallbackType.completed, authException);
+          callback(AuthCallbackType.failed, authException);
         },
         codeSent: (String verificationId, [int forceResendingToken]) {
           _verificationId = verificationId;
@@ -32,7 +32,7 @@ class AuthRepo {
           callback(AuthCallbackType.timeout);
         });
   }
-
+  
   Future<User> _verificationComplete(AuthCredential authCredential) async {
     var authResult = await _auth.signInWithCredential(authCredential);
     logger.i(authResult);

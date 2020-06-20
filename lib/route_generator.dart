@@ -1,4 +1,5 @@
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
+import 'package:asia/screens/home/index.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
@@ -13,7 +14,12 @@ class FluroRouter {
             return AuthenticationScreen();
           },
         );
-
+      case Constants.USER_INFO:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return HomeScreen();
+          },
+        );
       default:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
@@ -24,6 +30,16 @@ class FluroRouter {
   }
 
   static void setupRouter() {
+    router.define(
+      Constants.AUTHENTICATION_SCREEN,
+      handler: getCommonHandler(Constants.AUTHENTICATION_SCREEN),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
+      Constants.USER_INFO,
+      handler: getCommonHandler(Constants.USER_INFO),
+      transitionType: TransitionType.fadeIn,
+    );
     router.define(
       '/',
       handler: getCommonHandler(Constants.AUTHENTICATION_SCREEN),

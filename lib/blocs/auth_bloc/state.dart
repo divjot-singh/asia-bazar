@@ -12,3 +12,6 @@ class AuthenticatedState extends AuthenticationState {
   final User user;
   AuthenticatedState({@required this.user});
 }
+
+class FetchingState extends AuthenticationState {}
+class OtpSentState extends AuthenticationState{}

@@ -1,3 +1,4 @@
+import 'package:asia/repository/authentication.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class AuthenticationEvents {}
@@ -15,3 +16,8 @@ class VerifyOtpEvent extends AuthenticationEvents {
 }
 
 class CheckIfLoggedIn extends AuthenticationEvents {}
+
+class SetState extends AuthenticationEvents {
+  final AuthCallbackType callbackType;
+  SetState({@required this.callbackType});
+}

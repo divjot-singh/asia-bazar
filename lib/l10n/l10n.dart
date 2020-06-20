@@ -42,8 +42,21 @@ class L10n {
 Map<String, Map<String, String>> strings = {
   "en": {
     "error.ERROR_INVALID_VERIFICATION_CODE": "Invalid otp",
-    "error.invalidCredential": "Invalid phone number",
+    "error.invalidPhoneNumber": "Invalid phone number",
+    "error.verifyPhoneNumberError": "Some error in authentication",
     "error.verificationFailed": "Verification Failed",
+    "authentication.enterNumber":
+        "Please enter your phone number. We will send you a one time password",
+    "input.placeholder": "Enter your message here",
+    "phoneAuthentication.resend": "Resend",
+    "phoneAuthentication.verify": "Verify",
+    "phoneAuthentication.verificationFailed": "Verification Failed",
+    "phoneAuthentication.error.provideValue": "Please provide a value!",
+    "phoneAuthentication.invalidPhoneNumber": "Please enter a valid number.",
+    "phoneAuthentication.error.enterValidOTP": "Please enter a valid OTP.",
+    "phoneAuthentication.error.didntGetCode": "I didn't get the code",
+    "phoneAuthentication.enterCode":
+        "Please enter verification code sent to {number}",
   },
   "it": {},
 };

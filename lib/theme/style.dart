@@ -29,6 +29,9 @@ class ColorShades {
   static const Color crusta = const Color(0xffef8351);
   static const Color clinker = const Color(0xff3a321b);
   static const Color shadow = const Color(0xff89774d);
+  static const Color pinkBackground = const Color(0xfff2465d);
+  static const Color darkPink = const Color(0Xfff3697e);
+  static const Color lightBlue = const Color(0xffd4fcff);
 
   static const Color greyDark = const Color(0xff919191);
   static const Color greyLight = const Color(0xffC5C5C5);
@@ -93,6 +96,7 @@ extension CustomColorScheme on ColorScheme {
   Color get strokesDisabled => ColorShades.grey200;
   Color get success => ColorShades.elfGreen;
   Color get error => ColorShades.redOrange;
+  Color get pinkBackground => ColorShades.pinkBackground;
 }
 
 // IMPORTANT: remember to capitalize h5 and body1Black !!!

@@ -12,9 +12,11 @@ class AuthBloc extends Bloc<AuthenticationEvents, AuthenticationState> {
   Stream<AuthenticationState> mapEventToState(
       AuthenticationEvents event) async* {
     if (event is VerifyPhoneNumberEvent) {
+      yield FetchingState();
       authrepo.verifyPhoneNumber(
           phoneNumber: event.phoneNumber, callback: event.callback);
     } else if (event is CheckIfLoggedIn) {
+      yield FetchingState();
       User user = await authrepo.checkIfUserLoggedIn();
       if (user != null) {
         yield AuthenticatedState(user: user);
@@ -23,6 +25,7 @@ class AuthBloc extends Bloc<AuthenticationEvents, AuthenticationState> {
     } else if (event is VerifyOtpEvent) {
       var state, message;
       try {
+        yield FetchingState();
         User user = await authrepo.signInWithSmsCode(event.otp);
         if (user != null) {
           state = AuthCallbackType.completed;
@@ -31,9 +34,15 @@ class AuthBloc extends Bloc<AuthenticationEvents, AuthenticationState> {
         }
       } catch (e) {
         state = AuthCallbackType.failed;
-        message = e.code;
+        message = e;
       }
       event.callback(state, message);
+    } else if (event is SetState) {
+      if (event.callbackType == AuthCallbackType.codeSent) {
+        yield OtpSentState();
+      } else if (event.callbackType == AuthCallbackType.failed) {
+        yield UnAuthenticatedState();
+      }
     }
   }
 }
