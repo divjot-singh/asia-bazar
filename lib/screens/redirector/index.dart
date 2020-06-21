@@ -26,6 +26,8 @@ class _RedirectorState extends State<Redirector> {
         if (state is UserIsAdmin) {
           Navigator.pushReplacementNamed(context, Constants.ADMIN_PROFILE);
         } else if (state is UserIsUser) {
+          //Navigator.pushReplacementNamed(context, Constants.ADMIN_PROFILE);
+
           Navigator.pushReplacementNamed(context, Constants.HOME);
         } else if (state is NewUser) {
           Navigator.pushReplacementNamed(context, Constants.ADD_ADDRESS,
