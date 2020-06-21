@@ -21,3 +21,8 @@ class SetState extends AuthenticationEvents {
   final AuthCallbackType callbackType;
   SetState({@required this.callbackType});
 }
+
+class SignOut extends AuthenticationEvents {
+  final Function callback;
+  SignOut({this.callback});
+}

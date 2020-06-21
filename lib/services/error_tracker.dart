@@ -27,13 +27,13 @@ Function configureErrorTracking = () {
 };
 
 void configureCrashlytics() async {
-  var userId = await StorageManager.getItem(PersistentStorageKeys['userId']);
+  var userId = await StorageManager.getItem(KeyNames['userId']);
   Crashlytics.instance.log('Setting user identifier $userId in crashlytics');
   Crashlytics.instance.setUserIdentifier(userId);
 }
 
 Future<Event> getSentryEnvEvent(dynamic exception, dynamic stackTrace) async {
-  var userId = await StorageManager.getItem(PersistentStorageKeys['userId']);
+  var userId = await StorageManager.getItem(KeyNames['userId']);
   if (Platform.isIOS) {
     final IosDeviceInfo iosDeviceInfo = await deviceInfo.iosInfo;
     return Event(

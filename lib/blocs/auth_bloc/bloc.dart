@@ -43,6 +43,12 @@ class AuthBloc extends Bloc<AuthenticationEvents, AuthenticationState> {
       } else if (event.callbackType == AuthCallbackType.failed) {
         yield UnAuthenticatedState();
       }
+    } else if (event is SignOut) {
+      await authrepo.signout();
+      if (event.callback != null) {
+        event.callback();
+      }
+      yield UnAuthenticatedState();
     }
   }
 }

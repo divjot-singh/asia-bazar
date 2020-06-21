@@ -3,16 +3,19 @@ import 'package:asia/services/log_printer.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 enum AuthCallbackType { completed, failed, codeSent, timeout }
 
 class AuthRepo {
   static FirebaseAuth _auth = FirebaseAuth.instance;
+  static FirebaseDatabase db = FirebaseDatabase.instance;
   static final logger = getLogger('AuthRepo');
   var _verificationId = '';
   void verifyPhoneNumber(
       {@required String phoneNumber, @required Function callback}) {
+        
     _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: Duration(seconds: 30),
@@ -66,13 +69,13 @@ class AuthRepo {
       );
     } finally {
       await StorageManager.setItem(
-          PersistentStorageKeys["userId"], user.userId);
+          KeyNames["userId"], user.userId);
       await StorageManager.setItem(
-          PersistentStorageKeys["userName"], user.userName);
+          KeyNames["userName"], user.userName);
       await StorageManager.setItem(
-          PersistentStorageKeys["phoneNumber"], user.phoneNumber);
+          KeyNames["phone"], user.phoneNumber);
       await StorageManager.setItem(
-          PersistentStorageKeys["token"], user.firebaseToken);
+          KeyNames["token"], user.firebaseToken);
     }
     return user;
   }
@@ -83,5 +86,8 @@ class AuthRepo {
       verificationId: _verificationId,
     );
     return await _verificationComplete(authCredential);
+  }
+  Future<void> signout() async{
+    await _auth.signOut();
   }
 }

@@ -1,4 +1,4 @@
-const Map PersistentStorageKeys = {
+const Map KeyNames = {
   "userName": 'user_name',
   "userId": 'user_id',
   "token": 'token_info',
@@ -11,7 +11,10 @@ const Map URLS={
 
 class Constants {
   static const AUTHENTICATION_SCREEN = "authenticate";
-  static const USER_INFO = 'user/edit';
+  static const EDIT_PROFILE = 'user/edit';
+  static const POST_AUTHENTICATION_REDIRECTOR = 'user/redirect';
+  static const ADMIN_PROFILE = 'user/is_admin';
+  static const HOME = 'user/home';
 }
 
 const List<Map<String, String>> Countries = [

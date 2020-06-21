@@ -175,6 +175,17 @@ class Gradients {
       ColorShades.deepLilac,
     ],
   );
+  static LinearGradient lightPink = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomCenter,
+      colors: [Colors.white, ColorShades.pinkBackground]);
+  static LinearGradient lightPinkReverse = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomCenter,
+      colors: [
+        ColorShades.pinkBackground,
+        Colors.white,
+      ]);
 }
 
 class Shadows {

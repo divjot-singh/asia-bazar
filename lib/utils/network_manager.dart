@@ -125,8 +125,8 @@ class NetworkManager {
     data = data is Map ? data : {};
 
     String userId =
-        await StorageManager.getItem(PersistentStorageKeys["userId"]);
-    String token = await StorageManager.getItem(PersistentStorageKeys["token"]);
+        await StorageManager.getItem(KeyNames["userId"]);
+    String token = await StorageManager.getItem(KeyNames["token"]);
     String lang = L10n().getLocale();
     // String simCountryCode = await FlutterSimCountryCode.simCountryCode;
     // todo set it once

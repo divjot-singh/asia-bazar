@@ -38,7 +38,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   alreadyLoggedIn() {
-    Navigator.pushNamed(context, Constants.USER_INFO);
+    Navigator.pushReplacementNamed(
+        context, Constants.POST_AUTHENTICATION_REDIRECTOR);
   }
 
   verifyPhoneNumberCallback(authenticationState, [data]) {
@@ -339,31 +340,37 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.white, ColorShades.pinkBackground])),
+            gradient: _keyboardIsVisible()
+                ? Gradients.lightPinkReverse
+                : Gradients.lightPink,
+          ),
           child: Scaffold(
+            extendBodyBehindAppBar: true,
             backgroundColor: Colors.transparent,
             appBar: isCodeSent
-                ? AppBar(
-                    backgroundColor: Colors.transparent,
-                    elevation: 0,
-                    leading: IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        resetForm();
-                      },
-                      color: ColorShades.pinkBackground,
+                ? PreferredSize(
+                    preferredSize: Size.fromHeight(40),
+                    child: AppBar(
+                      backgroundColor: Colors.transparent,
+                      elevation: 0,
+                      leading: IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: () {
+                          resetForm();
+                        },
+                        color: _keyboardIsVisible()
+                            ? ColorShades.white
+                            : ColorShades.pinkBackground,
+                      ),
                     ),
                   )
                 : null,
-            body: SingleChildScrollView(
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                padding: EdgeInsets.symmetric(
-                    vertical: Spacing.space12, horizontal: Spacing.space16),
-                child: Center(
+            body: Container(
+              constraints: BoxConstraints.expand(),
+              padding: EdgeInsets.symmetric(
+                  vertical: Spacing.space12, horizontal: Spacing.space16),
+              child: SingleChildScrollView(
+                child: Container(
                   child: Column(
                     mainAxisAlignment:
                         _keyboardIsVisible() || _isLoading() || isCodeSent
@@ -374,6 +381,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         'assets/images/home_logo.png',
                         height: _keyboardIsVisible() ? 200 : 250,
                         width: _keyboardIsVisible() ? 200 : 250,
+                      ),
+                      SizedBox(
+                        height: _keyboardIsVisible() ? 0 : 60,
                       ),
                       BlocBuilder<AuthBloc, AuthenticationState>(
                           builder: (context, currentState) {

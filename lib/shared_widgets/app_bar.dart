@@ -8,16 +8,6 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
   final Map leading, rightAction;
   final hasTransparentBackground;
 
-  /*
-   * Constructor accepts the following fields:
-   * title: String
-   * leading: Map<leadingObject> - to be shown in the left end of the App bar.
-   *    ** LeadingObject: {icon: String - path of a png image, onTap: Function - defines the onTap action of the leading icon }
-   * rightAction: Map<RightActionObject> - to be shown in the right end of the App bar.
-   *    ** RightActionObject: {icon: Widget, onTap: Function - defines the onTap action of the icon Widget }
-   * hideBackArrow: bool - Controls the display of back arrow (in the left end of the App bar)
-  */
-
   MyAppBar({
     this.title,
     this.titleIcon,

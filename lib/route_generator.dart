@@ -1,5 +1,7 @@
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/home/index.dart';
+import 'package:asia/screens/redirector/index.dart';
+import 'package:asia/screens/user_is_admin/is_admin.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
@@ -14,10 +16,28 @@ class FluroRouter {
             return AuthenticationScreen();
           },
         );
-      case Constants.USER_INFO:
+      case Constants.HOME:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             return HomeScreen();
+          },
+        );
+      // case Constants.EDIT_PROFILE:
+      // return Handler(
+      //   handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      //     return EditProfile();
+      //   },
+      // );
+      case Constants.ADMIN_PROFILE:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return IsAdmin();
+          },
+        );
+      case Constants.POST_AUTHENTICATION_REDIRECTOR:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return Redirector();
           },
         );
       default:
@@ -36,8 +56,24 @@ class FluroRouter {
       transitionType: TransitionType.fadeIn,
     );
     router.define(
-      Constants.USER_INFO,
-      handler: getCommonHandler(Constants.USER_INFO),
+      Constants.EDIT_PROFILE,
+      handler: getCommonHandler(Constants.EDIT_PROFILE),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
+      Constants.HOME,
+      handler: getCommonHandler(Constants.HOME),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
+      Constants.ADMIN_PROFILE,
+      handler: getCommonHandler(Constants.ADMIN_PROFILE),
+      transitionType: TransitionType.fadeIn,
+    );
+
+    router.define(
+      Constants.POST_AUTHENTICATION_REDIRECTOR,
+      handler: getCommonHandler(Constants.POST_AUTHENTICATION_REDIRECTOR),
       transitionType: TransitionType.fadeIn,
     );
     router.define(
