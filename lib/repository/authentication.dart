@@ -13,9 +13,9 @@ class AuthRepo {
   static FirebaseDatabase db = FirebaseDatabase.instance;
   static final logger = getLogger('AuthRepo');
   var _verificationId = '';
+  var _authCredential;
   void verifyPhoneNumber(
       {@required String phoneNumber, @required Function callback}) {
-        
     _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: Duration(seconds: 30),
@@ -35,8 +35,9 @@ class AuthRepo {
           callback(AuthCallbackType.timeout);
         });
   }
-  
+
   Future<User> _verificationComplete(AuthCredential authCredential) async {
+    _authCredential = authCredential;
     var authResult = await _auth.signInWithCredential(authCredential);
     logger.i(authResult);
     return await setupUserData(authResult.user);
@@ -68,14 +69,10 @@ class AuthRepo {
         phoneNumber: firebaseUser.phoneNumber,
       );
     } finally {
-      await StorageManager.setItem(
-          KeyNames["userId"], user.userId);
-      await StorageManager.setItem(
-          KeyNames["userName"], user.userName);
-      await StorageManager.setItem(
-          KeyNames["phone"], user.phoneNumber);
-      await StorageManager.setItem(
-          KeyNames["token"], user.firebaseToken);
+      await StorageManager.setItem(KeyNames["userId"], user.userId);
+      await StorageManager.setItem(KeyNames["userName"], user.userName);
+      await StorageManager.setItem(KeyNames["phone"], user.phoneNumber);
+      await StorageManager.setItem(KeyNames["token"], user.firebaseToken);
     }
     return user;
   }
@@ -87,7 +84,8 @@ class AuthRepo {
     );
     return await _verificationComplete(authCredential);
   }
-  Future<void> signout() async{
+
+  Future<void> signout() async {
     await _auth.signOut();
   }
 }

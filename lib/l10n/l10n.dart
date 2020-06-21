@@ -73,6 +73,12 @@ Map<String, Map<String, String>> strings = {
     "profile.address.added": "Address succesfully saved",
     "profile.address.error": "Something went wrong",
     "profile.address.addAddress": "Add address",
+    "home.title": "Categories",
+    "drawer.hi": "Hi, {name}",
+    "drawer.editUsername": "You need to add a username",
+    "drawer.addAddress": 'Add address',
+    "drawer.logout": "Log out",
+    "drawer.addressList": "Address Book",
   },
   "it": {},
 };

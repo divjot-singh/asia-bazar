@@ -212,7 +212,7 @@ class _AddAddressState extends State<AddAddress> {
                       'lat': position.latitude,
                       'long': position.longitude,
                       'address_text': addressController.text,
-                      'is_default': true
+                      'is_default': widget.first
                     };
                     if (!disableSend) {
                       BlocProvider.of<UserDatabaseBloc>(context).add(

@@ -4,6 +4,7 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/secondary_button.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
+import 'package:asia/utils/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,12 +51,7 @@ class IsAdmin extends StatelessWidget {
               SecondaryButton(
                 text: L10n().getStr('redirector.goBack'),
                 onPressed: () {
-                  BlocProvider.of<AuthBloc>(context).add(SignOut(callback: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        Constants.AUTHENTICATION_SCREEN,
-                        (Route<dynamic> route) => false);
-                  }));
+                  Utilities.logout(context);
                 },
               )
             ],

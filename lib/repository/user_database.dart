@@ -45,7 +45,7 @@ class UserDatabase {
     if (snapshot.value != null) {
       List addressList;
       if (snapshot.value['address'] is List) {
-        addressList = snapshot.value['address'];
+        addressList = [...snapshot.value['address']];
       } else {
         addressList = [];
       }

@@ -103,7 +103,8 @@ class RouteGenerator {
     switch (routeName) {
       case Constants.ADD_ADDRESS:
         return MaterialPageRoute(builder: (_) {
-          Map<String, dynamic> arguments = settings.arguments;
+          Map<String, dynamic> arguments =
+              settings.arguments != null ? settings.arguments : {};
           return AddAddress(first: arguments['first']);
         });
 
