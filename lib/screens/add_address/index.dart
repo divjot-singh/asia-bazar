@@ -2,6 +2,7 @@ import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
+import 'package:asia/shared_widgets/customLoader.dart';
 import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/secondary_button.dart';
@@ -79,8 +80,7 @@ class _AddAddressState extends State<AddAddress> {
         : '';
     String postalCode =
         placeMark.postalCode.length > 0 ? placeMark.postalCode + ',' : '';
-    String country =
-        placeMark.country.length > 0 ? placeMark.country + ',' : '';
+    String country = placeMark.country;
     String address =
         "$name $subLocality $locality $administrativeArea $postalCode $country";
     return address;
@@ -91,6 +91,7 @@ class _AddAddressState extends State<AddAddress> {
       myLocationButtonEnabled: true,
       myLocationEnabled: true,
       markers: markerSet,
+      mapType: MapType.normal,
       initialCameraPosition: CameraPosition(
         target: LatLng(currentPosition.latitude, currentPosition.longitude),
         zoom: 20,
@@ -110,7 +111,9 @@ class _AddAddressState extends State<AddAddress> {
         List<Placemark> placemarks = await locator.placemarkFromCoordinates(
             position.latitude, position.longitude);
         String address = getAddressFromPlacemark(placemarks);
-        addressController.text = address;
+        setState(() {
+          addressController.text = address;
+        });
       },
       onTap: (location) {
         if (_focusNode.hasFocus)
@@ -124,6 +127,7 @@ class _AddAddressState extends State<AddAddress> {
   }
 
   addAddressCallback(bool result) {
+    Navigator.pop(context);
     dynamic snackbarResult;
     if (result) {
       snackbarResult = showCustomSnackbar(
@@ -168,7 +172,7 @@ class _AddAddressState extends State<AddAddress> {
                 child: Column(
                   children: <Widget>[
                     Container(
-                        height: 400,
+                        height: MediaQuery.of(context).size.height * 0.6,
                         child: showLoader ? TinyLoader() : _mapWidget()),
                     SizedBox(
                       height: Spacing.space20,
@@ -179,10 +183,12 @@ class _AddAddressState extends State<AddAddress> {
                           vertical: Spacing.space12,
                           horizontal: Spacing.space16),
                       child: InputBox(
+                        disabled: addressController.text.length == 0,
                         controller: addressController,
                         focusNode: _focusNode,
                         onChanged: (_) {},
                         maxLines: 2,
+                        hintText: '',
                       ),
                     )
                   ],
@@ -208,10 +214,12 @@ class _AddAddressState extends State<AddAddress> {
                       'address_text': addressController.text,
                       'is_default': true
                     };
-                    if (!disableSend)
+                    if (!disableSend) {
                       BlocProvider.of<UserDatabaseBloc>(context).add(
                           AddUserAddress(
                               address: address, callback: addAddressCallback));
+                      showCustomLoader(context);
+                    }
                     setState(() {
                       disableSend = true;
                     });

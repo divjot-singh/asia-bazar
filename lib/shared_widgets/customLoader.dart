@@ -1,3 +1,4 @@
+import 'package:asia/shared_widgets/page_views.dart';
 import 'package:flutter/material.dart';
 
 Future<void> showCustomLoader(BuildContext context) {
@@ -10,8 +11,7 @@ Future<void> showCustomLoader(BuildContext context) {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Center(
-          child: SizedBox(
-              height: 100, width: 100, child: CircularProgressIndicator()),
+          child: TinyLoader(),
         ),
       );
     },
