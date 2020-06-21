@@ -1,4 +1,6 @@
+import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
+import 'package:asia/screens/edit_profile/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/redirector/index.dart';
 import 'package:asia/screens/user_is_admin/is_admin.dart';
@@ -22,12 +24,18 @@ class FluroRouter {
             return HomeScreen();
           },
         );
-      // case Constants.EDIT_PROFILE:
-      // return Handler(
-      //   handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-      //     return EditProfile();
-      //   },
-      // );
+      case Constants.EDIT_PROFILE:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return EditProfile();
+          },
+        );
+      case Constants.ADD_ADDRESS:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return AddAddress();
+          },
+        );
       case Constants.ADMIN_PROFILE:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
@@ -77,6 +85,11 @@ class FluroRouter {
       transitionType: TransitionType.fadeIn,
     );
     router.define(
+      Constants.ADD_ADDRESS,
+      handler: getCommonHandler(Constants.ADD_ADDRESS),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
       '/',
       handler: getCommonHandler(Constants.AUTHENTICATION_SCREEN),
       transitionType: TransitionType.fadeIn,
@@ -88,9 +101,11 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     String routeName = settings.name;
     switch (routeName) {
-      // case Constants.EDITPROFILE:
-      //   return MaterialPageRoute(
-      //       builder: (_) => EditProfile(userData: settings.arguments));
+      case Constants.ADD_ADDRESS:
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments = settings.arguments;
+          return AddAddress(first: arguments['first']);
+        });
 
       default:
         return FluroRouter.router.generator(settings);

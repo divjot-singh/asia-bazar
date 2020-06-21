@@ -31,6 +31,32 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, UserDatabaseState> {
           yield ErrorState();
         }
       }
+    } else if (event is AddUserAddress) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        yield ErrorState();
+      } else {
+        try {
+          await userDatabaseRepo.addAddress(
+              userId: userId, address: event.address);
+          if (state == null) {
+            if (event.callback != null) {
+              event.callback(false);
+            }
+            yield ErrorState();
+          } else {
+            if (event.callback != null) {
+              event.callback(true);
+            }
+            yield state;
+          }
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          yield ErrorState();
+        }
+      }
     }
   }
 }

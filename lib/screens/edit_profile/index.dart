@@ -1,43 +1,105 @@
-import 'package:asia/blocs/user_database_bloc/bloc.dart';
-import 'package:asia/blocs/user_database_bloc/state.dart';
-import 'package:asia/l10n/l10n.dart';
-import 'package:asia/shared_widgets/app_bar.dart';
-import 'package:asia/shared_widgets/page_views.dart';
+import 'package:asia/screens/edit_profile/my_painter.dart';
+import 'package:asia/screens/edit_profile/search_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-class EditProfile extends StatefulWidget {
+class EditProfile extends StatefulWidget implements PreferredSizeWidget {
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
   @override
   _EditProfileState createState() => _EditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile> {
-  Map user;
+class _EditProfileState extends State<EditProfile>
+    with SingleTickerProviderStateMixin {
+  double rippleStartX, rippleStartY;
+  AnimationController _controller;
+  Animation _animation;
+  bool isInSearchMode = false;
+
   @override
-  void initState() {
-    var state = BlocProvider.of<UserDatabaseBloc>(context).state;
-    if (state is NewUser) {
-      user = state.user;
-    } else if (state is UserIsUser) {
-      user = state.user;
-    } else {
-      user = null;
-    }
+  initState() {
     super.initState();
+
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
+    _controller.addStatusListener(animationStatusListener);
+  }
+
+  animationStatusListener(AnimationStatus animationStatus) {
+    if (animationStatus == AnimationStatus.completed) {
+      setState(() {
+        isInSearchMode = true;
+      });
+    }
+  }
+
+  void onSearchTapUp(TapUpDetails details) {
+    setState(() {
+      rippleStartX = details.globalPosition.dx;
+      rippleStartY = details.globalPosition.dy;
+    });
+
+    print("pointer location $rippleStartX, $rippleStartY");
+    _controller.forward();
+  }
+
+  cancelSearch() {
+    setState(() {
+      isInSearchMode = false;
+    });
+
+    onSearchQueryChange('');
+    _controller.reverse();
+  }
+
+  onSearchQueryChange(String query) {
+    print('search $query');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBar(
-        hideBackArrow: true,
-        title: L10n().getStr('profile.updateProfile'),
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Stack(children: [
+      AppBar(
+        title: Text("Flutter App"),
+        actions: <Widget>[
+          GestureDetector(
+            child: IconButton(
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+            ),
+            onTapUp: onSearchTapUp,
+          ),
+          IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () {},
+          )
+        ],
       ),
-      body: user == null ? PageErrorView() : Container(
-        decoration: BoxDecoration(
-          
-        ),
+      AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: MyPainter(
+              containerHeight: widget.preferredSize.height,
+              center: Offset(rippleStartX ?? 0, rippleStartY ?? 0),
+              radius: _animation.value * screenWidth,
+              context: context,
+            ),
+          );
+        },
       ),
-    );
+      isInSearchMode
+          ? (SearchBar(
+              onCancelSearch: cancelSearch,
+              onSearchQueryChanged: onSearchQueryChange,
+            ))
+          : (Container())
+    ]);
   }
 }

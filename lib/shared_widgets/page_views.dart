@@ -32,6 +32,22 @@ class PageFetchingView extends PageView {
   }
 }
 
+class TinyLoader extends PageView {
+  @override
+  Widget build(BuildContext context) {
+    return SpinKitSquareCircle(
+      itemBuilder: (BuildContext context, int index) {
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: ColorShades.darkPink,
+          ),
+        );
+      },
+    );
+  }
+}
+
 class PageFetchingViewWithCircularLoader extends PageView {
   @override
   Widget build(BuildContext context) {

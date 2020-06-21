@@ -27,12 +27,16 @@ class _RedirectorState extends State<Redirector> {
           Navigator.pushReplacementNamed(context, Constants.ADMIN_PROFILE);
         } else if (state is UserIsUser) {
           Navigator.pushReplacementNamed(context, Constants.HOME);
-        } else {
-          Navigator.pushReplacementNamed(context, Constants.ADMIN_PROFILE);
+        } else if (state is NewUser) {
+          Navigator.pushReplacementNamed(context, Constants.ADD_ADDRESS,
+              arguments: {'first': true});
         }
       },
       child: BlocBuilder<UserDatabaseBloc, UserDatabaseState>(
         builder: (context, state) {
+          if (state is ErrorState) {
+            return PageErrorView();
+          }
           return Container(
             decoration: BoxDecoration(gradient: Gradients.lightPink),
             height: MediaQuery.of(context).size.height,

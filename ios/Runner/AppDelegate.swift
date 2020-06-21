@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import Firebase
+import GoogleMaps
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
@@ -11,6 +12,7 @@ import Firebase
     UIApplication.shared.isStatusBarHidden = false
 
     GeneratedPluginRegistrant.register(with: self)
+	GMSServices.provideAPIKey("AIzaSyA44if2p7nnYIy76PyUDawczq_gJk5u1hQ")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

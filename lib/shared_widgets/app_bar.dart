@@ -7,15 +7,17 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
   final bool hideBackArrow;
   final Map leading, rightAction;
   final hasTransparentBackground;
+  final textColor;
 
-  MyAppBar({
-    this.title,
-    this.titleIcon,
-    this.leading,
-    this.rightAction,
-    this.hideBackArrow,
-    this.hasTransparentBackground,
-  }) : super();
+  MyAppBar(
+      {this.title,
+      this.titleIcon,
+      this.leading,
+      this.rightAction,
+      this.hideBackArrow,
+      this.hasTransparentBackground = false,
+      this.textColor})
+      : super();
 
   @override
   Size get preferredSize => Size.fromHeight(Spacing.space24 * 2);
@@ -25,14 +27,20 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
     return PreferredSize(
       preferredSize: Size.fromHeight(Spacing.space24 * 2),
       child: Padding(
-          //todo ask khushboo
           padding: EdgeInsets.only(right: 0),
           child: AppBar(
             title: titleIcon != null
                 ? titleIcon
                 : Text(
                     this.title,
-                    style: Theme.of(context).textTheme.pageTitle,
+                    style: Theme.of(context).textTheme.pageTitle.copyWith(
+                        color: textColor != null
+                            ? textColor
+                            : hasTransparentBackground
+                                ? Theme.of(context).colorScheme.textPrimaryLight
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .textPrimaryDark),
                   ),
             automaticallyImplyLeading: false,
             elevation: 0,
@@ -70,7 +78,9 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
                         child: Align(
                           alignment: Alignment.center,
                           child: Icon(Icons.arrow_back,
-                              color: ColorShades.bastille),
+                              color: textColor != null
+                                  ? textColor
+                                  : ColorShades.bastille),
                         ),
                       ),
           )),

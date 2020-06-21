@@ -39,12 +39,29 @@ class UserDatabase {
     }
   }
 
+  Future<void> addAddress(
+      {@required String userId, @required Map address}) async {
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      List addressList;
+      if (snapshot.value['address'] is List) {
+        addressList = snapshot.value['address'];
+      } else {
+        addressList = [];
+      }
+      addressList.add(address);
+      userRef.child(userId).update({'address': addressList});
+    }
+  }
+
   Future<void> addUser({@required String userId}) async {
     String phoneNumber = await StorageManager.getItem(KeyNames['phone']);
     String userName = await StorageManager.getItem(KeyNames['userName']);
-    userRef
-        .child(userId)
-        .set({KeyNames['userName']: userName, KeyNames['phone']: phoneNumber});
+    userRef.child(userId).set({
+      KeyNames['userName']: userName,
+      KeyNames['phone']: phoneNumber,
+      'address': []
+    });
   }
 
   Future<dynamic> getUser({@required String userId}) async {

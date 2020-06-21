@@ -9,6 +9,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Asia Bazar"
         android:icon="@mipmap/ic_launcher">
+		<meta-data android:name="com.google.android.geo.API_KEY" 
+   android:value="AIzaSyAtluEQrBEFPrX4BynbMqQlEbZ1M4eTsLs"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

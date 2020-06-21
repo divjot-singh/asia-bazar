@@ -15,6 +15,7 @@ class Constants {
   static const POST_AUTHENTICATION_REDIRECTOR = 'user/redirect';
   static const ADMIN_PROFILE = 'user/is_admin';
   static const HOME = 'user/home';
+  static const ADD_ADDRESS = 'user/add_address';
 }
 
 const List<Map<String, String>> Countries = [

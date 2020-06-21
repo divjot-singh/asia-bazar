@@ -9,6 +9,7 @@ import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
+import 'package:asia/utils/utilities.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -124,14 +125,12 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-    bool _keyboardIsVisible() {
-      return !(MediaQuery.of(context).viewInsets.bottom == 0.0);
-    }
 
     bool _isLoading() {
       return BlocProvider.of<AuthBloc>(context).state is FetchingState;
     }
 
+    bool _keyboardIsVisible = Utilities.keyboardIsVisible(context);
     Widget otpScreen() {
       ThemeData theme = Theme.of(context);
       return Column(
@@ -225,7 +224,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: _keyboardIsVisible() ? Spacing.space24 : 60,
+            height: _keyboardIsVisible ? Spacing.space24 : 60,
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: Spacing.space8),
@@ -300,7 +299,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             ),
           ),
           SizedBox(
-            height: _keyboardIsVisible() ? Spacing.space24 : 40,
+            height: _keyboardIsVisible ? Spacing.space24 : 40,
           ),
           GestureDetector(
             onTap: () {
@@ -340,7 +339,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            gradient: _keyboardIsVisible()
+            gradient: _keyboardIsVisible
                 ? Gradients.lightPinkReverse
                 : Gradients.lightPink,
           ),
@@ -358,7 +357,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         onPressed: () {
                           resetForm();
                         },
-                        color: _keyboardIsVisible()
+                        color: _keyboardIsVisible
                             ? ColorShades.white
                             : ColorShades.pinkBackground,
                       ),
@@ -373,17 +372,17 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 child: Container(
                   child: Column(
                     mainAxisAlignment:
-                        _keyboardIsVisible() || _isLoading() || isCodeSent
+                        _keyboardIsVisible || _isLoading() || isCodeSent
                             ? MainAxisAlignment.start
                             : MainAxisAlignment.center,
                     children: <Widget>[
                       Image.asset(
                         'assets/images/home_logo.png',
-                        height: _keyboardIsVisible() ? 200 : 250,
-                        width: _keyboardIsVisible() ? 200 : 250,
+                        height: _keyboardIsVisible ? 200 : 250,
+                        width: _keyboardIsVisible ? 200 : 250,
                       ),
                       SizedBox(
-                        height: _keyboardIsVisible() ? 0 : 60,
+                        height: _keyboardIsVisible ? 0 : 60,
                       ),
                       BlocBuilder<AuthBloc, AuthenticationState>(
                           builder: (context, currentState) {

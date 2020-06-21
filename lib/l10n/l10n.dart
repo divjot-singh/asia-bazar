@@ -57,11 +57,22 @@ Map<String, Map<String, String>> strings = {
     "phoneAuthentication.error.didntGetCode": "I didn't get the code",
     "phoneAuthentication.enterCode":
         "Please enter verification code sent to {number}",
-    "redirector.userIsAdmin": "You are already registered as an admin on Asia Bazar",
+    "redirector.userIsAdmin":
+        "You are already registered as an admin on Asia Bazar",
     "redirector.userIsAdmin.info":
         "You can not register as an admin and a user from the same number. Please go back and login using a different phone number",
     "redirector.goBack": "Go Back",
-    "profile.updateProfile":"Update Profile",
+    "profile.updateProfile": "Update Profile",
+    "profile.updateProfile.welcome": "Welcome aboard {username}!",
+    "profile.updateprofile.info":
+        "Please add a username and address to continue",
+    "profile.updateProfile.username": "What should we call you?",
+    "profile.updateProfile.address":
+        "Please add a default address. You can always change that later.",
+    "profile.address.select": "Choose location",
+    "profile.address.added": "Address succesfully saved",
+    "profile.address.error": "Something went wrong",
+    "profile.address.addAddress": "Add address",
   },
   "it": {},
 };

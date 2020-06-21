@@ -42,7 +42,9 @@ dependencies:
   pin_code_text_field: ^1.5.1
   pin_code_fields: ^3.1.2
   firebase_database: ^3.1.6
-
+  google_maps_flutter:
+  location: ^3.0.2
+  geolocator: ^5.3.2+2
 
   
 
