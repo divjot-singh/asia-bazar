@@ -95,8 +95,8 @@
 //       child: Container(
 //         decoration: BoxDecoration(
 //           gradient: _keyboardIsVisible
-//               ? Gradients.lightPink
-//               : Gradients.lightPinkReverse,
+//               ? Gradients.greenGradient
+//               : Gradients.greenGradientReverse,
 //         ),
 //         child: Scaffold(
 //           backgroundColor: Colors.transparent,

@@ -41,7 +41,7 @@ class _RedirectorState extends State<Redirector> {
               return PageErrorView();
             }
             return Container(
-              decoration: BoxDecoration(gradient: Gradients.lightPink),
+              decoration: BoxDecoration(gradient: Gradients.greenGradient),
               height: MediaQuery.of(context).size.height,
               child: Center(
                 child: PageFetchingView(),

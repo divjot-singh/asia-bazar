@@ -65,12 +65,11 @@ class InputBox extends StatelessWidget {
             ),
           Container(
             decoration: BoxDecoration(boxShadow: [
-              BoxShadow(
-                  color: theme.colorScheme.shadowLight,
-                  offset: Offset(0, 4),
-                  blurRadius: 12),
+              Shadows.input,
             ]),
             child: TextFormField(
+              textAlign: TextAlign.left,
+              textAlignVertical: TextAlignVertical.center,
               onTap: onTap,
               maxLines: maxLines,
               initialValue: value,
@@ -100,13 +99,13 @@ class InputBox extends StatelessWidget {
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: ColorShades.white),
                   borderRadius: const BorderRadius.all(
-                    const Radius.circular(10.0),
+                    const Radius.circular(16.0),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: ColorShades.white),
                   borderRadius: const BorderRadius.all(
-                    const Radius.circular(10.0),
+                    const Radius.circular(16.0),
                   ),
                 ),
                 errorBorder: OutlineInputBorder(

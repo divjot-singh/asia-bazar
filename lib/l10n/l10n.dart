@@ -43,6 +43,7 @@ Map<String, Map<String, String>> strings = {
   "en": {
     "error.ERROR_INVALID_VERIFICATION_CODE": "Invalid otp",
     "error.invalidPhoneNumber": "Invalid phone number",
+    "error.invalidCredential": "Invalid phone number",
     "error.verifyPhoneNumberError": "Some error in authentication",
     "error.verificationFailed": "Verification Failed",
     "authentication.enterNumber":

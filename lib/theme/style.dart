@@ -12,6 +12,8 @@ class ColorShades {
   static const Color grey200 = const Color(0xffb1bad4);
   static const Color grey300 = const Color(0xff647093);
   static const Color bastille = const Color(0xff2d2d33);
+  static const Color greenBg = const Color(0xff178A43);
+  static const Color darkGreenBg = const Color(0xff0F5C2C);
 
   // Semantic
   static const Color elfGreen = const Color(0xff229d58);
@@ -175,15 +177,15 @@ class Gradients {
       ColorShades.deepLilac,
     ],
   );
-  static LinearGradient lightPink = LinearGradient(
+  static LinearGradient greenGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomCenter,
-      colors: [Colors.white, ColorShades.pinkBackground]);
-  static LinearGradient lightPinkReverse = LinearGradient(
+      colors: [Colors.white, ColorShades.greenBg]);
+  static LinearGradient greenGradientReverse = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomCenter,
       colors: [
-        ColorShades.pinkBackground,
+        ColorShades.greenBg,
         Colors.white,
       ]);
 }
@@ -192,9 +194,14 @@ class Shadows {
   final BuildContext context;
   Shadows(this.context) : super();
 
-  get card => BoxShadow(
-        color: Theme.of(context).colorScheme.shadowLight,
+  static get card => BoxShadow(
+        color: ColorShades.darkGreenBg,
         offset: Offset(0, 4),
+        blurRadius: 12,
+      );
+  static get input => BoxShadow(
+        color: ColorShades.darkGreenBg,
+        offset: Offset(1, -1),
         blurRadius: 12,
       );
 }

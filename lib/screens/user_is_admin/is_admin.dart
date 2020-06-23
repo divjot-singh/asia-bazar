@@ -17,7 +17,7 @@ class IsAdmin extends StatelessWidget {
         body: Container(
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.all(Spacing.space16),
-          decoration: BoxDecoration(gradient: Gradients.lightPink),
+          decoration: BoxDecoration(gradient: Gradients.greenGradient),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,

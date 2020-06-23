@@ -10,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        decoration: BoxDecoration(gradient: Gradients.lightPinkReverse),
+        decoration: BoxDecoration(gradient: Gradients.greenGradientReverse),
         child: Scaffold(
           backgroundColor: Colors.transparent,
           drawer: AppDrawer(),

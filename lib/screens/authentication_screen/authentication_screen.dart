@@ -130,6 +130,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       return BlocProvider.of<AuthBloc>(context).state is FetchingState;
     }
 
+    double viewportHeight = MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).viewInsets.bottom;
     bool _keyboardIsVisible = Utilities.keyboardIsVisible(context);
     Widget otpScreen() {
       ThemeData theme = Theme.of(context);
@@ -167,12 +170,13 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   borderRadius: BorderRadius.circular(10),
                   fieldHeight: 40,
                   fieldWidth: 40,
-                  borderWidth: 0,
-                  activeFillColor: ColorShades.darkPink,
-                  inactiveFillColor: ColorShades.darkPink,
+                  borderWidth: 1,
+                  activeFillColor: ColorShades.darkGreenBg,
+                  inactiveFillColor: ColorShades.darkGreenBg,
                   selectedFillColor: Colors.white,
-                  activeColor: Colors.white,
-                  selectedColor: ColorShades.darkPink,
+                  activeColor: ColorShades.greenBg,
+                  inactiveColor: ColorShades.greenBg,
+                  selectedColor: ColorShades.darkGreenBg,
                 ),
                 animationDuration: Duration(milliseconds: 300),
                 backgroundColor: Colors.transparent,
@@ -186,6 +190,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   });
                 },
                 beforeTextPaste: (text) {
+                  print('jee');
                   if (text.length > 6 || int.parse(text) == null) {
                     return false;
                   }
@@ -201,7 +206,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                       'phoneAuthentication.error.didntGetCode',
                     ),
                     style: theme.textTheme.body1Regular
-                        .copyWith(color: ColorShades.lightBlue),
+                        .copyWith(color: ColorShades.white),
                     children: [
                       TextSpan(text: '. '),
                       TextSpan(
@@ -211,7 +216,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                             },
                           text: L10n().getStr('phoneAuthentication.resend'),
                           style: theme.textTheme.body1Bold.copyWith(
-                              color: ColorShades.white,
+                              color: Color(0xffF89938),
                               fontWeight: FontWeight.w500,
                               decoration: TextDecoration.underline))
                     ]),
@@ -241,7 +246,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 height: _keyboardIsVisible ? Spacing.space24 : 60,
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: Spacing.space8),
+                padding: EdgeInsets.symmetric(horizontal: Spacing.space24),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -326,18 +331,19 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                   }
                 },
                 child: Container(
-                  height: 50,
-                  width: 50,
+                  height: 56,
+                  width: 56,
                   decoration: BoxDecoration(
+                      boxShadow: [Shadows.input],
                       shape: BoxShape.circle,
                       color: disableSend
-                          ? ColorShades.grey100
+                          ? ColorShades.grey200
                           : ColorShades.white),
                   child: Center(
                     child: Icon(
                       Icons.keyboard_arrow_right,
-                      color: ColorShades.pinkBackground,
-                      size: 30,
+                      color: ColorShades.greenBg,
+                      size: 32,
                     ),
                   ),
                 ),
@@ -360,62 +366,67 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             height: MediaQuery.of(context).size.height,
             decoration: BoxDecoration(
               gradient: _keyboardIsVisible
-                  ? Gradients.lightPinkReverse
-                  : Gradients.lightPink,
+                  ? Gradients.greenGradientReverse
+                  : Gradients.greenGradient,
             ),
-            child: CustomScrollView(
-              shrinkWrap: false,
-              slivers: <Widget>[
-                SliverToBoxAdapter(
-                  child: Stack(
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Padding(
-                          padding:
-                              EdgeInsets.only(top: _keyboardIsVisible ? 0 : 60),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Spacing.space20,
+            child: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      height: _keyboardIsVisible
+                          ? viewportHeight / 3
+                          : viewportHeight / 2,
+                      child: Center(
+                        child: Stack(
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    top: _keyboardIsVisible ? 0 : 60),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: Spacing.space20,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/home_logo.png',
+                                    height: _keyboardIsVisible ? 200 : 250,
+                                    width: _keyboardIsVisible ? 200 : 250,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Image.asset(
-                              'assets/images/home_logo.png',
-                              height: _keyboardIsVisible ? 200 : 250,
-                              width: _keyboardIsVisible ? 200 : 250,
-                            ),
-                          ),
+                            if (isCodeSent)
+                              Positioned(
+                                top: 20,
+                                left: 0,
+                                child: Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: IconButton(
+                                    icon: Icon(Icons.arrow_back),
+                                    onPressed: () {
+                                      resetForm();
+                                    },
+                                    color: _keyboardIsVisible
+                                        ? ColorShades.white
+                                        : ColorShades.greenBg,
+                                  ),
+                                ),
+                              )
+                          ],
                         ),
                       ),
-                      if (isCodeSent)
-                        Positioned(
-                          top: 20,
-                          left: 0,
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            child: IconButton(
-                              icon: Icon(Icons.arrow_back),
-                              onPressed: () {
-                                resetForm();
-                              },
-                              color: _keyboardIsVisible
-                                  ? ColorShades.white
-                                  : ColorShades.pinkBackground,
-                            ),
-                          ),
-                        )
-                    ],
-                  ),
-                ),
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                        vertical: Spacing.space8, horizontal: Spacing.space16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        BlocBuilder<AuthBloc, AuthenticationState>(
+                    ),
+                    Container(
+                      constraints:
+                          BoxConstraints(minHeight: viewportHeight / 2),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: Spacing.space16,
+                          vertical: Spacing.space12),
+                      child: Center(
+                        child: BlocBuilder<AuthBloc, AuthenticationState>(
                             builder: (context, currentState) {
                           if (currentState is UnAuthenticatedState) {
                             return unAuthenticatedScreen();
@@ -430,12 +441,85 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           }
                           return Container();
                         }),
-                      ],
-                    ),
-                  ),
-                )
-              ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
+            // child: CustomScrollView(
+            //   shrinkWrap: false,
+            //   slivers: <Widget>[
+            //     SliverToBoxAdapter(
+            //       child: Stack(
+            //         children: <Widget>[
+            //           Align(
+            //             alignment: Alignment.topCenter,
+            //             child: Padding(
+            //               padding:
+            //                   EdgeInsets.only(top: _keyboardIsVisible ? 0 : 60),
+            //               child: Container(
+            //                 padding: EdgeInsets.symmetric(
+            //                   horizontal: Spacing.space20,
+            //                 ),
+            //                 child: Image.asset(
+            //                   'assets/images/home_logo.png',
+            //                   height: _keyboardIsVisible ? 200 : 250,
+            //                   width: _keyboardIsVisible ? 200 : 250,
+            //                 ),
+            //               ),
+            //             ),
+            //           ),
+            //           if (isCodeSent)
+            //             Positioned(
+            //               top: 20,
+            //               left: 0,
+            //               child: Container(
+            //                 height: 50,
+            //                 width: 50,
+            //                 child: IconButton(
+            //                   icon: Icon(Icons.arrow_back),
+            //                   onPressed: () {
+            //                     resetForm();
+            //                   },
+            //                   color: _keyboardIsVisible
+            //                       ? ColorShades.white
+            //                       : ColorShades.pinkBackground,
+            //                 ),
+            //               ),
+            //             )
+            //         ],
+            //       ),
+            //     ),
+            //     SliverFillRemaining(
+            //       hasScrollBody: false,
+            //       child: Container(
+            //         padding: EdgeInsets.symmetric(
+            //             vertical: Spacing.space8, horizontal: Spacing.space16),
+            //         child: Column(
+            //           mainAxisSize: MainAxisSize.max,
+            //           children: <Widget>[
+            //             BlocBuilder<AuthBloc, AuthenticationState>(
+            //                 builder: (context, currentState) {
+            //               if (currentState is UnAuthenticatedState) {
+            //                 return unAuthenticatedScreen();
+            //               } else if (currentState is OtpSentState) {
+            //                 return otpScreen();
+            //               } else if (currentState is FetchingState) {
+            //                 return Padding(
+            //                   padding: EdgeInsets.symmetric(
+            //                       vertical: Spacing.space32),
+            //                   child: PageFetchingView(),
+            //                 );
+            //               }
+            //               return Container();
+            //             }),
+            //           ],
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // ),
           ),
         ),
       ),

@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
     ThemeData theme = Theme.of(context);
     return Drawer(
       child: Container(
-        decoration: BoxDecoration(gradient: Gradients.lightPink),
+        decoration: BoxDecoration(gradient: Gradients.greenGradient),
         child: ListView(
           children: <Widget>[
             DrawerHeader(
