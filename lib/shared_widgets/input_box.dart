@@ -20,6 +20,7 @@ class InputBox extends StatelessWidget {
   final margin, labelColor;
   final suffixIcon, maxLines, prefixIcon;
   final keyboardAppearance;
+  final bool hideShadow;
   TextEditingController controller;
   InputBox(
       {this.label,
@@ -27,6 +28,7 @@ class InputBox extends StatelessWidget {
       this.hintText,
       this.margin,
       this.validator,
+      this.hideShadow = false,
       this.disabled = false,
       this.autovalidate = false,
       this.value,
@@ -64,9 +66,12 @@ class InputBox extends StatelessWidget {
               height: Spacing.space8,
             ),
           Container(
-            decoration: BoxDecoration(boxShadow: [
-              Shadows.input,
-            ]),
+            decoration: BoxDecoration(
+                boxShadow: hideShadow
+                    ? null
+                    : [
+                        Shadows.input,
+                      ]),
             child: TextFormField(
               textAlign: TextAlign.left,
               textAlignVertical: TextAlignVertical.center,
@@ -89,7 +94,7 @@ class InputBox extends StatelessWidget {
                 counterText: '',
                 contentPadding: EdgeInsets.all(Spacing.space12),
                 errorStyle: theme.textTheme.body2Regular
-                    .copyWith(color: ColorShades.smokeWhite),
+                    .copyWith(color: theme.colorScheme.error),
                 hintText: hintText ?? L10n().getStr('input.placeholder'),
                 hintStyle: theme.textTheme.body1Regular
                     .copyWith(color: theme.colorScheme.textSecGray2),
@@ -97,13 +102,13 @@ class InputBox extends StatelessWidget {
                 fillColor:
                     disabled ? theme.colorScheme.disabled : ColorShades.white,
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: ColorShades.white),
+                  borderSide: BorderSide(color: ColorShades.greenBg),
                   borderRadius: const BorderRadius.all(
                     const Radius.circular(16.0),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: ColorShades.white),
+                  borderSide: BorderSide(color: ColorShades.greenBg),
                   borderRadius: const BorderRadius.all(
                     const Radius.circular(16.0),
                   ),

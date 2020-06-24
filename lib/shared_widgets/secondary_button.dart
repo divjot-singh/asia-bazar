@@ -6,6 +6,7 @@ class SecondaryButton extends StatelessWidget {
   final bool disabled, noWidth, hideShadow;
   final padding;
   final height;
+  final shadow;
   Function onPressed;
   SecondaryButton(
       {@required this.text,
@@ -13,6 +14,7 @@ class SecondaryButton extends StatelessWidget {
       this.height,
       this.disabled = false,
       this.hideShadow = false,
+      this.shadow,
       this.noWidth = false,
       @required this.onPressed});
   @override
@@ -21,18 +23,11 @@ class SecondaryButton extends StatelessWidget {
     return Container(
       height: height != null ? height : null,
       decoration: BoxDecoration(
-        border:
-            disabled ? null : Border.all(color: Color(0xfff2465d)),
+        border: disabled ? null : Border.all(color: ColorShades.greenBg),
         borderRadius: BorderRadius.circular(10),
         boxShadow: disabled || (hideShadow)
             ? null
-            : [
-                BoxShadow(
-                  color: Theme.of(context).colorScheme.shadowDark,
-                  offset: Offset(0, 0),
-                  blurRadius: 8,
-                )
-              ],
+            : [shadow != null ? shadow : Shadows.input],
       ),
       width: noWidth ? null : double.infinity,
       child: GestureDetector(
@@ -52,7 +47,7 @@ class SecondaryButton extends StatelessWidget {
             style: theme.textTheme.h4.copyWith(
                 color: disabled
                     ? theme.colorScheme.textSecGray2
-                    : Color(0xfff2465d)),
+                    : ColorShades.greenBg),
           ),
         ),
       ),

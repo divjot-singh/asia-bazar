@@ -36,7 +36,7 @@ class App extends StatelessWidget {
             }
 
             return MaterialApp(
-              title: 'game.tv',
+              title: 'Asia Bazar',
               theme: appTheme(),
               navigatorObservers: [routeObserver],
               localizationsDelegates: [

@@ -14,6 +14,7 @@ class ColorShades {
   static const Color bastille = const Color(0xff2d2d33);
   static const Color greenBg = const Color(0xff178A43);
   static const Color darkGreenBg = const Color(0xff0F5C2C);
+  static const Color lightGreenBg = const Color(0xffBDF5D2);
 
   // Semantic
   static const Color elfGreen = const Color(0xff229d58);
@@ -180,13 +181,13 @@ class Gradients {
   static LinearGradient greenGradient = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomCenter,
-      colors: [Colors.white, ColorShades.greenBg]);
+      colors: [ColorShades.lightGreenBg, ColorShades.greenBg]);
   static LinearGradient greenGradientReverse = LinearGradient(
       begin: Alignment.topLeft,
       end: Alignment.bottomCenter,
       colors: [
         ColorShades.greenBg,
-        Colors.white,
+        ColorShades.lightGreenBg,
       ]);
 }
 
@@ -201,7 +202,12 @@ class Shadows {
       );
   static get input => BoxShadow(
         color: ColorShades.darkGreenBg,
-        offset: Offset(1, -1),
+        offset: Offset(-1, 1),
         blurRadius: 12,
+      );
+  static get inputLight => BoxShadow(
+        color: ColorShades.darkGreenBg,
+        offset: Offset(-1, 1),
+        blurRadius: 6,
       );
 }

@@ -39,18 +39,29 @@ class UserDatabase {
     }
   }
 
+  Future<void> onboardUser(
+      {@required String userId,
+      @required String username,
+      @required Map address}) async {
+    await addAddress(userId: userId, address: address);
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      await userRef.child(userId).update({KeyNames['userName']: username});
+    }
+  }
+
   Future<void> addAddress(
       {@required String userId, @required Map address}) async {
     DataSnapshot snapshot = await userRef.child(userId).once();
     if (snapshot.value != null) {
       List addressList;
-      if (snapshot.value['address'] is List) {
-        addressList = [...snapshot.value['address']];
+      if (snapshot.value[KeyNames['address']] is List) {
+        addressList = [...snapshot.value[KeyNames['address']]];
       } else {
         addressList = [];
       }
       addressList.add(address);
-      userRef.child(userId).update({'address': addressList});
+      await userRef.child(userId).update({KeyNames['address']: addressList});
     }
   }
 
@@ -60,7 +71,7 @@ class UserDatabase {
     userRef.child(userId).set({
       KeyNames['userName']: userName,
       KeyNames['phone']: phoneNumber,
-      'address': []
+      KeyNames['address']: []
     });
   }
 

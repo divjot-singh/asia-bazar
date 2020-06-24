@@ -40,7 +40,7 @@ class TinyLoader extends PageView {
         return DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: ColorShades.darkPink,
+            color: ColorShades.darkGreenBg,
           ),
         );
       },

@@ -3,6 +3,7 @@ const Map KeyNames = {
   "userId": 'user_id',
   "token": 'token_info',
   "phone": "phone_number",
+  "address":"address",
 };
 
 const Map URLS={
@@ -16,6 +17,7 @@ class Constants {
   static const ADMIN_PROFILE = 'user/is_admin';
   static const HOME = 'user/home';
   static const ADD_ADDRESS = 'user/add_address';
+  static const ONBOARDING = 'user/onboarding';
 }
 
 const List<Map<String, String>> Countries = [

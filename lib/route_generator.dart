@@ -2,6 +2,7 @@ import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/edit_profile/index.dart';
 import 'package:asia/screens/home/index.dart';
+import 'package:asia/screens/onboarding/index.dart';
 import 'package:asia/screens/redirector/index.dart';
 import 'package:asia/screens/user_is_admin/is_admin.dart';
 import 'package:asia/utils/constants.dart';
@@ -40,6 +41,12 @@ class FluroRouter {
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             return IsAdmin();
+          },
+        );
+      case Constants.ONBOARDING:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return Onboarding();
           },
         );
       case Constants.POST_AUTHENTICATION_REDIRECTOR:
@@ -87,6 +94,11 @@ class FluroRouter {
     router.define(
       Constants.ADD_ADDRESS,
       handler: getCommonHandler(Constants.ADD_ADDRESS),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
+      Constants.ONBOARDING,
+      handler: getCommonHandler(Constants.ONBOARDING),
       transitionType: TransitionType.fadeIn,
     );
     router.define(

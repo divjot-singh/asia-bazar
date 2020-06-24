@@ -31,8 +31,10 @@ class _RedirectorState extends State<Redirector> {
 
             Navigator.pushReplacementNamed(context, Constants.HOME);
           } else if (state is NewUser) {
-            Navigator.pushReplacementNamed(context, Constants.ADD_ADDRESS,
-                arguments: {'first': true});
+            Navigator.pushReplacementNamed(
+              context,
+              Constants.ONBOARDING,
+            );
           }
         },
         child: BlocBuilder<UserDatabaseBloc, UserDatabaseState>(

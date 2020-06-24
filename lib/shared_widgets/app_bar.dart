@@ -37,20 +37,20 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
                         color: textColor != null
                             ? textColor
                             : hasTransparentBackground
-                                ? Theme.of(context).colorScheme.textPrimaryLight
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .textPrimaryDark),
+                                ? ColorShades.greenBg
+                                : ColorShades.white),
                   ),
             automaticallyImplyLeading: false,
             elevation: 0,
             centerTitle: true,
             backgroundColor: hasTransparentBackground == true
                 ? Colors.transparent
-                : Theme.of(context).colorScheme.bg,
+                : ColorShades.greenBg,
             textTheme: Theme.of(context).textTheme,
             iconTheme: IconThemeData(
-                color: Theme.of(context).colorScheme.textPrimaryDark),
+                color: hasTransparentBackground
+                    ? ColorShades.greenBg
+                    : ColorShades.white),
             actions: rightAction != null
                 ? <Widget>[
                     Padding(
@@ -80,7 +80,7 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
                           child: Icon(Icons.arrow_back,
                               color: textColor != null
                                   ? textColor
-                                  : ColorShades.bastille),
+                                  : ColorShades.green),
                         ),
                       ),
           )),
