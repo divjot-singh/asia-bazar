@@ -26,7 +26,6 @@ class AddAddress extends StatefulWidget {
 
 class _AddAddressState extends State<AddAddress> {
   bool disableSend = false;
-  bool showLoader = true;
 
   addAddressCallback(bool result) {
     Navigator.pop(context);
@@ -83,13 +82,11 @@ class _AddAddressState extends State<AddAddress> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                      child: showLoader
-                          ? TinyLoader()
-                          : MapWidget(
-                              addressType: widget.addressType,
-                              disableSend: disableSend,
-                              sendCallback: saveData,
-                            )),
+                      child: MapWidget(
+                    addressType: widget.addressType,
+                    disableSend: disableSend,
+                    sendCallback: saveData,
+                  )),
                 ],
               ),
             ),
