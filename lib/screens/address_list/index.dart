@@ -181,10 +181,14 @@ class _AddressListState extends State<AddressList> {
                                           ),
                                         ));
                                   } else if (value == 'set_default') {
+                                    showCustomLoader(context);
                                     BlocProvider.of<UserDatabaseBloc>(context)
                                         .add(SetDefaultAddress(
-                                            timestamp: address['timestamp']
-                                                .toString()));
+                                            timestamp:
+                                                address['timestamp'].toString(),
+                                            callback: (_) {
+                                              Navigator.pop(context);
+                                            }));
                                   }
                                 },
                                 padding: EdgeInsets.all(0),
