@@ -1,3 +1,4 @@
+import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:flutter/material.dart';
 
 abstract class UserDatabaseEvents {}
@@ -35,4 +36,10 @@ class SetDefaultAddress extends UserDatabaseEvents {
   String timestamp;
   Function callback;
   SetDefaultAddress({@required this.timestamp, this.callback});
+}
+
+class UpdateUsername extends UserDatabaseEvents{
+  String username;
+  Function callback;
+  UpdateUsername({@required this.username, this.callback});
 }

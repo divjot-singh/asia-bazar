@@ -40,6 +40,10 @@ class AppDrawer extends StatelessWidget {
                         width: 70,
                       ),
                       GestureDetector(
+                        onTap: () {
+                          Navigator.popAndPushNamed(
+                              context, Constants.EDIT_PROFILE);
+                        },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -55,7 +59,7 @@ class AppDrawer extends StatelessWidget {
                               ),
                             ),
                             Icon(
-                              Icons.edit,
+                              Icons.arrow_forward_ios,
                               color: ColorShades.greenBg,
                               size: 16,
                             ),
@@ -65,15 +69,6 @@ class AppDrawer extends StatelessWidget {
                       SizedBox(
                         height: Spacing.space12,
                       ),
-                      // Expanded(
-                      //   child: Text(
-                      //     L10n().getStr('home.drawer.noOrder'),
-                      //     overflow: TextOverflow.ellipsis,
-                      //     maxLines: 2,
-                      //     style: theme.textTheme.body1Regular
-                      //         .copyWith(color: ColorShades.greenBg),
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -85,6 +80,46 @@ class AppDrawer extends StatelessWidget {
                   title: Text(
                       L10n().getStr(
                         'home.title',
+                      ),
+                      style: theme.textTheme.h4
+                          .copyWith(color: ColorShades.greenBg)),
+                ),
+                Divider(
+                  color: ColorShades.greenBg,
+                  thickness: 1,
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, Constants.CART);
+                  },
+                  leading:
+                      Icon(Icons.shopping_cart, color: ColorShades.greenBg),
+                  title: Text(
+                      L10n().getStr(
+                        'drawer.cart',
+                      ),
+                      style: theme.textTheme.h4
+                          .copyWith(color: ColorShades.greenBg)),
+                ),
+                Divider(
+                  color: ColorShades.greenBg,
+                  thickness: 1,
+                ),
+                ListTile(
+                  onTap: () {
+                    Navigator.popAndPushNamed(context, Constants.ORDER_LIST);
+                  },
+                  leading: Padding(
+                    padding: EdgeInsets.only(left: Spacing.space4),
+                    child: SvgPicture.asset(
+                      'assets/images/invoice.svg',
+                      color: ColorShades.greenBg,
+                      width: 16,
+                    ),
+                  ),
+                  title: Text(
+                      L10n().getStr(
+                        'drawer.orders',
                       ),
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),
@@ -117,29 +152,6 @@ class AppDrawer extends StatelessWidget {
                   title: Text(
                       L10n().getStr(
                         'drawer.addAddress',
-                      ),
-                      style: theme.textTheme.h4
-                          .copyWith(color: ColorShades.greenBg)),
-                ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
-                ),
-                ListTile(
-                  onTap: () {
-                    //Navigator.popAndPushNamed(context, Constants.ORDER_LIST);
-                  },
-                  leading: Padding(
-                    padding: EdgeInsets.only(left: Spacing.space4),
-                    child: SvgPicture.asset(
-                      'assets/images/invoice.svg',
-                      color: ColorShades.greenBg,
-                      width: 16,
-                    ),
-                  ),
-                  title: Text(
-                      L10n().getStr(
-                        'drawer.orders',
                       ),
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),

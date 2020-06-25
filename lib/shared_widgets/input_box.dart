@@ -116,19 +116,19 @@ class InputBox extends StatelessWidget {
                 errorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: theme.colorScheme.error),
                   borderRadius: const BorderRadius.all(
-                    const Radius.circular(10.0),
+                    const Radius.circular(16.0),
                   ),
                 ),
                 focusedErrorBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: theme.colorScheme.error),
                   borderRadius: const BorderRadius.all(
-                    const Radius.circular(10.0),
+                    const Radius.circular(16.0),
                   ),
                 ),
                 disabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.transparent),
                   borderRadius: const BorderRadius.all(
-                    const Radius.circular(10.0),
+                    const Radius.circular(16.0),
                   ),
                 ),
               ),

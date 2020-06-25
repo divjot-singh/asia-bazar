@@ -154,6 +154,29 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
           yield {...state};
         }
       }
+    } else if (event is UpdateUsername) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.updateUsername(
+              userId: userId, username: event.username);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
     }
   }
 }

@@ -1,10 +1,13 @@
 import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
+import 'package:asia/screens/cart/index.dart';
 import 'package:asia/screens/edit_profile/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/onboarding/index.dart';
+import 'package:asia/screens/order_list/index.dart';
 import 'package:asia/screens/redirector/index.dart';
+import 'package:asia/screens/update_profile/index.dart';
 import 'package:asia/screens/user_is_admin/is_admin.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +32,7 @@ class FluroRouter {
       case Constants.EDIT_PROFILE:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-            return EditProfile();
+            return UpdateProfile();
           },
         );
       case Constants.ADMIN_PROFILE:
@@ -38,10 +41,22 @@ class FluroRouter {
             return IsAdmin();
           },
         );
+      case Constants.CART:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return Cart();
+          },
+        );
       case Constants.ONBOARDING:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             return Onboarding();
+          },
+        );
+      case Constants.ORDER_LIST:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return OrderList();
           },
         );
       case Constants.POST_AUTHENTICATION_REDIRECTOR:
@@ -80,6 +95,11 @@ class FluroRouter {
       handler: getCommonHandler(Constants.ADMIN_PROFILE),
       transitionType: TransitionType.fadeIn,
     );
+    router.define(
+      Constants.CART,
+      handler: getCommonHandler(Constants.CART),
+      transitionType: TransitionType.inFromBottom,
+    );
 
     router.define(
       Constants.POST_AUTHENTICATION_REDIRECTOR,
@@ -89,12 +109,17 @@ class FluroRouter {
     router.define(
       Constants.ADD_ADDRESS,
       handler: getCommonHandler(Constants.ADD_ADDRESS),
-      transitionType: TransitionType.fadeIn,
+      transitionType: TransitionType.inFromBottom,
     );
     router.define(
       Constants.ONBOARDING,
       handler: getCommonHandler(Constants.ONBOARDING),
-      transitionType: TransitionType.fadeIn,
+      transitionType: TransitionType.cupertinoFullScreenDialog,
+    );
+    router.define(
+      Constants.ORDER_LIST,
+      handler: getCommonHandler(Constants.ORDER_LIST),
+      transitionType: TransitionType.inFromLeft,
     );
     router.define(
       '/',

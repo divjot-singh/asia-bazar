@@ -3,11 +3,11 @@ const Map KeyNames = {
   "userId": 'user_id',
   "token": 'token_info',
   "phone": "phone_number",
-  "address":"address",
+  "address": "address",
 };
 
-const Map URLS={
-  'api_url':'',
+const Map URLS = {
+  'api_url': '',
 };
 
 class Constants {
@@ -19,6 +19,8 @@ class Constants {
   static const ADD_ADDRESS = 'user/add_address';
   static const ONBOARDING = 'user/onboarding';
   static const ADDRESS_LIST = 'user/address_list';
+  static const ORDER_LIST = 'user/order_list';
+  static const CART = 'user/cart';
 }
 
 const List<Map<String, String>> Countries = [
