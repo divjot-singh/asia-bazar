@@ -22,8 +22,9 @@ class _RedirectorState extends State<Redirector> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: BlocListener<UserDatabaseBloc, UserDatabaseState>(
-        listener: (context, state) {
+      child: BlocListener<UserDatabaseBloc, Map>(
+        listener: (context, currentState) {
+          var state = currentState['userstate'];
           if (state is UserIsAdmin) {
             Navigator.pushReplacementNamed(context, Constants.ADMIN_PROFILE);
           } else if (state is UserIsUser) {
@@ -37,8 +38,9 @@ class _RedirectorState extends State<Redirector> {
             );
           }
         },
-        child: BlocBuilder<UserDatabaseBloc, UserDatabaseState>(
-          builder: (context, state) {
+        child: BlocBuilder<UserDatabaseBloc, Map>(
+          builder: (context, currentState) {
+            var state = currentState['userstate'];
             if (state is ErrorState) {
               return PageErrorView();
             }

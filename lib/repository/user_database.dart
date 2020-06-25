@@ -50,6 +50,72 @@ class UserDatabase {
     }
   }
 
+  Future<void> updateAddress(
+      {@required Map address,
+      @required String timestamp,
+      @required String userId}) async {
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      List addressList;
+      if (snapshot.value[KeyNames['address']] is List) {
+        addressList = [...snapshot.value[KeyNames['address']]];
+      } else {
+        addressList = [];
+      }
+
+      int index = addressList
+          .indexWhere((item) => item['timestamp'].toString() == timestamp);
+      if (index > -1) {
+        addressList[index] = address;
+        await userRef.child(userId).update({KeyNames['address']: addressList});
+      }
+    }
+  }
+
+  Future<void> deleteAddress(
+      {@required String timestamp, @required String userId}) async {
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      List addressList;
+      if (snapshot.value[KeyNames['address']] is List) {
+        addressList = [...snapshot.value[KeyNames['address']]];
+      } else {
+        addressList = [];
+      }
+      addressList
+          .removeWhere((item) => item['timestamp'].toString() == timestamp);
+      await userRef.child(userId).update({KeyNames['address']: addressList});
+    }
+  }
+
+  Future<void> setDefault(
+      {@required String timestamp, @required String userId}) async {
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      List addressList;
+      if (snapshot.value[KeyNames['address']] is List) {
+        addressList = [...snapshot.value[KeyNames['address']]];
+      } else {
+        addressList = [];
+      }
+      addressList.forEach((item) {
+        if (item['timestamp'].toString() == timestamp) {
+          item['is_default'] = true;
+        } else
+          item['is_default'] = false;
+      });
+      await userRef.child(userId).update({KeyNames['address']: addressList});
+    }
+  }
+
+  Future<void> updateUsername(
+      {@required String userId, @required String username}) async {
+    DataSnapshot snapshot = await userRef.child(userId).once();
+    if (snapshot.value != null) {
+      await userRef.child(userId).update({KeyNames['userName']: username});
+    }
+  }
+
   Future<void> addAddress(
       {@required String userId, @required Map address}) async {
     DataSnapshot snapshot = await userRef.child(userId).once();
@@ -60,6 +126,7 @@ class UserDatabase {
       } else {
         addressList = [];
       }
+      address['timestamp'] = DateTime.now().millisecondsSinceEpoch;
       addressList.add(address);
       await userRef.child(userId).update({KeyNames['address']: addressList});
     }

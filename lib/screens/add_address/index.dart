@@ -4,22 +4,16 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/screens/add_address/map_widget.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
-import 'package:asia/shared_widgets/input_box.dart';
-import 'package:asia/shared_widgets/page_views.dart';
-import 'package:asia/shared_widgets/secondary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 
 class AddAddress extends StatefulWidget {
-  final bool first;
-  final String addressType;
-  AddAddress({this.first = false, this.addressType});
+  final bool first, isEdit;
+  final Map address;
+  AddAddress({this.first = false, this.isEdit = false, this.address});
   @override
   _AddAddressState createState() => _AddAddressState();
 }
@@ -57,8 +51,18 @@ class _AddAddressState extends State<AddAddress> {
       setState(() {
         disableSend = true;
       });
-      BlocProvider.of<UserDatabaseBloc>(context)
-          .add(AddUserAddress(address: address, callback: addAddressCallback));
+      if (widget.isEdit == true) {
+        if (widget.address['is_default'] == true) {
+          address['is_default'] = true;
+        }
+        BlocProvider.of<UserDatabaseBloc>(context).add(UpdateUserAddress(
+            address: address,
+            timestamp: widget.address['timestamp'].toString(),
+            callback: addAddressCallback));
+      } else {
+        BlocProvider.of<UserDatabaseBloc>(context).add(
+            AddUserAddress(address: address, callback: addAddressCallback));
+      }
       showCustomLoader(context);
     }
   }
@@ -83,9 +87,19 @@ class _AddAddressState extends State<AddAddress> {
                 children: <Widget>[
                   Container(
                       child: MapWidget(
-                    addressType: widget.addressType,
                     disableSend: disableSend,
                     sendCallback: saveData,
+                    isEdit: widget.isEdit,
+                    addressType: widget.address!= null ? widget.address['type'] : null,
+                    selectedLocation: widget.isEdit == true
+                        ? {
+                            'latitude': widget.address['lat'],
+                            'longitude': widget.address['long']
+                          }
+                        : null,
+                    ctaText: widget.isEdit == true
+                        ? L10n().getStr('address.updateLocation')
+                        : null,
                   )),
                 ],
               ),

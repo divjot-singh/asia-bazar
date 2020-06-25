@@ -42,11 +42,11 @@ class PrimaryButton extends StatelessWidget {
               ],
       ),
       child: RaisedButton(
-        color: ColorShades.pinkBackground,
+        color: ColorShades.redOrange,
         disabledColor: Theme.of(context).colorScheme.disabled,
         textColor: Theme.of(context).colorScheme.textPrimaryLight,
         disabledTextColor: Theme.of(context).colorScheme.textSecGray3,
-        highlightColor: ColorShades.darkPink,
+        highlightColor: ColorShades.greenBg,
         child: Text(
           text,
           style: Theme.of(context).textTheme.body1Medium,

@@ -15,6 +15,9 @@ class ColorShades {
   static const Color greenBg = const Color(0xff178A43);
   static const Color darkGreenBg = const Color(0xff0F5C2C);
   static const Color lightGreenBg = const Color(0xffBDF5D2);
+  static const Color lightGreenBg50 = const Color(0xff52c234);
+  static const Color lightGreenBg75 = const Color(0xff0f9b0f);
+  static const Color darkGreenBg50 = const Color(0xff061700);
 
   // Semantic
   static const Color elfGreen = const Color(0xff229d58);

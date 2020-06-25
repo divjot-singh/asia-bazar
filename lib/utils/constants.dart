@@ -18,6 +18,7 @@ class Constants {
   static const HOME = 'user/home';
   static const ADD_ADDRESS = 'user/add_address';
   static const ONBOARDING = 'user/onboarding';
+  static const ADDRESS_LIST = 'user/address_list';
 }
 
 const List<Map<String, String>> Countries = [

@@ -92,7 +92,16 @@ Map<String, Map<String, String>> strings = {
     "onboarding.name.error": "Please enter a value",
     "onboarding.name.hint": "I am Ironman",
     "onboarding.cta.title": "Next",
+    "address.default": "Default",
     "home.drawer.noOrder": "Place your first order with us",
+    "address.updateLocation": "Update location",
+    "address.setDefault": "Set as default address",
+    "address.edit": "Edit address",
+    "address.delete": "Delete address",
+    "address.delete.confirmation":
+        "Are you sure you want to delete this address?",
+    "confirmation.cancel": "Cancel",
+    "confirmation.delete": "Delete",
   },
   "it": {},
 };

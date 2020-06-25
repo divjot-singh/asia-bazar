@@ -10,15 +10,19 @@ import 'package:location/location.dart';
 
 class MapWidget extends StatefulWidget {
   final double height;
-  final String addressType, ctaText;
+  final String ctaText, addressType;
   final bool disableSend;
   final Function sendCallback;
   final Widget ctaWidget;
+  final bool isEdit;
+  final Map selectedLocation;
   MapWidget(
-      {this.addressType,
-      this.height,
+      {this.height,
       this.ctaText,
+      this.isEdit = false,
       this.disableSend = false,
+      this.addressType,
+      this.selectedLocation,
       this.ctaWidget,
       this.sendCallback});
   @override
@@ -40,10 +44,15 @@ class _MapWidgetState extends State<MapWidget> {
   Set<Marker> markerSet;
   @override
   void initState() {
-    addressType = widget.addressType != null
-        ? addressType
-        : L10n().getStr('profile.address.type.home');
-    getCurrentLocation();
+    addressType = widget.addressType != null ? widget.addressType : 'home';
+    currentPosition = LocationData.fromMap({'latitude': 20, 'longitude': 77});
+    if (widget.selectedLocation != null) {
+      currentPosition = LocationData.fromMap({...widget.selectedLocation});
+      showLoader = false;
+      markerSet = addMarker(
+          LatLng(currentPosition.latitude, currentPosition.longitude));
+    } else
+      getCurrentLocation();
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         Scrollable.ensureVisible(key.currentContext,
@@ -187,26 +196,23 @@ class _MapWidgetState extends State<MapWidget> {
                   disabledColor: Colors.yellow,
                   avatar: Icon(Icons.home,
                       size: 16,
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.home')
+                      color: addressType == 'home'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   avatarBorder: Border.all(color: Colors.red),
                   selectedColor: ColorShades.greenBg,
                   backgroundColor: ColorShades.white,
                   labelStyle: Theme.of(context).textTheme.body1Regular.copyWith(
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.home')
+                      color: addressType == 'home'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   onSelected: (selected) {
                     if (selected) {
-                      changeType(L10n().getStr('profile.address.type.home'));
+                      changeType('home');
                     }
                   },
                   label: Text(L10n().getStr('profile.address.type.home')),
-                  selected:
-                      addressType == L10n().getStr('profile.address.type.home'),
+                  selected: addressType == 'home',
                 ),
                 SizedBox(
                   width: Spacing.space4,
@@ -216,26 +222,23 @@ class _MapWidgetState extends State<MapWidget> {
                   disabledColor: Colors.yellow,
                   avatar: Icon(Icons.work,
                       size: 16,
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.work')
+                      color: addressType == 'work'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   avatarBorder: Border.all(color: Colors.red),
                   selectedColor: ColorShades.greenBg,
                   backgroundColor: ColorShades.white,
                   labelStyle: Theme.of(context).textTheme.body1Regular.copyWith(
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.work')
+                      color: addressType == 'work'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   onSelected: (selected) {
                     if (selected) {
-                      changeType(L10n().getStr('profile.address.type.work'));
+                      changeType('work');
                     }
                   },
                   label: Text(L10n().getStr('profile.address.type.work')),
-                  selected:
-                      addressType == L10n().getStr('profile.address.type.work'),
+                  selected: addressType == 'work',
                 ),
                 SizedBox(
                   width: Spacing.space4,
@@ -245,26 +248,23 @@ class _MapWidgetState extends State<MapWidget> {
                   disabledColor: Colors.yellow,
                   avatar: Icon(Icons.location_on,
                       size: 16,
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.other')
+                      color: addressType == 'other'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   avatarBorder: Border.all(color: Colors.red),
                   selectedColor: ColorShades.greenBg,
                   backgroundColor: ColorShades.white,
                   labelStyle: Theme.of(context).textTheme.body1Regular.copyWith(
-                      color: addressType ==
-                              L10n().getStr('profile.address.type.other')
+                      color: addressType == 'other'
                           ? ColorShades.white
                           : ColorShades.greenBg),
                   onSelected: (selected) {
                     if (selected) {
-                      changeType(L10n().getStr('profile.address.type.other'));
+                      changeType('other');
                     }
                   },
                   label: Text(L10n().getStr('profile.address.type.other')),
-                  selected: addressType ==
-                      L10n().getStr('profile.address.type.other'),
+                  selected: addressType == 'other',
                 ),
                 SizedBox(
                   width: Spacing.space4,

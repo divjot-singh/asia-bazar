@@ -1,4 +1,5 @@
 import 'package:asia/screens/add_address/index.dart';
+import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/edit_profile/index.dart';
 import 'package:asia/screens/home/index.dart';
@@ -29,12 +30,6 @@ class FluroRouter {
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             return EditProfile();
-          },
-        );
-      case Constants.ADD_ADDRESS:
-        return Handler(
-          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-            return AddAddress();
           },
         );
       case Constants.ADMIN_PROFILE:
@@ -113,11 +108,21 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     String routeName = settings.name;
     switch (routeName) {
+      case Constants.ADDRESS_LIST:
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments =
+              settings.arguments != null ? settings.arguments : {};
+          return AddressList(selectView: arguments['selectView']);
+        });
       case Constants.ADD_ADDRESS:
         return MaterialPageRoute(builder: (_) {
           Map<String, dynamic> arguments =
               settings.arguments != null ? settings.arguments : {};
-          return AddAddress(first: arguments['first']);
+          return AddAddress(
+            isEdit: arguments['isEdit'],
+            first: arguments['first'],
+            address: arguments['address'],
+          );
         });
 
       default:

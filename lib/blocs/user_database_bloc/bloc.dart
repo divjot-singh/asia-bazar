@@ -6,35 +6,40 @@ import 'package:asia/utils/storage_manager.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UserDatabaseBloc extends Bloc<UserDatabaseEvents, UserDatabaseState> {
+class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
   @override
   // TODO: implement initialState
-  UserDatabaseState get initialState => UnInitialisedState();
+  Map get initialState => UserDatabaseState.userstate;
   UserDatabase userDatabaseRepo = UserDatabase();
 
   @override
-  Stream<UserDatabaseState> mapEventToState(UserDatabaseEvents event) async* {
+  Stream<Map> mapEventToState(UserDatabaseEvents event) async* {
     if (event is CheckIfAdminOrUser) {
       var userId = await StorageManager.getItem(KeyNames['userId']);
       if (userId == null || userId.length == 0) {
-        yield ErrorState();
+        state['userstate'] = ErrorState();
+        yield {...state};
       } else {
         try {
-          UserDatabaseState state =
+          UserDatabaseState currentState =
               await userDatabaseRepo.checkIfAdminOrUser(userId: userId);
-          if (state == null) {
-            yield ErrorState();
+          if (currentState == null) {
+            state['userstate'] = ErrorState();
+            yield {...state};
           } else {
-            yield state;
+            state['userstate'] = currentState;
+            yield {...state};
           }
         } catch (e) {
-          yield ErrorState();
+          state['userstate'] = ErrorState();
+          yield {...state};
         }
       }
     } else if (event is AddUserAddress) {
       var userId = await StorageManager.getItem(KeyNames['userId']);
       if (userId == null || userId.length == 0) {
-        yield ErrorState();
+        state['userstate'] = ErrorState();
+        yield {...state};
       } else {
         try {
           await userDatabaseRepo.addAddress(
@@ -43,18 +48,22 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, UserDatabaseState> {
             event.callback(true);
           }
           var user = await userDatabaseRepo.getUser(userId: userId);
-          yield UserIsUser(user: user);
+
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
         } catch (e) {
           if (event.callback != null) {
             event.callback(false);
           }
-          yield ErrorState();
+          state['userstate'] = ErrorState();
+          yield {...state};
         }
       }
     } else if (event is OnboardUser) {
       var userId = await StorageManager.getItem(KeyNames['userId']);
       if (userId == null || userId.length == 0) {
-        yield ErrorState();
+        state['userstate'] = ErrorState();
+        yield {...state};
       } else {
         try {
           await userDatabaseRepo.onboardUser(
@@ -64,12 +73,85 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, UserDatabaseState> {
             event.callback(true);
           }
           var user = await userDatabaseRepo.getUser(userId: userId);
-          yield UserIsUser(user: user);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
         } catch (e) {
           if (event.callback != null) {
             event.callback(false);
           }
-          yield ErrorState();
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
+    } else if (event is UpdateUserAddress) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.updateAddress(
+              userId: userId,
+              address: event.address,
+              timestamp: event.timestamp);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
+    } else if (event is DeleteUserAddress) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.deleteAddress(
+              userId: userId, timestamp: event.timestamp);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
+    } else if (event is SetDefaultAddress) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.setDefault(
+              userId: userId, timestamp: event.timestamp);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
         }
       }
     }
