@@ -1,12 +1,9 @@
-import 'package:asia/blocs/auth_bloc/bloc.dart';
-import 'package:asia/blocs/auth_bloc/events.dart';
+
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/secondary_button.dart';
 import 'package:asia/theme/style.dart';
-import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class IsAdmin extends StatelessWidget {
   @override

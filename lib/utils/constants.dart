@@ -4,6 +4,7 @@ const Map KeyNames = {
   "token": 'token_info',
   "phone": "phone_number",
   "address": "address",
+  'fcmToken': "fcmToken",
 };
 
 const Map URLS = {

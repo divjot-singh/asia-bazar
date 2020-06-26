@@ -1,18 +1,13 @@
 //add all the imports here
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:asia/blocs/auth_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/index.dart';
 import 'package:asia/route_generator.dart';
-import 'package:asia/services/error_tracker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
-import 'package:logger/logger.dart';
 
 void main() {
   // enable network traffic logging

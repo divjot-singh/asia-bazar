@@ -3,12 +3,10 @@ import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/repository/user_database.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
   @override
-  // TODO: implement initialState
   Map get initialState => UserDatabaseState.userstate;
   UserDatabase userDatabaseRepo = UserDatabase();
 

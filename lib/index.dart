@@ -2,6 +2,7 @@ import 'package:asia/route_generator.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/services/log_printer.dart';
 import 'package:asia/theme/style.dart';
+import 'package:asia/utils/navigator_service.dart';
 import 'package:devicelocale/devicelocale.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -10,9 +11,20 @@ import 'l10n/l10n.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   static String className = 'App';
   static final logger = getLogger(className);
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    setupLocator();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +41,7 @@ class App extends StatelessWidget {
             if (snapshot.hasData) {
               String locale = snapshot.data[0];
               String lang = locale.substring(0, 2);
-              logger.i('lang$lang');
+              App.logger.i('lang$lang');
               if (lang is String) {
                 l10n.lang = lang;
               }
@@ -38,6 +50,7 @@ class App extends StatelessWidget {
             return MaterialApp(
               title: 'Asia Bazar',
               theme: appTheme(),
+              navigatorKey: locator<NavigationService>().navigatorKey,
               navigatorObservers: [routeObserver],
               localizationsDelegates: [
                 GlobalMaterialLocalizations.delegate,

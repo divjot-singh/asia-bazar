@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:asia/theme/style.dart';
 
-//TODO May be we can use the pill compoenent here, no need for this, but for that may be we need to change at other places
 class BoxedText extends StatelessWidget {
   final String text;
   final Color color;

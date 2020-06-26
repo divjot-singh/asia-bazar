@@ -5,7 +5,6 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/repository/authentication.dart';
 import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
-import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
@@ -15,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:pin_code_text_field/pin_code_text_field.dart' as pc;
 
 class AuthenticationScreen extends StatefulWidget {
   @override
@@ -126,9 +124,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-    bool _isLoading() {
-      return BlocProvider.of<AuthBloc>(context).state is FetchingState;
-    }
+
 
     double viewportHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -

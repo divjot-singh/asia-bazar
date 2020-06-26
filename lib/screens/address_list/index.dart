@@ -20,7 +20,6 @@ class AddressList extends StatefulWidget {
 class _AddressListState extends State<AddressList> {
   @override
   Widget build(BuildContext context) {
-    ThemeData theme = Theme.of(context);
     return SafeArea(
       child: Scaffold(
         appBar: MyAppBar(

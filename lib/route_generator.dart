@@ -2,7 +2,6 @@ import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/cart/index.dart';
-import 'package:asia/screens/edit_profile/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/onboarding/index.dart';
 import 'package:asia/screens/order_list/index.dart';
