@@ -23,6 +23,7 @@ class AuthRepo {
   static FirebaseMessaging _fcm = FirebaseMessaging();
   static final logger = getLogger('AuthRepo');
   static List<String> serverNotificationIds = [];
+  static CollectionReference cartRef = _firestore.collection('cart');
   int notificationId = 0;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -76,12 +77,14 @@ class AuthRepo {
           userId: firebaseUser.uid,
           userName: firebaseUser.displayName,
           phoneNumber: firebaseUser.phoneNumber,
+          cart: null,
           firebaseToken: tokenResult.token);
     } catch (error) {
       user = User(
         userId: firebaseUser.uid,
         userName: firebaseUser.displayName,
         phoneNumber: firebaseUser.phoneNumber,
+        cart: null,
       );
     } finally {
       setUpFcm(userId: firebaseUser.uid);
@@ -187,12 +190,12 @@ class AuthRepo {
     );
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
-        try{
-        var notification = message['notification'];
-        notification = notification.cast<String, dynamic>();
-        print(notification);
-        onForegroundNotification(notification);
-        } catch(e){
+        try {
+          var notification = message['notification'];
+          notification = notification.cast<String, dynamic>();
+          print(notification);
+          onForegroundNotification(notification);
+        } catch (e) {
           print(e);
         }
       },
@@ -222,13 +225,16 @@ class AuthRepo {
     }
 
     var firebaseToken = await _fcm.getToken();
-    await Firestore.instance.collection('users').document(userId).setData({
-      'user_id': userId,
-      'token': firebaseToken,
-      'platform':
-          Platform.isIOS ? 'ios' : Platform.isAndroid ? 'android' : 'web'
-    });
-    await StorageManager.setItem(KeyNames['fcmToken'], firebaseToken);
+
+    if (firebaseToken != null) {
+      await Firestore.instance.collection('users').document(userId).setData({
+        'user_id': userId,
+        'token': firebaseToken,
+        'platform':
+            Platform.isIOS ? 'ios' : Platform.isAndroid ? 'android' : 'web'
+      });
+      await StorageManager.setItem(KeyNames['fcmToken'], firebaseToken);
+    }
   }
 
   dynamic getLocalNotification({

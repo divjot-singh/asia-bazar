@@ -175,6 +175,52 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
           yield {...state};
         }
       }
+    } else if (event is AddItemToCart) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.addItemToCart(
+              userId: userId, item: event.item);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
+    } else if (event is RemoveCartItem) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (userId == null || userId.length == 0) {
+        state['userstate'] = ErrorState();
+        yield {...state};
+      } else {
+        try {
+          await userDatabaseRepo.removeCartItem(
+              userId: userId, itemId: event.itemId);
+          if (event.callback != null) {
+            event.callback(true);
+          }
+          var user = await userDatabaseRepo.getUser(userId: userId);
+          state['userstate'] = UserIsUser(user: user);
+          yield {...state};
+        } catch (e) {
+          if (event.callback != null) {
+            event.callback(false);
+          }
+          state['userstate'] = ErrorState();
+          yield {...state};
+        }
+      }
     }
   }
 }

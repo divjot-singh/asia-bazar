@@ -1,3 +1,4 @@
+import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
 abstract class UserDatabaseEvents {}
@@ -37,8 +38,20 @@ class SetDefaultAddress extends UserDatabaseEvents {
   SetDefaultAddress({@required this.timestamp, this.callback});
 }
 
-class UpdateUsername extends UserDatabaseEvents{
+class UpdateUsername extends UserDatabaseEvents {
   String username;
   Function callback;
   UpdateUsername({@required this.username, this.callback});
+}
+
+class AddItemToCart extends UserDatabaseEvents {
+  Map item;
+  Function callback;
+  AddItemToCart({@required this.item, this.callback});
+}
+
+class RemoveCartItem extends UserDatabaseEvents {
+  String itemId;
+  Function callback;
+  RemoveCartItem({@required this.itemId, this.callback});
 }

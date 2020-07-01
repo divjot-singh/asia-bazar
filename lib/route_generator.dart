@@ -2,6 +2,7 @@ import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/cart/index.dart';
+import 'package:asia/screens/category_listing/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/onboarding/index.dart';
 import 'package:asia/screens/order_list/index.dart';
@@ -58,6 +59,15 @@ class FluroRouter {
             return OrderList();
           },
         );
+      case Constants.CATEGORY_LISTING:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return CategoryListing(
+              categoryId: params['categoryId'][0],
+              categoryName: params['categoryName'][0],
+            );
+          },
+        );
       case Constants.POST_AUTHENTICATION_REDIRECTOR:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
@@ -108,6 +118,11 @@ class FluroRouter {
     router.define(
       Constants.ADD_ADDRESS,
       handler: getCommonHandler(Constants.ADD_ADDRESS),
+      transitionType: TransitionType.inFromBottom,
+    );
+    router.define(
+      Constants.CATEGORY_LISTING,
+      handler: getCommonHandler(Constants.CATEGORY_LISTING),
       transitionType: TransitionType.inFromBottom,
     );
     router.define(

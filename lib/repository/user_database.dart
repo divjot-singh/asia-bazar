@@ -1,7 +1,7 @@
-
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -137,7 +137,8 @@ class UserDatabase {
     userRef.child(userId).set({
       KeyNames['userName']: userName,
       KeyNames['phone']: phoneNumber,
-      KeyNames['address']: []
+      KeyNames['address']: [],
+      KeyNames['cart']: {},
     });
   }
 
@@ -145,5 +146,33 @@ class UserDatabase {
     var userData = userRef.child(userId);
     DataSnapshot userSnapshot = await userData.once();
     return userSnapshot.value;
+  }
+
+  Future<dynamic> addItemToCart(
+      {@required Map item, @required String userId}) async {
+    DataSnapshot userData = await userRef.child(userId).once();
+    if (userData.value != null) {
+      var cart = userData.value['cart'];
+      if (cart == null) {
+        cart = {};
+      }
+      cart[item['opc'].toString()] = item;
+      await userRef.child(userId).update({KeyNames['cart']: cart});
+    }
+    return false;
+  }
+
+  Future<dynamic> removeCartItem(
+      {@required String itemId, @required String userId}) async {
+    DataSnapshot userData = await userRef.child(userId).once();
+    if (userData.value != null) {
+      var cart = userData.value['cart'];
+      if (cart == null) {
+        cart = {};
+      }
+      cart.remove(itemId);
+      await userRef.child(userId).update({KeyNames['cart']: cart});
+    }
+    return false;
   }
 }

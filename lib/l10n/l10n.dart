@@ -111,6 +111,11 @@ Map<String, Map<String, String>> strings = {
     "myOrders.noOrders": "You have not placed an order yet!",
     "drawer.cart": "Cart",
     "cart.empty": "There are no items in your cart. Go back and add some!",
+    "list.empty":"No items found",
+    "home.search":"Search items",
+    "home.shopByCategory":"Shop by category",
+    "category.search":"Search {category}",
+    "item.add":"Add",
   },
   "it": {},
 };

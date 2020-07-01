@@ -32,6 +32,14 @@ class PageFetchingView extends PageView {
   }
 }
 
+class PageFetchingViewWithLightBg extends PageView {
+  @override
+  Widget build(BuildContext context) {
+    final loader = TinyLoader();
+    return loader;
+  }
+}
+
 class TinyLoader extends PageView {
   @override
   Widget build(BuildContext context) {

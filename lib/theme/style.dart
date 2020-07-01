@@ -199,9 +199,14 @@ class Shadows {
   Shadows(this.context) : super();
 
   static get card => BoxShadow(
-        color: ColorShades.darkGreenBg,
+        color: Color(0xff001a79),
         offset: Offset(0, 4),
         blurRadius: 12,
+      );
+  static get cardLight => BoxShadow(
+        color: Color(0xff001a79),
+        offset: Offset(0, 2),
+        blurRadius: 6,
       );
   static get input => BoxShadow(
         color: ColorShades.darkGreenBg,

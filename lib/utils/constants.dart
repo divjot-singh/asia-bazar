@@ -5,6 +5,7 @@ const Map KeyNames = {
   "phone": "phone_number",
   "address": "address",
   'fcmToken': "fcmToken",
+  "cart": "cart",
 };
 
 const Map URLS = {
@@ -22,6 +23,7 @@ class Constants {
   static const ADDRESS_LIST = 'user/address_list';
   static const ORDER_LIST = 'user/order_list';
   static const CART = 'user/cart';
+  static const CATEGORY_LISTING = 'user/category/:categoryName/:categoryId';
 }
 
 const List<Map<String, String>> Countries = [
