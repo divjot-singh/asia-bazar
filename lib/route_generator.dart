@@ -3,6 +3,7 @@ import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/cart/index.dart';
 import 'package:asia/screens/category_listing/index.dart';
+import 'package:asia/screens/checkout/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/onboarding/index.dart';
 import 'package:asia/screens/order_list/index.dart';
@@ -151,7 +152,16 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) {
           Map<String, dynamic> arguments =
               settings.arguments != null ? settings.arguments : {};
-          return AddressList(selectView: arguments['selectView']);
+          return AddressList(
+              selectView: arguments['selectView'] != null
+                  ? arguments['selectView']
+                  : false);
+        });
+      case Constants.CHECKOUT:
+        return MaterialPageRoute(builder: (_) {
+          Map<String, dynamic> arguments =
+              settings.arguments != null ? settings.arguments : {};
+          return Checkout(amount: arguments['amount']);
         });
       case Constants.ADD_ADDRESS:
         return MaterialPageRoute(builder: (_) {

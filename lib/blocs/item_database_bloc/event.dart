@@ -1,4 +1,4 @@
-import 'package:asia/blocs/item_database_bloc/state.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 abstract class ItemDatabaseEvents {}
@@ -7,7 +7,7 @@ class FetchAllCategories extends ItemDatabaseEvents {}
 
 class FetchCategoryListing extends ItemDatabaseEvents {
   String categoryId;
-  String startAt;
+  DocumentSnapshot startAt;
   Function callback;
   FetchCategoryListing(
       {@required this.categoryId, this.startAt, this.callback});
@@ -35,3 +35,9 @@ class GetItemDetails extends ItemDatabaseEvents {
   String itemId, categoryId;
   GetItemDetails({@required this.itemId, this.categoryId});
 }
+
+class PlaceOrder extends ItemDatabaseEvents {
+  Map orderDetails;
+  PlaceOrder({@required this.orderDetails});
+}
+

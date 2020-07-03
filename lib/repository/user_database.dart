@@ -2,24 +2,25 @@ import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 enum UserType { Admin, User, New }
 
 class UserDatabase {
-  static DatabaseReference database = FirebaseDatabase.instance.reference();
-  static DatabaseReference userDatabase = database.child('users');
-  static DatabaseReference adminRef = userDatabase.child('admin');
-  static DatabaseReference userRef = userDatabase.child('user');
+  static Firestore _firestore = Firestore.instance;
+  static CollectionReference userDatabase = _firestore.collection('users');
+  static DocumentReference userRef =
+      _firestore.collection('users').document('user');
+  static DocumentReference adminRef =
+      _firestore.collection('users').document('admin');
 
   Future<UserDatabaseState> checkIfAdminOrUser(
       {@required String userId}) async {
     try {
-      var adminData = adminRef.child(userId);
-      DataSnapshot snapshot = await adminData.once();
-      if (snapshot.value == null) {
+      var adminData = adminRef.collection('entries').document(userId);
+      DocumentSnapshot snapshot = await adminData.get();
+      if (snapshot.data == null) {
         dynamic userSnapshot = await getUser(userId: userId);
         if (userSnapshot == null) {
           await addUser(userId: userId);
@@ -43,9 +44,13 @@ class UserDatabase {
       @required String username,
       @required Map address}) async {
     await addAddress(userId: userId, address: address);
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
-      await userRef.child(userId).update({KeyNames['userName']: username});
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['userName']: username});
     }
   }
 
@@ -53,11 +58,12 @@ class UserDatabase {
       {@required Map address,
       @required String timestamp,
       @required String userId}) async {
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
       List addressList;
-      if (snapshot.value[KeyNames['address']] is List) {
-        addressList = [...snapshot.value[KeyNames['address']]];
+      if (snapshot.data[KeyNames['address']] is List) {
+        addressList = [...snapshot.data[KeyNames['address']]];
       } else {
         addressList = [];
       }
@@ -66,34 +72,42 @@ class UserDatabase {
           .indexWhere((item) => item['timestamp'].toString() == timestamp);
       if (index > -1) {
         addressList[index] = address;
-        await userRef.child(userId).update({KeyNames['address']: addressList});
+        await userRef
+            .collection('entries')
+            .document(userId)
+            .updateData({KeyNames['address']: addressList});
       }
     }
   }
 
   Future<void> deleteAddress(
       {@required String timestamp, @required String userId}) async {
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
       List addressList;
-      if (snapshot.value[KeyNames['address']] is List) {
-        addressList = [...snapshot.value[KeyNames['address']]];
+      if (snapshot.data[KeyNames['address']] is List) {
+        addressList = [...snapshot.data[KeyNames['address']]];
       } else {
         addressList = [];
       }
       addressList
           .removeWhere((item) => item['timestamp'].toString() == timestamp);
-      await userRef.child(userId).update({KeyNames['address']: addressList});
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['address']: addressList});
     }
   }
 
   Future<void> setDefault(
       {@required String timestamp, @required String userId}) async {
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
       List addressList;
-      if (snapshot.value[KeyNames['address']] is List) {
-        addressList = [...snapshot.value[KeyNames['address']]];
+      if (snapshot.data[KeyNames['address']] is List) {
+        addressList = [...snapshot.data[KeyNames['address']]];
       } else {
         addressList = [];
       }
@@ -103,39 +117,49 @@ class UserDatabase {
         } else
           item['is_default'] = false;
       });
-      await userRef.child(userId).update({KeyNames['address']: addressList});
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['address']: addressList});
     }
   }
 
   Future<void> updateUsername(
       {@required String userId, @required String username}) async {
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
-      await userRef.child(userId).update({KeyNames['userName']: username});
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['userName']: username});
     }
   }
 
   Future<void> addAddress(
       {@required String userId, @required Map address}) async {
-    DataSnapshot snapshot = await userRef.child(userId).once();
-    if (snapshot.value != null) {
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
       List addressList;
-      if (snapshot.value[KeyNames['address']] is List) {
-        addressList = [...snapshot.value[KeyNames['address']]];
+      if (snapshot.data[KeyNames['address']] is List) {
+        addressList = [...snapshot.data[KeyNames['address']]];
       } else {
         addressList = [];
       }
       address['timestamp'] = DateTime.now().millisecondsSinceEpoch;
       addressList.add(address);
-      await userRef.child(userId).update({KeyNames['address']: addressList});
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['address']: addressList});
     }
   }
 
   Future<void> addUser({@required String userId}) async {
     String phoneNumber = await StorageManager.getItem(KeyNames['phone']);
-    String userName = await StorageManager.getItem(KeyNames['userName']);
-    userRef.child(userId).set({
-      KeyNames['userName']: userName,
+    userRef.collection('entries').document(userId).setData({
+      KeyNames['userName']: phoneNumber,
       KeyNames['phone']: phoneNumber,
       KeyNames['address']: [],
       KeyNames['cart']: {},
@@ -143,36 +167,61 @@ class UserDatabase {
   }
 
   Future<dynamic> getUser({@required String userId}) async {
-    var userData = userRef.child(userId);
-    DataSnapshot userSnapshot = await userData.once();
-    return userSnapshot.value;
+    var userData = userRef.collection('entries').document(userId);
+    DocumentSnapshot userSnapshot = await userData.get();
+    return userSnapshot.data;
   }
 
   Future<dynamic> addItemToCart(
       {@required Map item, @required String userId}) async {
-    DataSnapshot userData = await userRef.child(userId).once();
-    if (userData.value != null) {
-      var cart = userData.value['cart'];
+    DocumentSnapshot userData =
+        await userRef.collection('entries').document(userId).get();
+    if (userData.data != null) {
+      var cart = userData.data['cart'];
       if (cart == null) {
         cart = {};
       }
       cart[item['opc'].toString()] = item;
-      await userRef.child(userId).update({KeyNames['cart']: cart});
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['cart']: cart});
     }
     return false;
   }
 
   Future<dynamic> removeCartItem(
       {@required String itemId, @required String userId}) async {
-    DataSnapshot userData = await userRef.child(userId).once();
-    if (userData.value != null) {
-      var cart = userData.value['cart'];
+    DocumentSnapshot userData =
+        await userRef.collection('entries').document(userId).get();
+    if (userData.data != null) {
+      var cart = userData.data['cart'];
       if (cart == null) {
         cart = {};
       }
       cart.remove(itemId);
-      await userRef.child(userId).update({KeyNames['cart']: cart});
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['cart']: cart});
     }
     return false;
+  }
+
+  Future<bool> emptyCart({@required String userId}) async {
+    try {
+      DocumentSnapshot userData =
+          await userRef.collection('entries').document(userId).get();
+      if (userData.data != null) {
+        await userRef
+            .collection('entries')
+            .document(userId)
+            .updateData({KeyNames['cart']: {}});
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 }

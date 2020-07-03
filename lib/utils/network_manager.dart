@@ -27,9 +27,7 @@ class NetworkManager {
     );
     //Uri uri=Uri.parse(url);
     //http.Request request = http.Request(type,uri);
-    Map<String, String> headers = {
-      "content-type": "application/x-www-form-urlencoded"
-    };
+
     http.Response response;
     if (!isAbsoluteUrl) {
       url = apiUrl + '/' + url;
@@ -40,6 +38,10 @@ class NetworkManager {
       Logger().d(
         data,
       );
+      Map<String, String> headers = {
+        "content-type": "application/x-www-form-urlencoded",
+        'Authorization': 'Bearer ' + data['token']
+      };
       if (type == 'POST') {
         response = await client.post(url, body: data, headers: headers);
       } else if (type == 'GET') {
@@ -124,8 +126,7 @@ class NetworkManager {
   static Future<Map<String, String>> _getBaseData(Map data) async {
     data = data is Map ? data : {};
 
-    String userId =
-        await StorageManager.getItem(KeyNames["userId"]);
+    String userId = await StorageManager.getItem(KeyNames["userId"]);
     String token = await StorageManager.getItem(KeyNames["token"]);
     String lang = L10n().getLocale();
     // String simCountryCode = await FlutterSimCountryCode.simCountryCode;

@@ -15,4 +15,9 @@ class Utilities {
           Constants.AUTHENTICATION_SCREEN, (Route<dynamic> route) => false);
     }));
   }
+
+  static getOrderId(userName) {
+    var date = DateTime.now().millisecondsSinceEpoch;
+    return 'A_B_$userName\_order_$date';
+  }
 }

@@ -3,6 +3,8 @@ import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/item_database_bloc/state.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/repository/item_database.dart';
+import 'package:asia/utils/constants.dart';
+import 'package:asia/utils/storage_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
@@ -48,7 +50,7 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
           if (event.startAt != null &&
               state['categoryListing'] is CategoryListingFetchedState &&
               state['categoryListing'].categoryId == currentCategoryId) {
-            var newList = {};
+            var newList = [];
             var oldListing = state['categoryListing'].categoryItems;
             newList.addAll(oldListing);
             newList.addAll(listing);
@@ -95,7 +97,7 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
           if (event.startAt != null &&
               state['categoryListing'] is CategoryListingFetchedState &&
               state['categoryListing'].categoryId == currentCategoryId) {
-            var newList = {};
+            var newList = [];
             var oldListing = state['categoryListing'].categoryItems;
             newList.addAll(oldListing);
             newList.addAll(listing);
@@ -116,6 +118,10 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
         state['categoryListing'] = GlobalErrorState();
         yield {...state};
       }
-    }
-  }
+    } else if (event is PlaceOrder) {
+      var details = event.orderDetails;
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      var status = await itemDatabase.placeOrder(details: details, userId:userId);
+    } 
+  } 
 }

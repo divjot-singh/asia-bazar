@@ -18,12 +18,9 @@ enum AuthCallbackType { completed, failed, codeSent, timeout }
 
 class AuthRepo {
   static FirebaseAuth _auth = FirebaseAuth.instance;
-  static FirebaseDatabase db = FirebaseDatabase.instance;
-  static Firestore _firestore = Firestore.instance;
   static FirebaseMessaging _fcm = FirebaseMessaging();
   static final logger = getLogger('AuthRepo');
   static List<String> serverNotificationIds = [];
-  static CollectionReference cartRef = _firestore.collection('cart');
   int notificationId = 0;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -227,7 +224,7 @@ class AuthRepo {
     var firebaseToken = await _fcm.getToken();
 
     if (firebaseToken != null) {
-      await Firestore.instance.collection('users').document(userId).setData({
+      await Firestore.instance.collection('usersTokens').document(userId).setData({
         'user_id': userId,
         'token': firebaseToken,
         'platform':

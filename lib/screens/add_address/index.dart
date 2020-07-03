@@ -25,16 +25,17 @@ class _AddAddressState extends State<AddAddress> {
     Navigator.pop(context);
     dynamic snackbarResult;
     if (result) {
-      snackbarResult = showCustomSnackbar(
-          type: SnackbarType.success,
-          context: context,
-          content: L10n().getStr('profile.address.added'));
-      snackbarResult.then((_) {
-        if (widget.first == true)
-          Navigator.pushReplacementNamed(context, Constants.HOME);
-        else
+      if (widget.first == true) {
+        Navigator.pushReplacementNamed(context, Constants.HOME);
+      } else {
+        snackbarResult = showCustomSnackbar(
+            type: SnackbarType.success,
+            context: context,
+            content: L10n().getStr('profile.address.added'));
+        snackbarResult.then((_) {
           Navigator.pop(context);
-      });
+        });
+      }
     } else {
       snackbarResult = showCustomSnackbar(
           type: SnackbarType.error,
@@ -51,6 +52,9 @@ class _AddAddressState extends State<AddAddress> {
       setState(() {
         disableSend = true;
       });
+      if (widget.first == true) {
+        address['is_default'] = true;
+      }
       if (widget.isEdit == true) {
         if (widget.address['is_default'] == true) {
           address['is_default'] = true;
@@ -75,10 +79,12 @@ class _AddAddressState extends State<AddAddress> {
           extendBodyBehindAppBar: true,
           backgroundColor: ColorShades.white,
           appBar: MyAppBar(
-            title: L10n().getStr('drawer.addAddress'),
+            title: widget.first == true
+                ? L10n().getStr('onboarding.message')
+                : L10n().getStr('drawer.addAddress'),
             textColor: ColorShades.greenBg,
             hasTransparentBackground: true,
-            hideBackArrow: widget.first,
+            hideBackArrow: widget.first == true,
           ),
           body: SingleChildScrollView(
             child: Container(
@@ -90,7 +96,8 @@ class _AddAddressState extends State<AddAddress> {
                     disableSend: disableSend,
                     sendCallback: saveData,
                     isEdit: widget.isEdit,
-                    addressType: widget.address!= null ? widget.address['type'] : null,
+                    addressType:
+                        widget.address != null ? widget.address['type'] : null,
                     selectedLocation: widget.isEdit == true
                         ? {
                             'latitude': widget.address['lat'],
@@ -99,7 +106,9 @@ class _AddAddressState extends State<AddAddress> {
                         : null,
                     ctaText: widget.isEdit == true
                         ? L10n().getStr('address.updateLocation')
-                        : null,
+                        : widget.first == true
+                            ? L10n().getStr('onboarding.next')
+                            : null,
                   )),
                 ],
               ),

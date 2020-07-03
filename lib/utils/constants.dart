@@ -1,3 +1,5 @@
+import 'package:asia/l10n/l10n.dart';
+
 const Map KeyNames = {
   "userName": 'user_name',
   "userId": 'user_id',
@@ -6,6 +8,7 @@ const Map KeyNames = {
   "address": "address",
   'fcmToken': "fcmToken",
   "cart": "cart",
+  'orderPlaced':'placed',
 };
 
 const Map URLS = {
@@ -24,6 +27,7 @@ class Constants {
   static const ORDER_LIST = 'user/order_list';
   static const CART = 'user/cart';
   static const CATEGORY_LISTING = 'user/category/:categoryName/:categoryId';
+  static const CHECKOUT = 'user/checkout';
 }
 
 const List<Map<String, String>> Countries = [
@@ -290,4 +294,22 @@ const List<Map<String, String>> Countries = [
   {"name": "Yemen", "code": "YE", "dial_code": "+967"},
   {"name": "Zambia", "code": "ZM", "dial_code": "+260"},
   {"name": "Zimbabwe", "code": "ZW", "dial_code": "+263"}
+];
+
+var razorpayOptions = {
+  'key': 'rzp_test_Y2WNi4hdVKh0Px',
+  'name': 'Aisa Bazar',
+  'description': 'Some order',
+  'prefill': {'contact': '+919805387500'}
+};
+
+var paymentOptions = [
+  {
+    'value': 'cod',
+    'title': L10n().getStr('checkout.paymentMethods.cod'),
+  },
+  {
+    'value': 'razorPay',
+    'title': L10n().getStr('checkout.paymentMethods.razorpay'),
+  },
 ];

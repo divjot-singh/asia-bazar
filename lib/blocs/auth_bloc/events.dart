@@ -26,3 +26,5 @@ class SignOut extends AuthenticationEvents {
   final Function callback;
   SignOut({this.callback});
 }
+
+

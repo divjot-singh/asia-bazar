@@ -78,16 +78,10 @@ class _OnboardingState extends State<Onboarding> {
         ),
         body: SingleChildScrollView(
           child: Container(
-            padding: EdgeInsets.all(Spacing.space16),
+            padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(L10n().getStr('onboarding.name'),
-                    style: theme.textTheme.h3
-                        .copyWith(color: ColorShades.bastille)),
-                SizedBox(
-                  height: Spacing.space12,
-                ),
                 Form(
                   key: key,
                   child: InputBox(

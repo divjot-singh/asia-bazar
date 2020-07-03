@@ -204,7 +204,7 @@ class Shadows {
         blurRadius: 12,
       );
   static get cardLight => BoxShadow(
-        color: Color(0xff001a79),
+        color: ColorShades.grey200,
         offset: Offset(0, 2),
         blurRadius: 6,
       );

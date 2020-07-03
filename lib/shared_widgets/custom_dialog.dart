@@ -84,8 +84,8 @@ Future<Type> showCustomDialog(
                   ),
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.close,
-                        color: theme.colorScheme.textPrimaryDark, size: 16),
+                    child:
+                        Icon(Icons.close, color: ColorShades.greenBg, size: 24),
                   ),
                 ],
               ),

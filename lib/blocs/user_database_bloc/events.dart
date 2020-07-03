@@ -1,4 +1,3 @@
-import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
 abstract class UserDatabaseEvents {}
@@ -54,4 +53,9 @@ class RemoveCartItem extends UserDatabaseEvents {
   String itemId;
   Function callback;
   RemoveCartItem({@required this.itemId, this.callback});
+}
+
+class EmptyCart extends UserDatabaseEvents {
+  Function callback;
+  EmptyCart({this.callback});
 }

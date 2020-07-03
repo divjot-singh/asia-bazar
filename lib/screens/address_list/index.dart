@@ -18,6 +18,13 @@ class AddressList extends StatefulWidget {
 }
 
 class _AddressListState extends State<AddressList> {
+  var selectedIndex = 0;
+  var selectedAddress;
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -41,6 +48,7 @@ class _AddressListState extends State<AddressList> {
                   return 0;
               });
             }
+            if (selectedAddress == null) selectedAddress = addressList[0];
             return Container(
               padding: EdgeInsets.symmetric(
                   horizontal: Spacing.space16, vertical: Spacing.space24),
@@ -48,7 +56,48 @@ class _AddressListState extends State<AddressList> {
                 itemCount: addressList.length,
                 itemBuilder: (context, index) {
                   var address = addressList[index];
-                  return getAddressCard(address: address, context: context);
+                  return GestureDetector(
+                    onTap: () {
+                      if (widget.selectView) {
+                        setState(() {
+                          selectedIndex = index;
+                          selectedAddress = addressList[index];
+                        });
+                      }
+                    },
+                    child: Row(
+                      children: <Widget>[
+                        if (widget.selectView == true)
+                          Container(
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                              color: ColorShades.greenBg,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Container(
+                                height: selectedIndex == index ? 8 : 17,
+                                width: selectedIndex == index ? 8 : 17,
+                                decoration: BoxDecoration(
+                                    color: ColorShades.white,
+                                    shape: BoxShape.circle),
+                              ),
+                            ),
+                          ),
+                        if (widget.selectView == true)
+                          SizedBox(
+                            width: Spacing.space8,
+                          ),
+                        Expanded(
+                            child: getAddressCard(
+                                address: address,
+                                context: context,
+                                selected: selectedIndex == index &&
+                                    widget.selectView == true)),
+                      ],
+                    ),
+                  );
                 },
               ),
             );
@@ -56,10 +105,13 @@ class _AddressListState extends State<AddressList> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, Constants.ADD_ADDRESS);
+            if (widget.selectView == true)
+              Navigator.pop(context, selectedAddress);
+            else
+              Navigator.pushNamed(context, Constants.ADD_ADDRESS);
           },
           child: Icon(
-            Icons.add,
+            widget.selectView == true ? Icons.check : Icons.add,
             color: ColorShades.white,
           ),
           backgroundColor: ColorShades.greenBg,
@@ -72,7 +124,8 @@ class _AddressListState extends State<AddressList> {
 Widget getAddressCard(
     {@required Map address,
     @required BuildContext context,
-    bool hideOptions = false}) {
+    bool hideOptions = false,
+    bool selected = false}) {
   ThemeData theme = Theme.of(context);
   var icon;
   if (address['type'] == 'home') {
@@ -84,10 +137,10 @@ Widget getAddressCard(
   }
   return Container(
     decoration: BoxDecoration(
-      gradient: LinearGradient(
-          colors: [ColorShades.lightGreenBg50, ColorShades.greenBg]),
-      borderRadius: BorderRadius.circular(20),
-    ),
+        gradient: LinearGradient(
+            colors: [ColorShades.lightGreenBg50, ColorShades.greenBg]),
+        borderRadius: BorderRadius.circular(20),
+        border: selected ? Border.all(color: ColorShades.darkGreenBg50) : null),
     padding: EdgeInsets.only(
         left: Spacing.space16,
         right: Spacing.space16,

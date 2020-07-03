@@ -17,7 +17,7 @@ class AllCategoriesFetchedState {
 }
 
 class CategoryListingFetchedState {
-  Map categoryItems;
+  List categoryItems;
   String categoryId;
   CategoryListingFetchedState(
       {@required this.categoryItems, @required this.categoryId});
@@ -35,7 +35,7 @@ class ItemDetailsFetchedState {
 }
 
 class PartialFetchingState {
-  Map categoryItems;
+  List categoryItems;
   String categoryId;
   PartialFetchingState(
       {@required this.categoryItems, @required this.categoryId});

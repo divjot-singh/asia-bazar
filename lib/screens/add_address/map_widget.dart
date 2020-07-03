@@ -128,6 +128,8 @@ class _MapWidgetState extends State<MapWidget> {
       myLocationEnabled: true,
       markers: markerSet,
       mapType: MapType.normal,
+      zoomControlsEnabled: true,
+      zoomGesturesEnabled: true,
       initialCameraPosition: CameraPosition(
         target: LatLng(currentPosition.latitude, currentPosition.longitude),
         zoom: 20,
