@@ -335,7 +335,8 @@ class _MapWidgetState extends State<MapWidget> {
                     },
                     child: widget.ctaWidget)
                 : SecondaryButton(
-                    disabled: widget.disableSend,
+                    disabled: widget.disableSend ||
+                        addressController.text.length == 0,
                     shadow: Shadows.inputLight,
                     noWidth: true,
                     onPressed: () {

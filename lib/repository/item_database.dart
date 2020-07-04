@@ -73,56 +73,94 @@ class ItemDatabase {
   }
 
   Future<dynamic> placeOrder(
-      {@required Map details, @required String userId}) async {
+      {@required Map details,
+      @required String userId,
+      @required Function callback}) async {
     var returnItem = {};
     try {
       var cart = details['cart'];
       var transactionWrites = [];
-      var transactionResult =
-          await _firestore.runTransaction((transaction) async {
+      _firestore.runTransaction((transaction) {
+        print('transaction start');
         var cartKeys = cart.keys.toList();
 
         for (var i = 0; i < cart.length; i++) {
           var key = cartKeys[i];
           var item = cart[key];
-          var deptName = item['dept_name'];
-          DocumentSnapshot itemDocument = await transaction.get(inventoryRef
-              .document(deptName)
-              .collection('items')
-              .document(key));
-          var itemData = itemDocument.data;
-          var quantity = itemData['quantity'];
-          if (quantity >= item['cartQuantity']) {
-            quantity -= item['cartQuantity'];
-            transactionWrites.add({
-              'ref': inventoryRef
-                  .document(deptName)
-                  .collection('items')
-                  .document(key),
-              'data': {'quantity': quantity}
+          var deptName = item['categoryId'];
+          print('getting');
+          DocumentSnapshot itemDocument;
+          try {
+            transaction
+                .get(inventoryRef
+                    .document(deptName)
+                    .collection('items')
+                    .document(key))
+                .then((snapshot) {
+              itemDocument = snapshot;
+              print('all read');
+              var itemData = itemDocument.data;
+              var quantity = itemData['quantity'];
+              if (quantity >= item['cartQuantity']) {
+                print('writing to transactionwrites');
+                quantity -= item['cartQuantity'];
+                transactionWrites.add({
+                  'ref': inventoryRef
+                      .document(deptName)
+                      .collection('items')
+                      .document(key),
+                  'data': {'quantity': quantity}
+                });
+              } else {
+                returnItem[itemData['opc']] = itemData;
+              }
+              if (i == cart.length - 1) {
+                if (returnItem.length == 0 &&
+                    transactionWrites.length == cart.length) {
+                  print('transaction writing');
+                  for (var j = 0; j < transactionWrites.length; j++) {
+                    var item = transactionWrites[j];
+                    transaction.update(item['ref'], item['data']).then(
+                        (snapshot) async {
+                      print('written');
+                      return;
+                    }, onError: (e) {
+                      print('inside update error');
+                      print(e);
+                      callback(returnItem);
+                    });
+                  }
+                } else {
+                  print('returning');
+                  callback(returnItem);
+                }
+              }
+            }, onError: (e) {
+              print('inside onError');
+              callback(returnItem);
+            }).catchError((e) {
+              print('cautght error');
+              callback(returnItem);
             });
-          } else {
-            returnItem[itemData['opc']] = itemData;
+          } catch (e) {
+            print('caught error');
+            print(e);
+            callback(returnItem);
           }
         }
-        if (returnItem == null && transactionWrites.length == cart.length) {
-          transactionWrites.forEach((item) async {
-            await transaction.update(item['ref'], item['data']);
-          });
-        } else {
-          return returnItem;
-        }
-      });
-      if (transactionResult == null) {
+      }, timeout: Duration(seconds: 10)).then((_) async {
         DocumentReference ref = await orderRef.add(details);
         await activeOrdersRef
             .add({'orderId': ref.documentID, 'userId': details['userId']});
-        return true;
-      } else {
-        return transactionResult;
-      }
+        callback(true);
+      }).catchError((e) {
+        print(e);
+        callback(returnItem);
+      });
     } catch (e) {
-      return returnItem;
+      print(e.toString());
+      print('error');
+      callback(returnItem);
     }
   }
 

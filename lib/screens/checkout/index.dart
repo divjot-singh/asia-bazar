@@ -1,6 +1,7 @@
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
+import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
@@ -11,6 +12,7 @@ import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/network_manager.dart';
+import 'package:asia/utils/storage_manager.dart';
 import 'package:asia/utils/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -174,7 +176,7 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 
-  void placeOrder() {
+  void placeOrder() async {
     var phoneNumber = currentUser[KeyNames['phone']];
     var userName = currentUser[KeyNames['userName']];
     var orderAddress = address;
@@ -185,7 +187,7 @@ class _CheckoutState extends State<Checkout> {
 
     ///cartItems.removeWhere((key, item) => item['quantity'] < 1);
     var orderId = Utilities.getOrderId(userName);
-    var userId = currentUser[KeyNames['userId']];
+    var userId = await StorageManager.getItem(KeyNames['userId']);
     var orderDetails = {
       'phoneNumber': phoneNumber,
       'address': orderAddress,
@@ -204,8 +206,11 @@ class _CheckoutState extends State<Checkout> {
   void placeOrderCallback(result) {
     Navigator.pop(context);
     if (result == true) {
+      BlocProvider.of<UserDatabaseBloc>(context).add(EmptyCart());
+      showCustomSnackbar(
+          context: context, content: 'Success', type: SnackbarType.success);
       //todo order placed, take to order details page
-    } else if (result is Map) {
+    } else if (result is Map && result.length > 1) {
       setState(() {
         itemsOutOfStock = true;
       });
@@ -315,6 +320,8 @@ class _CheckoutState extends State<Checkout> {
                     color: ColorShades.white, boxShadow: [Shadows.cardLight]),
                 child: PrimaryButton(
                   text: L10n().getStr('checkout.placeOrder'),
+                  disabled: !(currentUser[KeyNames['cart']] is Map &&
+                      currentUser[KeyNames['cart']].length > 0),
                   onPressed: () {
                     makePaymentAndPlaceOrder();
                   },

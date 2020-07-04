@@ -121,11 +121,9 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
     } else if (event is PlaceOrder) {
       var details = event.orderDetails;
       var userId = await StorageManager.getItem(KeyNames['userId']);
-      var status =
-          await itemDatabase.placeOrder(details: details, userId: userId);
-      if (event.callback != null) {
-        event.callback(status);
-      }
+
+      itemDatabase.placeOrder(
+          details: details, userId: userId, callback: event.callback);
     }
   }
 }
