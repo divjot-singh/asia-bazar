@@ -1,5 +1,7 @@
+import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
+import 'package:asia/repository/item_database.dart';
 import 'package:asia/repository/user_database.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
@@ -9,7 +11,7 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
   @override
   Map get initialState => UserDatabaseState.userstate;
   UserDatabase userDatabaseRepo = UserDatabase();
-
+  ItemDatabase itemDatabaseRepo = ItemDatabase();
   @override
   Stream<Map> mapEventToState(UserDatabaseEvents event) async* {
     if (event is CheckIfAdminOrUser) {
@@ -182,14 +184,17 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
         yield {...state};
       } else {
         try {
-          await userDatabaseRepo.addItemToCart(
+          var status = await userDatabaseRepo.addItemToCart(
               userId: userId, item: event.item);
-
-          var user = await userDatabaseRepo.getUser(userId: userId);
-          state['userstate'] = UserIsUser(user: user);
-          yield {...state};
-          if (event.callback != null) {
-            event.callback(true);
+          if (status == true) {
+            var user = await userDatabaseRepo.getUser(userId: userId);
+            state['userstate'] = UserIsUser(user: user);
+            yield {...state};
+            if (event.callback != null) {
+              event.callback(true);
+            }
+          } else {
+            event.callback(status);
           }
         } catch (e) {
           if (event.callback != null) {
@@ -245,6 +250,25 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
           state['userstate'] = ErrorState();
           yield {...state};
         }
+      }
+    } else if (event is FetchCartItems) {
+      var currentUser =
+          state['userstate'] is UserIsUser ? state['userstate'].user : null;
+      state['userstate'] = GlobalFetchingState();
+      yield {...state};
+      if (currentUser == null) {
+        var userId = await StorageManager.getItem(KeyNames['userId']);
+        currentUser = await userDatabaseRepo.getUser(userId: userId);
+      }
+      var cart = currentUser['cart'] != null ? currentUser['cart'] : {};
+      var items = await itemDatabaseRepo.fetchCartItems(cartKeys: cart);
+      if (items != null && event.callback != null) {
+        event.callback(items);
+        state['userstate'] = UserIsUser(user: currentUser);
+        yield {...state};
+      } else {
+        state['userstate'] = GlobalErrorState();
+        yield {...state};
       }
     }
   }

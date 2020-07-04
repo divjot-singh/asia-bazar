@@ -6,9 +6,11 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/checkbox_list.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
+import 'package:asia/shared_widgets/custom_dialog.dart';
 import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/utils/constants.dart';
+import 'package:asia/utils/network_manager.dart';
 import 'package:asia/utils/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,9 +26,11 @@ class Checkout extends StatefulWidget {
 
 class _CheckoutState extends State<Checkout> {
   Map address;
+  var rzpPaymentId;
   String paymentMethod;
   var currentUser;
   ThemeData theme;
+  bool itemsOutOfStock = false;
   Razorpay _razorpay;
   List paymentMethodOptions;
   @override
@@ -41,6 +45,7 @@ class _CheckoutState extends State<Checkout> {
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    rzpPaymentId = response.paymentId;
     placeOrder();
     // showCustomSnackbar(
     //     context: context, type: SnackbarType.success, content: 'Success');
@@ -176,7 +181,9 @@ class _CheckoutState extends State<Checkout> {
     var amount = widget.amount;
     var orderPaymentMethod = paymentMethodOptions
         .firstWhere((item) => item['value'] == paymentMethod);
-    var cartItems = currentUser[KeyNames['cart']];
+    Map cartItems = {...currentUser[KeyNames['cart']]};
+
+    ///cartItems.removeWhere((key, item) => item['quantity'] < 1);
     var orderId = Utilities.getOrderId(userName);
     var userId = currentUser[KeyNames['userId']];
     var orderDetails = {
@@ -186,12 +193,64 @@ class _CheckoutState extends State<Checkout> {
       'paymentMethod': orderPaymentMethod,
       'cart': cartItems,
       'orderId': orderId,
-      'status':KeyNames['orderPlaced'],
-      'userId':userId,
+      'status': KeyNames['orderPlaced'],
+      'userId': userId,
     };
-    BlocProvider.of<ItemDatabaseBloc>(context)
-        .add(PlaceOrder(orderDetails: orderDetails));
+    BlocProvider.of<ItemDatabaseBloc>(context).add(
+        PlaceOrder(orderDetails: orderDetails, callback: placeOrderCallback));
     showCustomLoader(context, text: L10n().getStr('checkout.placingOrder'));
+  }
+
+  void placeOrderCallback(result) {
+    Navigator.pop(context);
+    if (result == true) {
+      //todo order placed, take to order details page
+    } else if (result is Map) {
+      setState(() {
+        itemsOutOfStock = true;
+      });
+      processRefund();
+      showCustomDialog(
+        context: context,
+        heading: '',
+        child: Container(
+          child: Column(
+            children: <Widget>[
+              Text(
+                L10n().getStr('checkout.itemOutOfStock'),
+                style: theme.textTheme.h4.copyWith(color: ColorShades.greenBg),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                height: Spacing.space20,
+              ),
+              PrimaryButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context, {'refresh': true});
+                },
+                text: L10n().getStr('redirector.goBack'),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      processRefund();
+      showCustomSnackbar(
+          context: context,
+          content: L10n().getStr('profile.address.error') +
+              '.' +
+              L10n().getStr('cart.refundProcessing'),
+          type: SnackbarType.error);
+    }
+  }
+
+  void processRefund() async {
+    if (paymentMethod == 'razorpay' && rzpPaymentId != null) {
+      var refundUrl = URLS['refund_url'].replaceAll(':paymentId', rzpPaymentId);
+      await NetworkManager.post(url: refundUrl, sendCredentials: false);
+    }
   }
 
   void makePaymentAndPlaceOrder() {
@@ -218,6 +277,19 @@ class _CheckoutState extends State<Checkout> {
             appBar: MyAppBar(
               hasTransparentBackground: true,
               title: L10n().getStr('checkout.checkout'),
+              leading: {
+                'icon': Align(
+                  alignment: Alignment.center,
+                  child: Icon(Icons.arrow_back, color: ColorShades.green),
+                ),
+                'onTap': (context) {
+                  if (itemsOutOfStock) {
+                    Navigator.pop(context, {'refresh': true});
+                  } else {
+                    Navigator.pop(context);
+                  }
+                }
+              },
             ),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: Spacing.space16),

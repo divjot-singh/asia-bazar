@@ -8,11 +8,12 @@ const Map KeyNames = {
   "address": "address",
   'fcmToken': "fcmToken",
   "cart": "cart",
-  'orderPlaced':'placed',
+  'orderPlaced': 'placed',
 };
 
 const Map URLS = {
   'api_url': '',
+  'refund_url':'https://rzp_test_Y2WNi4hdVKh0Px:u5baLA8VYXRDmTlGIIbi0aUT@razorpay.com/v1/payments/:paymentId/refund',
 };
 
 class Constants {
@@ -306,10 +307,10 @@ var razorpayOptions = {
 var paymentOptions = [
   {
     'value': 'cod',
-    'title': L10n().getStr('checkout.paymentMethods.cod'),
+    'title': L10n().getStr('checkout.paymentMethod.cod'),
   },
   {
     'value': 'razorPay',
-    'title': L10n().getStr('checkout.paymentMethods.razorpay'),
+    'title': L10n().getStr('checkout.paymentMethod.razorpay'),
   },
 ];

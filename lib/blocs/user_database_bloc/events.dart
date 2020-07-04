@@ -59,3 +59,8 @@ class EmptyCart extends UserDatabaseEvents {
   Function callback;
   EmptyCart({this.callback});
 }
+
+class FetchCartItems extends UserDatabaseEvents {
+  Function callback;
+  FetchCartItems({this.callback});
+}

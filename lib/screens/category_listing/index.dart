@@ -8,6 +8,7 @@ import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
+import 'package:asia/shared_widgets/custom_dialog.dart';
 import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/primary_button.dart';
@@ -18,6 +19,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:asia/theme/style.dart';
+import 'package:flutter_picker/flutter_picker.dart';
 
 class CategoryListing extends StatefulWidget {
   final String categoryId, categoryName;
@@ -89,6 +91,13 @@ class _CategoryListingState extends State<CategoryListing> {
         });
       }
     }
+  }
+
+  Future<void> reloadPage() async {
+    var route = Constants.CATEGORY_LISTING
+        .replaceAll(':categoryId', widget.categoryId)
+        .replaceAll(':categoryName', widget.categoryId);
+    Navigator.popAndPushNamed(context, route);
   }
 
   @override
@@ -188,14 +197,17 @@ class _CategoryListingState extends State<CategoryListing> {
                           ))
                         else
                           Expanded(
-                            child: ListView.builder(
-                              controller: _scrollController,
-                              itemCount: listing.length,
-                              itemBuilder: (context, index) {
-                                var item = listing[index].data;
-                                return listItem(
-                                    context: context, item: item, user: user);
-                              },
+                            child: RefreshIndicator(
+                              onRefresh: reloadPage,
+                              child: ListView.builder(
+                                controller: _scrollController,
+                                itemCount: listing.length,
+                                itemBuilder: (context, index) {
+                                  var item = listing[index].data;
+                                  return listItem(
+                                      context: context, item: item, user: user);
+                                },
+                              ),
                             ),
                           ),
                         SizedBox(
@@ -240,15 +252,56 @@ Widget listItem(
     @required Map item,
     @required Map user,
     bool cartItem = false}) {
+  Debouncer d = Debouncer();
   ThemeData theme = Theme.of(context);
   if (item['cost'] == null ||
       item['cost'] is String && item['cost'].trim().length == 0) {
     item['cost'] = 0;
   }
+
+  addItemToCart(cartItem) {
+    showCustomLoader(context);
+    BlocProvider.of<UserDatabaseBloc>(context).add(AddItemToCart(
+        item: cartItem,
+        callback: (result) {
+          Navigator.pop(context);
+          if (result is Map && result['error'] != null || result == false) {
+            var errorMessage = result is Map && result['error'] != null
+                ? 'error.' + result['error']
+                : 'profile.address.error';
+            showCustomSnackbar(
+                content: L10n().getStr(errorMessage),
+                context: context,
+                type: SnackbarType.error);
+          }
+        }));
+  }
+
+  showPickerNumber(BuildContext context, {@required Map cartItem}) {
+    cartItem = {...cartItem};
+    var initValue = cartItem['cartQuantity'];
+    Picker(
+        adapter: NumberPickerAdapter(data: [
+          NumberPickerColumn(
+            begin: 1,
+            initValue: initValue,
+            end: 50,
+          ),
+        ]),
+        hideHeader: true,
+        title: Text(L10n().getStr('item.selectQuantity')),
+        selectedTextStyle: TextStyle(color: Colors.blue),
+        onConfirm: (Picker picker, List value) {
+          cartItem['cartQuantity'] = value[0] + 1;
+          addItemToCart(cartItem);
+        }).showDialog(context);
+  }
+
   var cart = user['cart'];
   var cost = item['cost'] is String
       ? double.parse(item['cost'])
       : item['cost'].toDouble();
+  bool outOfStock = item['quantity'] < 1;
   return Padding(
     padding: EdgeInsets.symmetric(
         horizontal: Spacing.space16, vertical: Spacing.space4),
@@ -282,12 +335,43 @@ Widget listItem(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  item['description'],
-                  style:
-                      theme.textTheme.h4.copyWith(color: ColorShades.bastille),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        item['description'],
+                        style: theme.textTheme.h4
+                            .copyWith(color: ColorShades.bastille),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (outOfStock && cartItem)
+                      GestureDetector(
+                        onTap: () {
+                          var currentCartItem = cart[item['opc'].toString()];
+                          showCustomLoader(context);
+                          BlocProvider.of<UserDatabaseBloc>(context)
+                              .add(RemoveCartItem(
+                                  itemId: currentCartItem['opc'].toString(),
+                                  callback: (result) {
+                                    Navigator.pop(context);
+                                    if (!result) {
+                                      showCustomSnackbar(
+                                          content: L10n()
+                                              .getStr('profile.address.error'),
+                                          context: context,
+                                          type: SnackbarType.error);
+                                    }
+                                  }));
+                        },
+                        child: Icon(
+                          Icons.delete,
+                          color: ColorShades.redOrange,
+                        ),
+                      )
+                  ],
                 ),
                 SizedBox(
                   height: Spacing.space4,
@@ -302,172 +386,153 @@ Widget listItem(
                 SizedBox(
                   height: Spacing.space4,
                 ),
-                Row(
-                  children: <Widget>[
-                    if (cartItem)
-                      Text(
-                        '  \$ ' + (cost * item['cartQuantity']).toString(),
-                        style: theme.textTheme.h4.copyWith(
-                          color: ColorShades.bastille,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    if (!cartItem && item['normal_price'] != null)
-                      Text(
-                        '\$ ' + item['normal_price'].toString(),
-                        style: theme.textTheme.body1Regular.copyWith(
-                            color: ColorShades.grey300,
-                            decoration: TextDecoration.lineThrough),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    SizedBox(
-                      width: Spacing.space4,
+                if (outOfStock)
+                  Padding(
+                    padding: EdgeInsets.only(top: Spacing.space8),
+                    child: Text(
+                      L10n().getStr('item.outOfStock'),
+                      style: theme.textTheme.body1Regular.copyWith(
+                          color: ColorShades.red, fontStyle: FontStyle.italic),
                     ),
-                    if (!cartItem)
-                      Text(
-                        '  \$ ' + cost.toString(),
-                        style: theme.textTheme.body1Regular.copyWith(
-                          color: ColorShades.grey300,
+                  )
+                else
+                  Row(
+                    children: <Widget>[
+                      if (cartItem)
+                        Text(
+                          '  \$ ' + (cost * item['cartQuantity']).toString(),
+                          style: theme.textTheme.h4.copyWith(
+                            color: ColorShades.bastille,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      if (!cartItem && item['normal_price'] != null)
+                        Text(
+                          '\$ ' + item['normal_price'].toString(),
+                          style: theme.textTheme.body1Regular.copyWith(
+                              color: ColorShades.grey300,
+                              decoration: TextDecoration.lineThrough),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      SizedBox(
+                        width: Spacing.space4,
                       ),
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          if (user['cart'] == null ||
-                              user['cart'][item['opc'].toString()] == null)
-                            PrimaryButton(
-                              text: L10n().getStr('item.add'),
-                              onPressed: () {
-                                var cartItem = item;
-                                cartItem['cartQuantity'] = 1;
-                                showCustomLoader(context);
-                                BlocProvider.of<UserDatabaseBloc>(context)
-                                    .add(AddItemToCart(
-                                        item: cartItem,
-                                        callback: (result) {
-                                          Navigator.pop(context);
-                                          if (!result) {
-                                            showCustomSnackbar(
-                                                content: L10n().getStr(
-                                                    'profile.address.error'),
-                                                context: context,
-                                                type: SnackbarType.error);
-                                          }
-                                        }));
-                              },
-                            )
-                          else
-                            Row(
-                              children: <Widget>[
-                                GestureDetector(
-                                    onTap: () {
-                                      showCustomLoader(context);
-                                      var cartItem =
-                                          cart[item['opc'].toString()];
-                                      if (cartItem['cartQuantity'] > 1) {
-                                        cartItem['cartQuantity'] =
-                                            cartItem['cartQuantity'] - 1;
-                                        BlocProvider.of<UserDatabaseBloc>(
-                                                context)
-                                            .add(AddItemToCart(
-                                                item: cartItem,
-                                                callback: (result) {
-                                                  Navigator.pop(context);
-                                                  if (!result) {
-                                                    showCustomSnackbar(
-                                                        content: L10n().getStr(
-                                                            'profile.address.error'),
-                                                        context: context,
-                                                        type:
-                                                            SnackbarType.error);
-                                                  }
-                                                }));
-                                      } else {
-                                        BlocProvider.of<UserDatabaseBloc>(
-                                                context)
-                                            .add(RemoveCartItem(
-                                                itemId:
-                                                    cartItem['opc'].toString(),
-                                                callback: (result) {
-                                                  Navigator.pop(context);
-                                                  if (!result) {
-                                                    showCustomSnackbar(
-                                                        content: L10n().getStr(
-                                                            'profile.address.error'),
-                                                        context: context,
-                                                        type:
-                                                            SnackbarType.error);
-                                                  }
-                                                }));
-                                      }
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color:
-                                                  ColorShades.pinkBackground)),
-                                      child: Icon(
-                                        Icons.remove,
-                                        color: ColorShades.pinkBackground,
-                                        size: 20,
+                      if (!cartItem)
+                        Text(
+                          '  \$ ' + cost.toString(),
+                          style: theme.textTheme.body1Regular.copyWith(
+                            color: ColorShades.grey300,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            if (user['cart'] == null ||
+                                user['cart'][item['opc'].toString()] == null)
+                              PrimaryButton(
+                                text: L10n().getStr('item.add'),
+                                onPressed: () {
+                                  var currentCartItem = {
+                                    'cartQuantity': 1,
+                                    'categoryId': item['dept_name'],
+                                    'opc': item['opc'].toString()
+                                  };
+                                  addItemToCart(currentCartItem);
+                                },
+                              )
+                            else
+                              Row(
+                                children: <Widget>[
+                                  GestureDetector(
+                                      onTap: () {
+                                        var currentCartItem =
+                                            cart[item['opc'].toString()];
+                                        if (currentCartItem['cartQuantity'] >
+                                            1) {
+                                          currentCartItem['cartQuantity'] =
+                                              currentCartItem['cartQuantity'] -
+                                                  1;
+                                          addItemToCart(currentCartItem);
+                                        } else {
+                                          BlocProvider.of<UserDatabaseBloc>(
+                                                  context)
+                                              .add(RemoveCartItem(
+                                                  itemId: currentCartItem['opc']
+                                                      .toString(),
+                                                  callback: (result) {
+                                                    Navigator.pop(context);
+                                                    if (!result) {
+                                                      showCustomSnackbar(
+                                                          content: L10n().getStr(
+                                                              'profile.address.error'),
+                                                          context: context,
+                                                          type: SnackbarType
+                                                              .error);
+                                                    }
+                                                  }));
+                                        }
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: ColorShades
+                                                    .pinkBackground)),
+                                        child: Icon(
+                                          Icons.remove,
+                                          color: ColorShades.pinkBackground,
+                                          size: 20,
+                                        ),
+                                      )),
+                                  Container(
+                                    height: 24,
+                                    width: 24,
+                                    child: Center(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showPickerNumber(context,
+                                              cartItem: user['cart']
+                                                  [item['opc'].toString()]);
+                                        },
+                                        child: Text(
+                                          user['cart'][item['opc'].toString()]
+                                                  ['cartQuantity']
+                                              .toString(),
+                                          style: theme.textTheme.h4.copyWith(
+                                              color: ColorShades.bastille),
+                                        ),
                                       ),
-                                    )),
-                                Container(
-                                  height: 24,
-                                  width: 24,
-                                  child: Center(
-                                    child: Text(
-                                      user['cart'][item['opc'].toString()]
-                                              ['cartQuantity']
-                                          .toString(),
-                                      style: theme.textTheme.h4.copyWith(
-                                          color: ColorShades.bastille),
                                     ),
                                   ),
-                                ),
-                                GestureDetector(
-                                    onTap: () {
-                                      var cartItem =
-                                          cart[item['opc'].toString()];
-                                      cartItem['cartQuantity'] =
-                                          cartItem['cartQuantity'] + 1;
-                                      showCustomLoader(context);
-                                      BlocProvider.of<UserDatabaseBloc>(context)
-                                          .add(AddItemToCart(
-                                              item: cartItem,
-                                              callback: (result) {
-                                                Navigator.pop(context);
-                                                if (!result) {
-                                                  showCustomSnackbar(
-                                                      content: L10n().getStr(
-                                                          'profile.address.error'),
-                                                      context: context,
-                                                      type: SnackbarType.error);
-                                                }
-                                              }));
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: ColorShades.greenBg)),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: ColorShades.greenBg,
-                                        size: 20,
-                                      ),
-                                    )),
-                              ],
-                            )
-                        ],
-                      ),
-                    )
-                  ],
-                )
+                                  GestureDetector(
+                                      onTap: () {
+                                        var currentCartItem =
+                                            cart[item['opc'].toString()];
+                                        currentCartItem['cartQuantity'] =
+                                            currentCartItem['cartQuantity'] + 1;
+                                        addItemToCart(currentCartItem);
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: ColorShades.greenBg)),
+                                        child: Icon(
+                                          Icons.add,
+                                          color: ColorShades.greenBg,
+                                          size: 20,
+                                        ),
+                                      )),
+                                ],
+                              )
+                          ],
+                        ),
+                      )
+                    ],
+                  )
               ],
             ),
           ),

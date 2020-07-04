@@ -38,6 +38,7 @@ class GetItemDetails extends ItemDatabaseEvents {
 
 class PlaceOrder extends ItemDatabaseEvents {
   Map orderDetails;
-  PlaceOrder({@required this.orderDetails});
+  Function callback;
+  PlaceOrder({@required this.orderDetails, this.callback});
 }
 

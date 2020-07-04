@@ -1,4 +1,5 @@
 import 'package:asia/blocs/user_database_bloc/state.dart';
+import 'package:asia/repository/item_database.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +15,7 @@ class UserDatabase {
       _firestore.collection('users').document('user');
   static DocumentReference adminRef =
       _firestore.collection('users').document('admin');
-
+  static CollectionReference inventoryRef = _firestore.collection('inventory');
   Future<UserDatabaseState> checkIfAdminOrUser(
       {@required String userId}) async {
     try {
@@ -176,18 +177,31 @@ class UserDatabase {
       {@required Map item, @required String userId}) async {
     DocumentSnapshot userData =
         await userRef.collection('entries').document(userId).get();
-    if (userData.data != null) {
-      var cart = userData.data['cart'];
-      if (cart == null) {
-        cart = {};
+    try {
+      DocumentSnapshot itemSnapshot = await inventoryRef
+          .document(item['categoryId'])
+          .collection('items')
+          .document(item['opc'])
+          .get();
+      if (itemSnapshot.data['quantity'] >= item['cartQuantity']) {
+        if (userData.data != null) {
+          var cart = userData.data['cart'];
+          if (cart == null) {
+            cart = {};
+          }
+          cart[item['opc']] = item;
+          await userRef
+              .collection('entries')
+              .document(userId)
+              .updateData({KeyNames['cart']: cart});
+          return true;
+        }
+        return false;
       }
-      cart[item['opc'].toString()] = item;
-      await userRef
-          .collection('entries')
-          .document(userId)
-          .updateData({KeyNames['cart']: cart});
+      return {'error': 'ITEM_OUT_OF_STOCK'};
+    } catch (e) {
+      return false;
     }
-    return false;
   }
 
   Future<dynamic> removeCartItem(

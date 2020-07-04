@@ -124,7 +124,7 @@ class FluroRouter {
     router.define(
       Constants.CATEGORY_LISTING,
       handler: getCommonHandler(Constants.CATEGORY_LISTING),
-      transitionType: TransitionType.inFromBottom,
+      transitionType: TransitionType.fadeIn,
     );
     router.define(
       Constants.ONBOARDING,

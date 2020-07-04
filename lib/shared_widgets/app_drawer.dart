@@ -20,7 +20,7 @@ class AppDrawer extends StatelessWidget {
           if (appState is UserIsUser) {
             user = appState.user;
           }
-          String username = user[KeyNames['userName']];
+          String username = user != null ? user[KeyNames['userName']] : '';
           return Container(
             color: ColorShades.lightGreenBg,
             child: Column(

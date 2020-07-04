@@ -46,6 +46,7 @@ Map<String, Map<String, String>> strings = {
     "error.invalidCredential": "Invalid phone number",
     "error.verifyPhoneNumberError": "Some error in authentication",
     "error.verificationFailed": "Verification Failed",
+    "error.ITEM_OUT_OF_STOCK": "Selected quantity is not available in stock",
     "authentication.enterNumber":
         "Please enter your phone number. We will send you a one time password",
     "input.placeholder": "Enter your message here",
@@ -127,7 +128,12 @@ Map<String, Map<String, String>> strings = {
     "checkout.paymentMethod.cod": "Cash on delivery",
     "checkout.paymentMethod.razorpay": "Razorpay",
     "checkout.placingOrder": "Placing order",
+    "item.outOfStock": "Out of stock",
     "cart.empty.confirmation": "Are you sure, you want to empty the cart?",
+    "cart.refundProcessing": "Refund is being processed.",
+    "checkout.itemOutOfStock":
+        "Some of the items in your cart are out of stock. Please go back and place the order again. Meanwhile, the refund is being processed",
+    "item.selectQuantity": "Select quantity",
   },
   "it": {},
 };

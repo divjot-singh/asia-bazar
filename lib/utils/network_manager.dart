@@ -19,6 +19,7 @@ class NetworkManager {
     String url,
     String type,
     Map data,
+    bool sendCredentials,
     bool noSnackbar,
     bool isAbsoluteUrl,
   ) async {
@@ -34,7 +35,7 @@ class NetworkManager {
     }
     try {
       logger.i(url);
-      data = await NetworkManager._getBaseData(data);
+      if (sendCredentials) data = await NetworkManager._getBaseData(data);
       Logger().d(
         data,
       );
@@ -109,18 +110,22 @@ class NetworkManager {
   static get({
     @required String url,
     Map data,
+    bool sendCredentials = true,
     bool noSnackbar = false,
     bool isAbsoluteUrl = false,
   }) {
-    return _makeRequest(url, 'GET', data, noSnackbar, isAbsoluteUrl);
+    return _makeRequest(
+        url, 'GET', data, sendCredentials, noSnackbar, isAbsoluteUrl);
   }
 
   static post(
       {@required String url,
       Map data,
       bool noSnackbar = false,
+      bool sendCredentials = true,
       bool isAbsoluteUrl = false}) {
-    return _makeRequest(url, 'POST', data, noSnackbar, isAbsoluteUrl);
+    return _makeRequest(
+        url, 'POST', data, sendCredentials, noSnackbar, isAbsoluteUrl);
   }
 
   static Future<Map<String, String>> _getBaseData(Map data) async {
