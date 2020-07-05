@@ -55,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushNamed(
                   context,
                   Constants.CATEGORY_LISTING
-                      .replaceAll(':categoryId', item['name'].toString())
+                      .replaceAll(':categoryId', item['id'].toString())
                       .replaceAll(':categoryName', item['name']));
             },
             child: Container(

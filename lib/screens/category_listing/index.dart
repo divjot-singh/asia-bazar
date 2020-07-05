@@ -366,7 +366,8 @@ Widget listItem(
                                           context: context,
                                           type: SnackbarType.error);
                                     } else {
-                                      removeItemHandler(currentCartItem);
+                                      if (removeItemHandler != null)
+                                        removeItemHandler(currentCartItem);
                                     }
                                   }));
                         },
@@ -443,7 +444,7 @@ Widget listItem(
                                 onPressed: () {
                                   var currentCartItem = {
                                     'cartQuantity': 1,
-                                    'categoryId': item['dept_name'],
+                                    'categoryId': item['categoryId'].toString(),
                                     'opc': item['opc'].toString()
                                   };
                                   addItemToCart(currentCartItem);
@@ -480,8 +481,10 @@ Widget listItem(
                                                           type: SnackbarType
                                                               .error);
                                                     } else {
-                                                      removeItemHandler(
-                                                          currentCartItem);
+                                                      if (removeItemHandler !=
+                                                          null)
+                                                        removeItemHandler(
+                                                            currentCartItem);
                                                     }
                                                   }));
                                         }
