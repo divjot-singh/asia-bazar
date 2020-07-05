@@ -60,7 +60,11 @@ class _CartState extends State<Cart> {
       ),
     );
   }
-
+  void removeItemHandler(item){
+    setState(() {
+      cart.remove(item['opc'].toString());
+    });
+  }
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
@@ -184,6 +188,7 @@ class _CartState extends State<Cart> {
                               return listItem(
                                   context: context,
                                   item: item,
+                                  removeItemHandler: removeItemHandler,
                                   user: userState.user,
                                   cartItem: true);
                             },

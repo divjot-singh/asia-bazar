@@ -251,8 +251,8 @@ Widget listItem(
     {@required BuildContext context,
     @required Map item,
     @required Map user,
+    Function removeItemHandler,
     bool cartItem = false}) {
-  Debouncer d = Debouncer();
   ThemeData theme = Theme.of(context);
   if (item['cost'] == null ||
       item['cost'] is String && item['cost'].trim().length == 0) {
@@ -350,7 +350,9 @@ Widget listItem(
                     if (outOfStock && cartItem)
                       GestureDetector(
                         onTap: () {
-                          var currentCartItem = cart[item['opc'].toString()];
+                          Map currentCartItem = {
+                            ...cart[item['opc'].toString()]
+                          };
                           showCustomLoader(context);
                           BlocProvider.of<UserDatabaseBloc>(context)
                               .add(RemoveCartItem(
@@ -363,6 +365,8 @@ Widget listItem(
                                               .getStr('profile.address.error'),
                                           context: context,
                                           type: SnackbarType.error);
+                                    } else {
+                                      removeItemHandler(currentCartItem);
                                     }
                                   }));
                         },
@@ -450,8 +454,9 @@ Widget listItem(
                                 children: <Widget>[
                                   GestureDetector(
                                       onTap: () {
-                                        var currentCartItem =
-                                            cart[item['opc'].toString()];
+                                        Map currentCartItem = {
+                                          ...cart[item['opc'].toString()]
+                                        };
                                         if (currentCartItem['cartQuantity'] >
                                             1) {
                                           currentCartItem['cartQuantity'] =
@@ -459,6 +464,7 @@ Widget listItem(
                                                   1;
                                           addItemToCart(currentCartItem);
                                         } else {
+                                          showCustomLoader(context);
                                           BlocProvider.of<UserDatabaseBloc>(
                                                   context)
                                               .add(RemoveCartItem(
@@ -473,6 +479,9 @@ Widget listItem(
                                                           context: context,
                                                           type: SnackbarType
                                                               .error);
+                                                    } else {
+                                                      removeItemHandler(
+                                                          currentCartItem);
                                                     }
                                                   }));
                                         }
@@ -510,8 +519,10 @@ Widget listItem(
                                   ),
                                   GestureDetector(
                                       onTap: () {
-                                        var currentCartItem =
-                                            cart[item['opc'].toString()];
+                                        Map currentCartItem = {
+                                          ...cart[item['opc'].toString()]
+                                        };
+
                                         currentCartItem['cartQuantity'] =
                                             currentCartItem['cartQuantity'] + 1;
                                         addItemToCart(currentCartItem);
