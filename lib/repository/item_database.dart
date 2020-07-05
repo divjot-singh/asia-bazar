@@ -87,7 +87,7 @@ class ItemDatabase {
               .document(item['categoryId'])
               .collection('items')
               .document(key);
-          transaction.get(ref).then((snapshot) {
+          return transaction.get(ref).then((snapshot) {
             var itemData = snapshot.data;
             var quantity = itemData['quantity'];
             if (quantity >= item['cartQuantity']) {
