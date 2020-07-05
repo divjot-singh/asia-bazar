@@ -210,7 +210,7 @@ class _CheckoutState extends State<Checkout> {
       showCustomSnackbar(
           context: context, content: 'Success', type: SnackbarType.success);
       //todo order placed, take to order details page
-    } else if (result is Map && result.length > 0) {
+    } else if (result is Map) {
       setState(() {
         itemsOutOfStock = true;
       });

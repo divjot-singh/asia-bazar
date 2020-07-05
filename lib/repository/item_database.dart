@@ -77,58 +77,100 @@ class ItemDatabase {
       @required String userId,
       @required Function callback}) async {
     var returnItem = {};
-    var transactionWriteArray = [];
+    //var transactionWriteArray = [];
     try {
       var cart = details['cart'];
-      var lastKey = cart.keys.toList()[cart.length - 1];
-      _firestore.runTransaction((transaction) {
-        cart.forEach((key, item) {
-          var ref = inventoryRef
-              .document(item['categoryId'])
-              .collection('items')
-              .document(key);
-          return transaction.get(ref).then((snapshot) {
-            var itemData = snapshot.data;
-            var quantity = itemData['quantity'];
-            if (quantity >= item['cartQuantity']) {
-              quantity -= item['cartQuantity'];
-              transactionWriteArray.add({
-                'ref': ref,
-                'data': {'quantity': quantity}
-              });
-            } else {
-              returnItem[itemData['opc']] = itemData;
-            }
-            if (key == lastKey) {
-              transactionWriteArray.forEach((item) async {
-                await transaction.update(item['ref'], item['data']);
-              });
-            }
-          }, onError: (e) {
-            print('reading error');
-            print(ref);
-            print(e);
-          });
-        });
-      }, timeout: Duration(seconds: 15)).then((value) async {
+      //var lastKey = cart.keys.toList()[cart.length - 1];
+      WriteBatch batchWrite = _firestore.batch();
+      //var successful = true;
+      cart.forEach((key, item) async {
+        var decrementValue = item['cartQuantity'];
+        decrementValue *= -1;
+        var ref = inventoryRef
+            .document(item['categoryId'])
+            .collection('items')
+            .document(key);
+        try {
+          print('wiriting' + ref.path.toString());
+          batchWrite.updateData(
+              ref, {'quantity': FieldValue.increment(decrementValue)});
+        } catch (e) {
+          print('update error');
+          print(e);
+        }
+      });
+
+      batchWrite.commit().then((value) async {
         DocumentReference ref = await orderRef.add(details);
         await activeOrdersRef
             .add({'orderId': ref.documentID, 'userId': details['userId']});
         callback(true);
         return;
-      }, onError: (e, stack) {
-        print('transaction failed');
-        print(e);
-        print(stack);
-        print('returning');
+      }, onError: (error) {
+        print(error.toString());
+        print('error in try catch');
         callback(returnItem);
         return;
       });
+
+      // _firestore.runTransaction((transaction) {
+      //   cart.forEach((key, item) {
+      //     var ref = inventoryRef
+      //         .document(item['categoryId'])
+      //         .collection('items')
+      //         .document(key);
+
+      //     return transaction.get(ref).then((snapshot) async {
+      //       print('inside get');
+      //       var itemData = snapshot.data;
+      //       var quantity = itemData['quantity'];
+      //       if (quantity >= item['cartQuantity']) {
+      //         quantity -= item['cartQuantity'];
+      //         transactionWriteArray.add({
+      //           'ref': ref,
+      //           'data': {'quantity': quantity}
+      //         });
+      //       } else {
+      //         returnItem[itemData['opc']] = itemData;
+      //       }
+      //       if (key == lastKey) {
+      //         return await transactionWriteArray.forEach((item) async {
+      //           print('inside write');
+      //           var result = await transaction
+      //               .update(item['ref'], item['data'])
+      //               .then((snapshot) {
+      //             print('written');
+      //             return 'abc';
+      //           });
+      //           print(result);
+      //         });
+      //       }
+      //     }, onError: (e) {
+      //       print('reading error');
+      //       print(ref);
+      //       print(e);
+      //     });
+      //   });
+      // }, timeout: Duration(seconds: 15)).then((value) async {
+      //   print('all done');
+      //   DocumentReference ref = await orderRef.add(details);
+      //   await activeOrdersRef
+      //       .add({'orderId': ref.documentID, 'userId': details['userId']});
+      //   callback(true);
+      //   return;
+      // }, onError: (e, stack) {
+      //   print('transaction failed');
+      //   print(e);
+      //   print(stack);
+      //   print('returning');
+      //   callback(returnItem);
+      //   return;
+      // });
     } catch (e) {
       //error in try catch block
       print(e.toString());
-      print('error in try catch');
-      callback(returnItem);
+      print('error in try catch 2');
+      callback(false);
       return;
     }
   }
