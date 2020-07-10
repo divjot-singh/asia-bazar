@@ -102,13 +102,7 @@ class _SearchItemsState extends State<SearchItems> {
             body: Column(
               children: <Widget>[
                 Container(
-                  decoration: BoxDecoration(boxShadow: [
-                    BoxShadow(
-                      offset: Offset(1, 2),
-                      color: ColorShades.lightGreenBg75,
-                      blurRadius: 3,
-                    )
-                  ]),
+                  decoration: BoxDecoration(boxShadow: [Shadows.cardLight]),
                   child: TextFormField(
                     controller: _textController,
                     style: theme.textTheme.h4.copyWith(
