@@ -270,6 +270,42 @@ class UserDatabaseBloc extends Bloc<UserDatabaseEvents, Map> {
         state['userstate'] = GlobalErrorState();
         yield {...state};
       }
+    } else if (event is FetchMyOrders) {
+      var userId = await StorageManager.getItem(KeyNames['userId']);
+      if (event.startAt == null) {
+        state['ordersstate'] = GlobalFetchingState();
+        yield {...state};
+      }
+      var orderItems;
+      try {
+        orderItems = await itemDatabaseRepo.fetchMyOrders(
+            userId: userId, startAt: event.startAt);
+        if (orderItems is List) {
+          var ordersListing = [];
+          if (event.startAt != null &&
+              state['ordersstate'] is OrdersFetchedState) {
+            var listing = state['ordersstate'].orders;
+            ordersListing.addAll(listing);
+          }
+          ordersListing.addAll(orderItems);
+          state['ordersstate'] = OrdersFetchedState(orders: ordersListing);
+
+          yield {...state};
+          if (event.callback != null) {
+            event.callback(orderItems);
+          }
+        } else {
+          state['ordersstate'] = GlobalErrorState();
+          yield {...state};
+        }
+      } catch (e) {
+        print(e);
+        state['ordersstate'] = GlobalErrorState();
+        yield {...state};
+      }
+      if (event.callback != null) {
+        event.callback(orderItems);
+      }
     }
   }
 }

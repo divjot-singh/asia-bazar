@@ -114,7 +114,7 @@ extension CustomTextTheme on TextTheme {
   TextStyle get h1 => TextStyle(
       fontSize: 28.0, fontWeight: FontWeight.w500, height: 28.0 / 28.0);
   TextStyle get h2 => TextStyle(
-      fontSize: 24.0, fontWeight: FontWeight.w500, height: 24.0 / 24.0);
+      fontSize: 24.0, fontWeight: FontWeight.w500, height: 28.0 / 24.0);
   TextStyle get h3 => TextStyle(
       fontSize: 20.0, fontWeight: FontWeight.w500, height: 24.0 / 20.0);
   TextStyle get h4 => TextStyle(

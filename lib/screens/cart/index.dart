@@ -1,3 +1,5 @@
+import 'package:asia/blocs/global_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
@@ -24,12 +26,29 @@ class Cart extends StatefulWidget {
 class _CartState extends State<Cart> {
   ThemeData theme;
   var cart;
+  double grandTotal = 0;
   double totalCost = 0;
+  double packagingCharges = 0;
+  double otherCharges = 0;
+  double deliveryCharges = 0;
   @override
   void initState() {
     BlocProvider.of<UserDatabaseBloc>(context)
         .add(FetchCartItems(callback: fetchItemsCallback));
+    BlocProvider.of<GlobalBloc>(context)
+        .add(FetchSellerInfo(callback: fetchSellerCallback));
     super.initState();
+  }
+
+  fetchSellerCallback(info) {
+    if (info is Map) {
+      double d;
+      setState(() {
+        deliveryCharges = info['deliveryCharges'].toDouble();
+        packagingCharges = info['packagingCharges'].toDouble();
+        otherCharges = info['packagingCharges'].toDouble();
+      });
+    }
   }
 
   fetchItemsCallback(items) {
@@ -60,11 +79,13 @@ class _CartState extends State<Cart> {
       ),
     );
   }
-  void removeItemHandler(item){
+
+  void removeItemHandler(item) {
     setState(() {
       cart.remove(item['opc'].toString());
     });
   }
+
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
@@ -99,6 +120,9 @@ class _CartState extends State<Cart> {
               });
             }
             totalCost = ((totalCost * 100).ceil() / 100);
+            grandTotal =
+                totalCost + deliveryCharges + packagingCharges + otherCharges;
+            grandTotal = (grandTotal * 100).ceil() / 100;
             return Scaffold(
               appBar: MyAppBar(
                 hasTransparentBackground: true,
@@ -178,23 +202,171 @@ class _CartState extends State<Cart> {
               backgroundColor: ColorShades.white,
               body: !cartValid
                   ? emptyState()
-                  : Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: ListView.builder(
-                            itemCount: cart.keys.length,
-                            itemBuilder: (context, index) {
-                              var item = cart[cart.keys.toList()[index]];
-                              return listItem(
-                                  context: context,
-                                  item: item,
-                                  removeItemHandler: removeItemHandler,
-                                  user: userState.user,
-                                  cartItem: true);
-                            },
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: <Widget>[
+                          ...cart.keys.map((key) {
+                            var item = cart[key];
+                            return listItem(
+                                context: context,
+                                item: item,
+                                removeItemHandler: removeItemHandler,
+                                user: userState.user,
+                                cartItem: true);
+                          }),
+                          // ListView.builder(
+                          //   itemCount: cart.keys.length,
+                          //   itemBuilder: (context, index) {
+                          //     var item = cart[cart.keys.toList()[index]];
+                          //     return listItem(
+                          //         context: context,
+                          //         item: item,
+                          //         removeItemHandler: removeItemHandler,
+                          //         user: userState.user,
+                          //         cartItem: true);
+                          //   },
+                          // ),
+
+                          SizedBox(
+                            height: Spacing.space16,
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Spacing.space16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  L10n().getStr('orderDetails.cartTotal') +
+                                      ' : ',
+                                  style: theme.textTheme.h4
+                                      .copyWith(color: ColorShades.bastille),
+                                ),
+                                Text(
+                                  '\$ ${totalCost.toStringAsFixed(2)}',
+                                  style: theme.textTheme.body1Medium
+                                      .copyWith(color: ColorShades.bastille),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (deliveryCharges > 0)
+                            SizedBox(
+                              height: Spacing.space16,
+                            ),
+                          if (deliveryCharges > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    L10n().getStr(
+                                            'orderDetails.deliveryCharges') +
+                                        ' : ',
+                                    style: theme.textTheme.h4
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                  Text(
+                                    '\$ ${deliveryCharges.toStringAsFixed(2)}',
+                                    style: theme.textTheme.body1Medium
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (packagingCharges > 0)
+                            SizedBox(
+                              height: Spacing.space16,
+                            ),
+                          if (packagingCharges > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    L10n().getStr(
+                                            'orderDetails.packagingCharges') +
+                                        ' : ',
+                                    style: theme.textTheme.h4
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                  Text(
+                                    '\$ ${packagingCharges.toStringAsFixed(2)}',
+                                    style: theme.textTheme.body1Medium
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (otherCharges > 0)
+                            SizedBox(
+                              height: Spacing.space16,
+                            ),
+                          if (otherCharges > 0)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    L10n().getStr('orderDetails.otherCharges') +
+                                        ' : ',
+                                    style: theme.textTheme.h4
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                  Text(
+                                    '\$ ${otherCharges.toStringAsFixed(2)}',
+                                    style: theme.textTheme.body1Medium
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (grandTotal != totalCost)
+                            SizedBox(
+                              height: Spacing.space8,
+                            ),
+                          if (grandTotal != totalCost)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Divider(
+                                color: ColorShades.grey100,
+                                thickness: 2,
+                              ),
+                            ),
+                          if (grandTotal != totalCost)
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    L10n().getStr('cart.total') + ' : ',
+                                    style: theme.textTheme.h4
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                  Text(
+                                    '\$ ${grandTotal.toStringAsFixed(2)}',
+                                    style: theme.textTheme.body1Medium
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          SizedBox(height: Spacing.space12)
+                        ],
+                      ),
                     ),
               bottomNavigationBar: !cartValid
                   ? BottomAppBar()
@@ -214,7 +386,7 @@ class _CartState extends State<Cart> {
                                     .copyWith(color: ColorShades.white),
                               ),
                               Text(
-                                '\$ ${totalCost.toStringAsFixed(2)}',
+                                '\$ ${grandTotal.toStringAsFixed(2)}',
                                 style: theme.textTheme.h4
                                     .copyWith(color: ColorShades.white),
                               )
@@ -229,7 +401,7 @@ class _CartState extends State<Cart> {
                                   onPressed: () async {
                                     var result = await Navigator.pushNamed(
                                         context, Constants.CHECKOUT,
-                                        arguments: {'amount': totalCost});
+                                        arguments: {'amount': grandTotal});
                                     if (result is Map &&
                                         result['refresh'] == true) {
                                       Navigator.popAndPushNamed(

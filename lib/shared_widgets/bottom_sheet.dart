@@ -25,11 +25,12 @@ import 'package:asia/theme/style.dart';
 //           );
 //         });
 
-class GtvBottomSheet extends StatelessWidget {
+class BottomSheetModal extends StatelessWidget {
   final List sheetItems;
   final BuildContext context;
 
-  GtvBottomSheet({@required this.sheetItems, @required this.context}) : super();
+  BottomSheetModal({@required this.sheetItems, @required this.context})
+      : super();
 
   Widget buildSheetItem(
       {@required Map item, @required ThemeData theme, String itemType}) {
@@ -82,7 +83,7 @@ class GtvBottomSheet extends StatelessWidget {
       }
     }
     sheetWidget.add(buildSheetItem(
-        item: {'text': L10n().getStr('filter.close')},
+        item: {'text': L10n().getStr('sheet.close')},
         theme: theme,
         itemType: 'close'));
     return sheetWidget;

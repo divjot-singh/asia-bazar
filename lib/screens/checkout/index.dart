@@ -35,6 +35,7 @@ class _CheckoutState extends State<Checkout> {
   bool itemsOutOfStock = false;
   Razorpay _razorpay;
   List paymentMethodOptions;
+  var orderId;
   @override
   void initState() {
     paymentMethodOptions = paymentOptions;
@@ -186,7 +187,7 @@ class _CheckoutState extends State<Checkout> {
     Map cartItems = {...currentUser[KeyNames['cart']]};
 
     ///cartItems.removeWhere((key, item) => item['quantity'] < 1);
-    var orderId = Utilities.getOrderId(userName);
+    orderId = Utilities.getOrderId(userName);
     var userId = await StorageManager.getItem(KeyNames['userId']);
     var orderDetails = {
       'phoneNumber': phoneNumber,
@@ -207,8 +208,13 @@ class _CheckoutState extends State<Checkout> {
     Navigator.pop(context);
     if (result == true) {
       BlocProvider.of<UserDatabaseBloc>(context).add(EmptyCart());
-      showCustomSnackbar(
-          context: context, content: 'Success', type: SnackbarType.success);
+      if (orderId != null) {
+        Navigator.popAndPushNamed(
+            context, Constants.ORDER_DETAILS.replaceAll(':orderId', orderId));
+      } else
+        showCustomSnackbar(
+            context: context, content: 'Success', type: SnackbarType.success);
+
       //todo order placed, take to order details page
     } else if (result is Map) {
       setState(() {

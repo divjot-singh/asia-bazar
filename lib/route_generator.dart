@@ -1,11 +1,15 @@
+import 'package:asia/main.dart';
 import 'package:asia/screens/add_address/index.dart';
 import 'package:asia/screens/address_list/index.dart';
+import 'package:asia/screens/all_search/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/cart/index.dart';
 import 'package:asia/screens/category_listing/index.dart';
 import 'package:asia/screens/checkout/index.dart';
 import 'package:asia/screens/home/index.dart';
 import 'package:asia/screens/onboarding/index.dart';
+import 'package:asia/screens/order_details/index.dart';
+import 'package:asia/screens/order_details/item_details.dart';
 import 'package:asia/screens/order_list/index.dart';
 import 'package:asia/screens/redirector/index.dart';
 import 'package:asia/screens/update_profile/index.dart';
@@ -13,6 +17,7 @@ import 'package:asia/screens/user_is_admin/is_admin.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FluroRouter {
   static Router router = Router();
@@ -42,6 +47,12 @@ class FluroRouter {
             return IsAdmin();
           },
         );
+      case Constants.SEARCH:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return SearchItems();
+          },
+        );
       case Constants.CART:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
@@ -58,6 +69,28 @@ class FluroRouter {
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             return OrderList();
+          },
+        );
+      case Constants.ORDER_DETAILS:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            var orderId = params['orderId'][0];
+            return BlocProvider.value(
+                value: BlocHolder().getClubDetailsBloc(orderId),
+                child: OrderDetails(orderId: orderId));
+          },
+        );
+      case Constants.ORDER_ITEM_DETAILS:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            var orderId = params['orderId'][0];
+            var editView = params['editView'][0] == "true";
+            return BlocProvider.value(
+                value: BlocHolder().getClubDetailsBloc(orderId),
+                child: OrderItemDetails(
+                  orderId: orderId,
+                  editView: editView,
+                ));
           },
         );
       case Constants.CATEGORY_LISTING:
@@ -106,6 +139,11 @@ class FluroRouter {
       transitionType: TransitionType.fadeIn,
     );
     router.define(
+      Constants.SEARCH,
+      handler: getCommonHandler(Constants.SEARCH),
+      transitionType: TransitionType.inFromBottom,
+    );
+    router.define(
       Constants.CART,
       handler: getCommonHandler(Constants.CART),
       transitionType: TransitionType.inFromBottom,
@@ -122,6 +160,11 @@ class FluroRouter {
       transitionType: TransitionType.inFromBottom,
     );
     router.define(
+      Constants.ORDER_DETAILS,
+      handler: getCommonHandler(Constants.ORDER_DETAILS),
+      transitionType: TransitionType.inFromBottom,
+    );
+    router.define(
       Constants.CATEGORY_LISTING,
       handler: getCommonHandler(Constants.CATEGORY_LISTING),
       transitionType: TransitionType.fadeIn,
@@ -129,6 +172,11 @@ class FluroRouter {
     router.define(
       Constants.ONBOARDING,
       handler: getCommonHandler(Constants.ONBOARDING),
+      transitionType: TransitionType.cupertinoFullScreenDialog,
+    );
+    router.define(
+      Constants.ORDER_ITEM_DETAILS,
+      handler: getCommonHandler(Constants.ORDER_ITEM_DETAILS),
       transitionType: TransitionType.cupertinoFullScreenDialog,
     );
     router.define(

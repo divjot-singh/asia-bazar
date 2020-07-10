@@ -3,7 +3,9 @@
 import 'dart:io';
 
 import 'package:asia/blocs/auth_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
+import 'package:asia/blocs/order_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/index.dart';
 import 'package:asia/route_generator.dart';
@@ -32,6 +34,9 @@ void main() {
         BlocProvider<ItemDatabaseBloc>(
           create: (BuildContext context) => BlocHolder().itemDbBloc(),
         ),
+        BlocProvider<GlobalBloc>(
+          create: (BuildContext context) => BlocHolder().globalBloc(),
+        ),
       ],
       child: App(),
     ),
@@ -45,6 +50,7 @@ class BlocHolder {
   AuthBloc _authBloc;
   UserDatabaseBloc _userDbBloc;
   ItemDatabaseBloc _itemDbBloc;
+  GlobalBloc _globalBloc;
   BlocHolder._internal();
   static final BlocHolder _inst = BlocHolder._internal();
 
@@ -65,9 +71,16 @@ class BlocHolder {
     if (_inst._itemDbBloc == null) _inst._itemDbBloc = ItemDatabaseBloc();
     return _inst._itemDbBloc;
   }
-  // ChatBloc chatBloc() {
-  //   if (_inst._chatBloc == null) _inst._chatBloc = ChatBloc();
-  //   return _inst._chatBloc;
-  // }
 
+  GlobalBloc globalBloc() {
+    if (_inst._globalBloc == null) _inst._globalBloc = GlobalBloc();
+    return _inst._globalBloc;
+  }
+
+  Map<String, OrderDetailsBloc> _orderDetailsBloc = {};
+  OrderDetailsBloc getClubDetailsBloc(String orderId) {
+    OrderDetailsBloc bloc = _orderDetailsBloc[orderId] ?? OrderDetailsBloc();
+    _orderDetailsBloc[orderId] = bloc;
+    return bloc;
+  }
 }

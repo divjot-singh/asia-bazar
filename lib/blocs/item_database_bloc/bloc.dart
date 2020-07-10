@@ -124,6 +124,46 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
 
       itemDatabase.placeOrder(
           details: details, userId: userId, callback: event.callback);
+    } else if (event is SearchAllItems) {
+      if (event.startAt == null) {
+        var currentState = state['searchListing'];
+        if (currentState is CategoryListingFetchedState)
+          state['searchListing'] =
+              PartialFetchingState(categoryItems: currentState.categoryItems);
+        else
+          state['searchListing'] = GlobalFetchingState();
+        yield {...state};
+      }
+      try {
+        var listing = await itemDatabase.searchAllListing(
+            startAt: event.startAt, query: event.query);
+
+        if (listing != null) {
+          if (event.callback != null) {
+            event.callback(listing);
+          }
+          var searchListingState;
+          if (event.startAt != null &&
+              state['searchListing'] is SearchListingFetched) {
+            var newList = [];
+            var oldListing = state['searchListing'].searchItems;
+            newList.addAll(oldListing);
+            newList.addAll(listing);
+            searchListingState = SearchListingFetched(searchItems: newList);
+          } else {
+            searchListingState = SearchListingFetched(searchItems: listing);
+          }
+          state['searchListing'] = searchListingState;
+          yield {...state};
+        } else {
+          state['searchListing'] = GlobalErrorState();
+          yield {...state};
+        }
+      } catch (e) {
+        print(e);
+        state['categoryListing'] = GlobalErrorState();
+        yield {...state};
+      }
     }
   }
 }

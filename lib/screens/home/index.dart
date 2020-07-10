@@ -1,3 +1,5 @@
+import 'package:asia/blocs/global_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/event.dart';
@@ -24,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     BlocProvider.of<ItemDatabaseBloc>(context).add(FetchAllCategories());
+    BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo());
     fetchToken();
     super.initState();
   }
@@ -118,6 +121,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: <Widget>[
                     InputBox(
                       onChanged: (_) {},
+                      onTap: () {
+                        Navigator.pushNamed(context, Constants.SEARCH);
+                      },
                       hideShadow: true,
                       hintText: L10n().getStr('home.search'),
                       prefixIcon: Icon(

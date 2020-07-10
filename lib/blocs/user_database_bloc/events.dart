@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 abstract class UserDatabaseEvents {}
@@ -63,4 +64,10 @@ class EmptyCart extends UserDatabaseEvents {
 class FetchCartItems extends UserDatabaseEvents {
   Function callback;
   FetchCartItems({this.callback});
+}
+
+class FetchMyOrders extends UserDatabaseEvents {
+  Function callback;
+  DocumentSnapshot startAt;
+  FetchMyOrders({this.callback, this.startAt});
 }

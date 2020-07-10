@@ -15,7 +15,7 @@ class FetchCategoryListing extends ItemDatabaseEvents {
 
 class SearchAllItems extends ItemDatabaseEvents {
   String query;
-  int startAt;
+  DocumentSnapshot startAt;
   Function callback;
   SearchAllItems({@required this.query, this.startAt, this.callback});
 }

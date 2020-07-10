@@ -9,12 +9,34 @@ const Map KeyNames = {
   'fcmToken': "fcmToken",
   "cart": "cart",
   'orderPlaced': 'placed',
+  'orderApproved': 'approved',
+  'orderRejected': 'rejected',
+  'orderDispatched': 'dispatched',
+  'orderDelivered': 'delivered',
+  'orderCancelled': 'cancelled',
+  'orderReturnRequested': 'returnRequested',
+  'orderReturnApproved': 'returnApproved',
+  'orderReturnRejected': 'returnRejected',
 };
 
 const Map URLS = {
   'api_url': '',
-  'refund_url':'https://rzp_test_Y2WNi4hdVKh0Px:u5baLA8VYXRDmTlGIIbi0aUT@razorpay.com/v1/payments/:paymentId/refund',
+  'refund_url':
+      'https://rzp_test_Y2WNi4hdVKh0Px:u5baLA8VYXRDmTlGIIbi0aUT@razorpay.com/v1/payments/:paymentId/refund',
 };
+
+// const StatusIcons = {
+//   'placed':Icons.check,
+//   'approved',
+//   'rejected',
+//   'dispatched',
+//   'delivered',
+//   'cancelled',
+//   'returnRequested',
+//   'returnApproved',
+//   'returnRejected',
+// };
+const ORDER_RETURN_THRESHOLD_IN_DAYS = 1;
 
 class Constants {
   static const AUTHENTICATION_SCREEN = "authenticate";
@@ -29,6 +51,10 @@ class Constants {
   static const CART = 'user/cart';
   static const CATEGORY_LISTING = 'user/category/:categoryName/:categoryId';
   static const CHECKOUT = 'user/checkout';
+  static const ORDER_DETAILS = 'user/order_details/:orderId';
+  static const SEARCH = 'user/search';
+  static const ORDER_ITEM_DETAILS =
+      'user/order_details/:orderId/item_details/:editView';
 }
 
 const List<Map<String, String>> Countries = [

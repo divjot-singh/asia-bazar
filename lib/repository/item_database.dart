@@ -6,8 +6,7 @@ class ItemDatabase {
   static CollectionReference categoryRef = _firestore.collection('categories');
   static CollectionReference inventoryRef = _firestore.collection('inventory');
   static CollectionReference orderRef = _firestore.collection('orders');
-  static CollectionReference activeOrdersRef =
-      _firestore.collection('active_orders');
+  static CollectionReference orderedItems = _firestore.collection('orderItems');
   Future<List> fetchAllCategories() async {
     QuerySnapshot snapshot = await categoryRef.getDocuments();
     return snapshot.documents;
@@ -72,6 +71,36 @@ class ItemDatabase {
     return null;
   }
 
+  Future<List> searchAllListing(
+      {DocumentSnapshot startAt, String query}) async {
+    QuerySnapshot snapshot;
+    var limit = 50;
+    var returnValue;
+    if (query.length > 0) {
+      if (startAt != null) {
+        snapshot = await _firestore
+            .collectionGroup('items')
+            .orderBy('opc')
+            .where('tokens', arrayContains: query)
+            .limit(limit)
+            .startAfterDocument(startAt)
+            .getDocuments();
+      } else {
+        snapshot = await _firestore
+            .collectionGroup('items')
+            .orderBy('opc')
+            .where('tokens', arrayContains: query)
+            .limit(limit)
+            .getDocuments();
+      }
+      returnValue = snapshot.documents;
+      returnValue = snapshot.documents == null ? {} : snapshot.documents;
+      if (returnValue != null) return [...returnValue];
+      return null;
+    }
+    return [];
+  }
+
   Future<dynamic> placeOrder(
       {@required Map details,
       @required String userId,
@@ -101,9 +130,21 @@ class ItemDatabase {
       });
 
       batchWrite.commit().then((value) async {
+        var itemsOrdered = details['cart'].keys.toList();
+        Map cart = {...details['cart']};
+        details.remove('cart');
+        details['cartItems'] = itemsOrdered;
+        var orderId = details['orderId'];
+        details['timestamp'] = Timestamp.now();
         DocumentReference ref = await orderRef.add(details);
-        await activeOrdersRef
-            .add({'orderId': ref.documentID, 'userId': details['userId']});
+        cart.forEach((key, item) async {
+          await orderedItems.add({
+            'itemDetails': item,
+            'orderId': orderId,
+            'orderRef': ref.documentID
+          });
+        });
+
         callback(true);
         return;
       }, onError: (error) {
@@ -112,60 +153,6 @@ class ItemDatabase {
         callback(returnItem);
         return;
       });
-
-      // _firestore.runTransaction((transaction) {
-      //   cart.forEach((key, item) {
-      //     var ref = inventoryRef
-      //         .document(item['categoryId'])
-      //         .collection('items')
-      //         .document(key);
-
-      //     return transaction.get(ref).then((snapshot) async {
-      //       print('inside get');
-      //       var itemData = snapshot.data;
-      //       var quantity = itemData['quantity'];
-      //       if (quantity >= item['cartQuantity']) {
-      //         quantity -= item['cartQuantity'];
-      //         transactionWriteArray.add({
-      //           'ref': ref,
-      //           'data': {'quantity': quantity}
-      //         });
-      //       } else {
-      //         returnItem[itemData['opc']] = itemData;
-      //       }
-      //       if (key == lastKey) {
-      //         return await transactionWriteArray.forEach((item) async {
-      //           print('inside write');
-      //           var result = await transaction
-      //               .update(item['ref'], item['data'])
-      //               .then((snapshot) {
-      //             print('written');
-      //             return 'abc';
-      //           });
-      //           print(result);
-      //         });
-      //       }
-      //     }, onError: (e) {
-      //       print('reading error');
-      //       print(ref);
-      //       print(e);
-      //     });
-      //   });
-      // }, timeout: Duration(seconds: 15)).then((value) async {
-      //   print('all done');
-      //   DocumentReference ref = await orderRef.add(details);
-      //   await activeOrdersRef
-      //       .add({'orderId': ref.documentID, 'userId': details['userId']});
-      //   callback(true);
-      //   return;
-      // }, onError: (e, stack) {
-      //   print('transaction failed');
-      //   print(e);
-      //   print(stack);
-      //   print('returning');
-      //   callback(returnItem);
-      //   return;
-      // });
     } catch (e) {
       //error in try catch block
       print(e.toString());
@@ -190,6 +177,37 @@ class ItemDatabase {
       }
       return items;
     } catch (e) {
+      return null;
+    }
+  }
+
+  Future<List> fetchMyOrders(
+      {@required String userId, DocumentSnapshot startAt}) async {
+    try {
+      var limit = 50;
+      QuerySnapshot snapshot;
+      var returnValue;
+      if (startAt == null) {
+        snapshot = await orderRef
+            .orderBy('timestamp', descending: true)
+            .where('userId', isEqualTo: userId)
+            .limit(limit)
+            .getDocuments();
+        returnValue = snapshot.documents;
+      } else {
+        snapshot = await orderRef
+            .orderBy('timestamp', descending: true)
+            .where('userId', isEqualTo: userId)
+            .startAfterDocument(startAt)
+            .limit(limit)
+            .getDocuments();
+        returnValue = snapshot.documents == null ? {} : snapshot.documents;
+      }
+
+      if (returnValue != null) return [...returnValue];
+      return null;
+    } catch (e) {
+      print(e);
       return null;
     }
   }

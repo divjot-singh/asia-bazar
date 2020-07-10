@@ -1,4 +1,8 @@
-abstract class GlobalState {}
+import 'package:flutter/material.dart';
+
+abstract class GlobalState {
+  static Map globalState = {'sellerinfo': GlobalUninitialisedState()};
+}
 
 class GlobalErrorState extends GlobalState {
   final String text;
@@ -6,3 +10,10 @@ class GlobalErrorState extends GlobalState {
 }
 
 class GlobalFetchingState extends GlobalState {}
+
+class GlobalUninitialisedState extends GlobalState {}
+
+class InfoFetchedState extends GlobalState{
+  Map sellerInfo;
+  InfoFetchedState({@required this.sellerInfo});
+}

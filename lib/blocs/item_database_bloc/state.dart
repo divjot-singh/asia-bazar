@@ -37,6 +37,5 @@ class ItemDetailsFetchedState {
 class PartialFetchingState {
   List categoryItems;
   String categoryId;
-  PartialFetchingState(
-      {@required this.categoryItems, @required this.categoryId});
+  PartialFetchingState({@required this.categoryItems, this.categoryId});
 }

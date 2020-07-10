@@ -1,8 +1,11 @@
-
+import 'package:asia/blocs/order_bloc/state.dart';
 import 'package:flutter/material.dart';
 
 abstract class UserDatabaseState {
-  static Map userstate = {'userstate': UnInitialisedState};
+  static Map userstate = {
+    'userstate': UnInitialisedState,
+    'ordersstate': UninitialisedState
+  };
 }
 
 class UserIsAdmin extends UserDatabaseState {
@@ -23,3 +26,8 @@ class NewUser extends UserDatabaseState {
 class ErrorState extends UserDatabaseState {}
 
 class UnInitialisedState extends UserDatabaseState {}
+
+class OrdersFetchedState extends UserDatabaseState {
+  List orders;
+  OrdersFetchedState({@required this.orders});
+}
