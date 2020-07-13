@@ -11,7 +11,6 @@ import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,26 +21,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ThemeData theme;
-  String usertoken;
   @override
   void initState() {
     BlocProvider.of<ItemDatabaseBloc>(context).add(FetchAllCategories());
     BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo());
-    fetchToken();
     super.initState();
-  }
-
-  fetchToken() async {
-    try {
-      String token = await FirebaseMessaging().getToken();
-      setState(() {
-        usertoken = token;
-      });
-    } catch (e) {
-      setState(() {
-        usertoken = e.toString();
-      });
-    }
   }
 
   Widget categoryGrid({@required List listing}) {
