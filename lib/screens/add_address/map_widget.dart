@@ -1,7 +1,9 @@
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
+import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/secondary_button.dart';
+import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -69,14 +71,62 @@ class _MapWidgetState extends State<MapWidget> {
   }
 
   getCurrentLocation() async {
-    var position = await location.getLocation();
+    try {
+      var position = await location.getLocation();
 
-    setState(() {
-      currentPosition = position;
-      showLoader = false;
-      markerSet = addMarker(
-          LatLng(currentPosition.latitude, currentPosition.longitude));
-    });
+      setState(() {
+        currentPosition = position;
+        showLoader = false;
+        markerSet = addMarker(
+            LatLng(currentPosition.latitude, currentPosition.longitude));
+      });
+    } catch (e) {
+      try {
+        if (e.code == 'PERMISSION_DENIED_NEVER_ASK' ||
+            e.code == 'PERMISSION_DENIED') {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            child: AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20)),
+              backgroundColor: ColorShades.red,
+              content: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.center,
+                children: <Widget>[
+                  Text(
+                    L10n().getStr(
+                      "error.${e.code}",
+                    ),
+                    textAlign:TextAlign.center,
+                    style: Theme.of(context).textTheme.body1Bold.copyWith(
+                        color: Theme.of(context).colorScheme.textPrimaryLight,
+                        decoration: TextDecoration.none),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: Spacing.space16),
+                    child: PrimaryButton(
+                      text: L10n().getStr('redirector.goBack'),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ).then((_) {
+            Navigator.pop(context);
+          });
+        }
+      } catch (e) {
+        showCustomSnackbar(
+            context: context,
+            content: L10n().getStr('profile.address.error'),
+            type: SnackbarType.error);
+      }
+    }
   }
 
   sendData() {
@@ -145,13 +195,20 @@ class _MapWidgetState extends State<MapWidget> {
       onCameraIdle: () async {
         var marker = markerSet.first;
         var position = marker.position;
-
-        List<Placemark> placemarks = await locator.placemarkFromCoordinates(
-            position.latitude, position.longitude);
-        String address = getAddressFromPlacemark(placemarks);
-        setState(() {
-          addressController.text = address;
-        });
+        try {
+          List<Placemark> placemarks = await locator.placemarkFromCoordinates(
+              position.latitude, position.longitude);
+          String address = getAddressFromPlacemark(placemarks);
+          setState(() {
+            addressController.text = address;
+          });
+        } catch (e) {
+          print(e);
+          showCustomSnackbar(
+              type: SnackbarType.error,
+              context: context,
+              content: L10n().getStr('profile.address.error'));
+        }
       },
       onTap: (location) {
         if (_focusNode.hasFocus)
@@ -337,7 +394,7 @@ class _MapWidgetState extends State<MapWidget> {
                 : SecondaryButton(
                     disabled: widget.disableSend ||
                         addressController.text.length == 0,
-                    shadow: Shadows.inputLight,
+                    shadow: Shadows.cardLight,
                     noWidth: true,
                     onPressed: () {
                       sendData();

@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
           }
           String username = user != null ? user[KeyNames['userName']] : '';
           return Container(
-            color: ColorShades.lightGreenBg,
+            color: ColorShades.white,
             child: Column(
               children: <Widget>[
                 DrawerHeader(
@@ -74,7 +74,8 @@ class AppDrawer extends StatelessWidget {
                 ),
                 ListTile(
                   onTap: () {
-                    Navigator.popAndPushNamed(context, Constants.HOME);
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, Constants.HOME, (route) => false);
                   },
                   leading: Icon(Icons.home, color: ColorShades.greenBg),
                   title: Text(
@@ -83,10 +84,6 @@ class AppDrawer extends StatelessWidget {
                       ),
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),
-                ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
                 ),
                 ListTile(
                   onTap: () {
@@ -100,10 +97,6 @@ class AppDrawer extends StatelessWidget {
                       ),
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),
-                ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
                 ),
                 ListTile(
                   onTap: () {
@@ -124,10 +117,6 @@ class AppDrawer extends StatelessWidget {
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),
                 ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
-                ),
                 ListTile(
                   onTap: () {
                     Navigator.popAndPushNamed(context, Constants.ADDRESS_LIST);
@@ -139,10 +128,6 @@ class AppDrawer extends StatelessWidget {
                       ),
                       style: theme.textTheme.h4
                           .copyWith(color: ColorShades.greenBg)),
-                ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
                 ),
                 ListTile(
                   onTap: () {

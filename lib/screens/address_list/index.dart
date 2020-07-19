@@ -93,6 +93,7 @@ class _AddressListState extends State<AddressList> {
                             child: getAddressCard(
                                 address: address,
                                 context: context,
+                                hideOptions: widget.selectView == true,
                                 selected: selectedIndex == index &&
                                     widget.selectView == true)),
                       ],
@@ -137,8 +138,10 @@ Widget getAddressCard(
   }
   return Container(
     decoration: BoxDecoration(
-        gradient: LinearGradient(
-            colors: [ColorShades.lightGreenBg50, ColorShades.greenBg]),
+        gradient: LinearGradient(colors: [
+          ColorShades.greenBg,
+          ColorShades.lightGreenBg50,
+        ]),
         borderRadius: BorderRadius.circular(20),
         border: selected ? Border.all(color: ColorShades.darkGreenBg50) : null),
     padding: EdgeInsets.only(

@@ -77,7 +77,8 @@ class MyAppBar extends StatelessWidget with PreferredSizeWidget {
                         onTap: () => Navigator.pop(context),
                         child: Align(
                           alignment: Alignment.center,
-                          child: Icon(Icons.arrow_back,
+                          child: Icon(Icons.keyboard_arrow_left,
+                              size: 36,
                               color: textColor != null
                                   ? textColor
                                   : ColorShades.green),

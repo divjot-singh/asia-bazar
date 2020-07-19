@@ -47,6 +47,8 @@ Map<String, Map<String, String>> strings = {
     "error.verifyPhoneNumberError": "Some error in authentication",
     "error.verificationFailed": "Verification Failed",
     "error.ITEM_OUT_OF_STOCK": "Selected quantity is not available in stock",
+    "error.PERMISSION_DENIED_NEVER_ASK":"Location permission has been denied. Please allow location access in order to add an address",
+    "error.PERMISSION_DENIED":"Location permission has been denied. Please allow location access in order to add an address",
     "authentication.enterNumber":
         "Please enter your phone number. We will send you a one time password",
     "input.placeholder": "Enter your message here",
