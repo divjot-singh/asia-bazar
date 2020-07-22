@@ -209,8 +209,10 @@ class _CheckoutState extends State<Checkout> {
     if (result == true) {
       BlocProvider.of<UserDatabaseBloc>(context).add(EmptyCart());
       if (orderId != null) {
-        Navigator.popAndPushNamed(
-            context, Constants.ORDER_DETAILS.replaceAll(':orderId', orderId));
+        Navigator.pushNamedAndRemoveUntil(
+            context,
+            Constants.ORDER_DETAILS.replaceAll(':orderId', orderId),
+            (route) => route.isFirst);
       } else
         showCustomSnackbar(
             context: context, content: 'Success', type: SnackbarType.success);
