@@ -47,8 +47,10 @@ Map<String, Map<String, String>> strings = {
     "error.verifyPhoneNumberError": "Some error in authentication",
     "error.verificationFailed": "Verification Failed",
     "error.ITEM_OUT_OF_STOCK": "Selected quantity is not available in stock",
-    "error.PERMISSION_DENIED_NEVER_ASK":"Location permission has been denied. Please allow location access in order to add an address",
-    "error.PERMISSION_DENIED":"Location permission has been denied. Please allow location access in order to add an address",
+    "error.PERMISSION_DENIED_NEVER_ASK":
+        "Location permission has been denied. Please allow location access in order to add an address",
+    "error.PERMISSION_DENIED":
+        "Location permission has been denied. Please allow location access in order to add an address",
     "authentication.enterNumber":
         "Please enter your phone number. We will send you a one time password",
     "input.placeholder": "Enter your message here",
@@ -60,8 +62,12 @@ Map<String, Map<String, String>> strings = {
     "phoneAuthentication.error.enterValidOTP": "Please enter a valid OTP.",
     "phoneAuthentication.error.didntGetCode": "I didn't get the code",
     "app.loading": "Loading, please wait...",
+    "profile.note":"Note",
+    "profile.loyalty_points.noPoints":"Place your first order with us and win points",
     "phoneAuthentication.enterCode":
         "Please enter verification code sent to {number}",
+    "profile.loyalty_points": "Loyalty points",
+    "profile.loyalty_points.info":"Loyalty points are updated after each order is successfully delivered. You get 1 point for every \$ {value} spent on the orders through this Asia Bazar app.",
     "redirector.userIsAdmin":
         "You are already registered as an admin on Asia Bazar",
     "redirector.userIsAdmin.info":

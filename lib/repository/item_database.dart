@@ -146,7 +146,7 @@ class ItemDatabase {
             'orderRef': ref.documentID
           });
         });
-        userDabase.updatePoints(userId: userId, points: details['points']);
+        //userDabase.updatePoints(userId: userId, points: details['points']);
         callback(true);
         return;
       }, onError: (error) {

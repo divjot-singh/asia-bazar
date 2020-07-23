@@ -1,3 +1,5 @@
+import 'package:asia/blocs/global_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/l10n/l10n.dart';
@@ -19,6 +21,22 @@ class _UpdateProfileState extends State<UpdateProfile> {
   bool nameEditable = false;
   GlobalKey key = GlobalKey<FormState>();
   String username, phone;
+  double pointValue;
+  @override
+  void initState() {
+    BlocProvider.of<GlobalBloc>(context)
+        .add(FetchSellerInfo(callback: fetchInfoCallback));
+    super.initState();
+  }
+
+  void fetchInfoCallback(info) {
+    if (info['loyalty_point_value'] != null) {
+      setState(() {
+        pointValue = info['loyalty_point_value'];
+      });
+    }
+  }
+
   Map defaultAddress;
   List<Widget> getAddressBox() {
     ThemeData theme = Theme.of(context);
@@ -87,6 +105,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               var userState = currentState['userstate'];
               username = userState.user[KeyNames['userName']];
               phone = userState.user[KeyNames['phone']];
+              var points = userState.user[KeyNames['points']];
               var addressList = userState.user['address'];
               if (addressList is List) {
                 defaultAddress = addressList
@@ -190,6 +209,49 @@ class _UpdateProfileState extends State<UpdateProfile> {
                       height: Spacing.space20,
                     ),
                     ...getAddressBox(),
+                    SizedBox(
+                      height: Spacing.space16,
+                    ),
+                    Text(
+                      L10n().getStr('profile.loyalty_points'),
+                      style: theme.textTheme.h4
+                          .copyWith(color: ColorShades.greenBg),
+                    ),
+                    SizedBox(height: Spacing.space8),
+                    Text(
+                      points.toString(),
+                      style: theme.textTheme.body1Regular
+                          .copyWith(color: ColorShades.bastille),
+                    ),
+                    if (pointValue != null)
+                      Padding(
+                        padding: EdgeInsets.only(top: Spacing.space8),
+                        child: RichText(
+                          text: TextSpan(
+                            text: L10n().getStr('profile.note') + ": ",
+                            style: theme.textTheme.body1Bold
+                                .copyWith(color: ColorShades.redOrange),
+                            children: [
+                              TextSpan(
+                                text: L10n()
+                                    .getStr('profile.loyalty_points.info', {
+                                  'value': (1 / pointValue).toStringAsFixed(0),
+                                }),
+                                style: theme.textTheme.body1Regular
+                                    .copyWith(color: ColorShades.bastille),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    if (points == 0)
+                      Padding(
+                        padding: EdgeInsets.only(top: Spacing.space8),
+                        child: Text(
+                            L10n().getStr('profile.loyalty_points.noPoints'),
+                            style: theme.textTheme.body1Regular
+                                .copyWith(color: ColorShades.bastille)),
+                      ),
                   ],
                 ),
               );
