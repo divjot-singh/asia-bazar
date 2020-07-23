@@ -1,3 +1,5 @@
+import 'package:asia/blocs/global_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
@@ -35,9 +37,12 @@ class _CheckoutState extends State<Checkout> {
   bool itemsOutOfStock = false;
   Razorpay _razorpay;
   List paymentMethodOptions;
+  double pointValue;
   var orderId;
   @override
   void initState() {
+    BlocProvider.of<GlobalBloc>(context)
+        .add(FetchSellerInfo(callback: fetchInfoCallback));
     paymentMethodOptions = paymentOptions;
     paymentMethod = paymentMethodOptions[0]['value'];
     _razorpay = Razorpay();
@@ -45,6 +50,14 @@ class _CheckoutState extends State<Checkout> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     super.initState();
+  }
+
+  fetchInfoCallback(info) {
+    if (info['loyalty_point_value'] != null) {
+      setState(() {
+        pointValue = info['loyalty_point_value'];
+      });
+    }
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
@@ -198,6 +211,7 @@ class _CheckoutState extends State<Checkout> {
       'orderId': orderId,
       'status': KeyNames['orderPlaced'],
       'userId': userId,
+      'points':pointValue!=null ? pointValue * amount : 0
     };
     BlocProvider.of<ItemDatabaseBloc>(context).add(
         PlaceOrder(orderDetails: orderDetails, callback: placeOrderCallback));

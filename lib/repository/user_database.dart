@@ -137,6 +137,18 @@ class UserDatabase {
     }
   }
 
+  Future<void> updatePoints(
+      {@required String userId, @required double points}) async {
+    DocumentSnapshot snapshot =
+        await userRef.collection('entries').document(userId).get();
+    if (snapshot.data != null) {
+      await userRef
+          .collection('entries')
+          .document(userId)
+          .updateData({KeyNames['points']: FieldValue.increment(points)});
+    }
+  }
+
   Future<void> addAddress(
       {@required String userId, @required Map address}) async {
     DocumentSnapshot snapshot =
@@ -164,6 +176,7 @@ class UserDatabase {
       KeyNames['phone']: phoneNumber,
       KeyNames['address']: [],
       KeyNames['cart']: {},
+      KeyNames['points']: 0,
     });
   }
 

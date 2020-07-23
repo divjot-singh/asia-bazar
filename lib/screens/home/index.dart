@@ -7,6 +7,7 @@ import 'package:asia/blocs/item_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/app_drawer.dart';
+import 'package:asia/shared_widgets/firebase_notification_configuration.dart';
 import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/theme/style.dart';
@@ -23,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ThemeData theme;
   @override
   void initState() {
+    ConfigureNotification.configureNotifications();
+
     BlocProvider.of<ItemDatabaseBloc>(context).add(FetchAllCategories());
     BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo());
     super.initState();

@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:asia/theme/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-NotificationDetails getNotificationDetails(String title, String body) {
+NotificationDetails getNotificationDetails(
+  String title,
+  String body,
+) {
   final androidPlatformChannelSpecifics = AndroidNotificationDetails(
     '1',
     'Tournament notifications',
@@ -11,7 +15,8 @@ NotificationDetails getNotificationDetails(String title, String body) {
     importance: Importance.Max,
     priority: Priority.Max,
     playSound: true,
-    color: Color.fromARGB(0, 255, 94, 100),
+    icon: '@mipmap/launcher',
+    color: ColorShades.red,
     styleInformation: BigTextStyleInformation(
       body,
       htmlFormatBigText: true,

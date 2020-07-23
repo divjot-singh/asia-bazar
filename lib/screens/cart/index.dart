@@ -330,6 +330,27 @@ class _CartState extends State<Cart> {
                                 ],
                               ),
                             ),
+                          Container(
+                            margin: EdgeInsets.only(top: Spacing.space8),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Spacing.space16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  L10n().getStr('use loyalty points') +
+                                      ' : ',
+                                  style: theme.textTheme.h4
+                                      .copyWith(color: ColorShades.bastille),
+                                ),
+                                Text(
+                                  '\$ ${otherCharges.toStringAsFixed(2)}',
+                                  style: theme.textTheme.body1Medium
+                                      .copyWith(color: ColorShades.bastille),
+                                ),
+                              ],
+                            ),
+                          ),
                           if (grandTotal != totalCost)
                             SizedBox(
                               height: Spacing.space8,

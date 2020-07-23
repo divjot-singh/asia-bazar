@@ -1,3 +1,4 @@
+import 'package:asia/repository/user_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
@@ -7,6 +8,7 @@ class ItemDatabase {
   static CollectionReference inventoryRef = _firestore.collection('inventory');
   static CollectionReference orderRef = _firestore.collection('orders');
   static CollectionReference orderedItems = _firestore.collection('orderItems');
+  static UserDatabase userDabase = UserDatabase();
   Future<List> fetchAllCategories() async {
     QuerySnapshot snapshot = await categoryRef.getDocuments();
     return snapshot.documents;
@@ -144,7 +146,7 @@ class ItemDatabase {
             'orderRef': ref.documentID
           });
         });
-
+        userDabase.updatePoints(userId: userId, points: details['points']);
         callback(true);
         return;
       }, onError: (error) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/local_notification_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -32,42 +33,32 @@ class LocalNotificationAndroid extends LocalNotification {
         );
 
   String getTitle() {
-    //var notification = notificationMessage["data"];
-    return notificationMessage["title"];
+    return notificationMessage['notification']["title"];
   }
 
   String getBody() {
-    var notification = notificationMessage["data"];
-    return notificationMessage["body"];
+    return notificationMessage['notification']["body"];
+  }
+
+  String getIcon() {
+    return notificationMessage['data']["icon"];
   }
 
   String getRedirectPath() {
-    var notificationData = notificationMessage["data"];
-    return notificationMessage["redirect_path"];
+    var data = notificationMessage['data']["extra_data"];
+    Map extraData = {...json.decode(data)};
+    return NotificationTypes.fetchNotificationRoute(extraData);
   }
 
-  String getServerNotificationId() {
-    var notificationData = notificationMessage["data"];
-    return notificationData["server_notification_id"];
-  }
+  // Future<Map<String, dynamic>> getArguments() async {
+  //   var notificationData = notificationMessage["data"];
+  //   if (notificationData.containsKey("arguments")) {
+  //     var arguments = json.decode(notificationData["arguments"]);
 
-  bool isAdminNotification() {
-    var notificationData = notificationMessage["data"];
-    if (notificationData.containsKey("is_admin_notification")) {
-      return notificationData["is_admin_notification"] == 'true';
-    }
-    return false;
-  }
-
-  Future<Map<String, dynamic>> getArguments() async {
-    var notificationData = notificationMessage["data"];
-    if (notificationData.containsKey("arguments")) {
-      var arguments = json.decode(notificationData["arguments"]);
-
-      return arguments;
-    }
-    return {};
-  }
+  //     return arguments;
+  //   }
+  //   return {};
+  // }
 
   showNotificationOnTray() async {
     showOngoingNotification(
@@ -76,7 +67,8 @@ class LocalNotificationAndroid extends LocalNotification {
       body: getBody(),
       id: notificationId,
       payload: {
-        // "redirectPath": getRedirectPath(),
+        "redirectPath": getRedirectPath(),
+        'icon': getIcon(),
         // "serverNotificationId": getServerNotificationId(),
         // "isAdminNotification": isAdminNotification(),
         // "arguments": await getArguments(),
@@ -99,36 +91,32 @@ class LocalNotificationIos extends LocalNotification {
         );
 
   String getTitle() {
-    return notificationMessage["title"];
+    return notificationMessage['notification']["title"];
   }
 
   String getBody() {
-    return notificationMessage["body"];
+    return notificationMessage['notification']["body"];
+  }
+
+  String getIcon() {
+    return notificationMessage["icon"];
   }
 
   String getRedirectPath() {
-    return notificationMessage["redirect_path"];
+    var data = notificationMessage["extra_data"];
+    Map extraData = {...json.decode(data)};
+    return NotificationTypes.fetchNotificationRoute(extraData);
   }
 
-  String getServerNotificationId() {
-    return notificationMessage["server_notification_id"];
-  }
+  // Future<Map<String, dynamic>> getArguments() async {
+  //   var notificationData = notificationMessage["data"];
+  //   if (notificationData.containsKey("arguments")) {
+  //     var arguments = json.decode(notificationData["arguments"]);
 
-  bool isAdminNotification() {
-    if (notificationMessage.containsKey("is_admin_notification")) {
-      return notificationMessage["is_admin_notification"] == 'true';
-    }
-    return false;
-  }
-
-  Future<Map<String, dynamic>> getArguments() async {
-    if (notificationMessage.containsKey("arguments")) {
-      var arguments = json.decode(notificationMessage["arguments"]);
-
-      return arguments;
-    }
-    return {};
-  }
+  //     return arguments;
+  //   }
+  //   return {};
+  // }
 
   showNotificationOnTray() async {
     showOngoingNotification(
@@ -138,9 +126,10 @@ class LocalNotificationIos extends LocalNotification {
       id: notificationId,
       payload: {
         "redirectPath": getRedirectPath(),
-        "serverNotificationId": getServerNotificationId(),
-        "isAdminNotification": isAdminNotification(),
-        "arguments": await getArguments(),
+        'icon': getIcon(),
+        // "serverNotificationId": getServerNotificationId(),
+        // "isAdminNotification": isAdminNotification(),
+        // "arguments": await getArguments(),
       },
     );
   }
@@ -169,4 +158,22 @@ dynamic getLocalNotification({
     );
   }
   return null;
+}
+
+class NotificationTypes {
+  static Map routeMap = {
+    'ORDER_UPDATED_NOTIFICATION': Constants.ORDER_DETAILS,
+  };
+  static String fetchNotificationRoute(Map notificationData) {
+    Map data = {...notificationData};
+    String route = routeMap[data['notification_type']];
+    if (route == null) return null;
+    if (data['parameters'] is Map) {
+      Map params = data['parameters'];
+      params.forEach((key, value) {
+        route = route.replaceAll(":$key", value);
+      });
+    }
+    return route;
+  }
 }

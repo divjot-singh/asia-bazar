@@ -13,4 +13,15 @@ class NavigationService {
   Future<dynamic> navigateTo(String routeName, {Map arguments}) {
     return navigatorKey.currentState.pushNamed(routeName, arguments: arguments);
   }
+
+  Future<dynamic> navigateAndRemoveUntilTo(String routeName,
+      {Map arguments, @required Function predicate}) {
+    return navigatorKey.currentState
+        .pushNamedAndRemoveUntil(routeName, predicate, arguments: arguments);
+  }
+
+  Future<dynamic> navigateReplacementTo(String routeName, {Map arguments}) {
+    return navigatorKey.currentState
+        .pushReplacementNamed(routeName, arguments: arguments);
+  }
 }

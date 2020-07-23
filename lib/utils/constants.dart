@@ -3,6 +3,7 @@ import 'package:asia/l10n/l10n.dart';
 const Map KeyNames = {
   "userName": 'user_name',
   "userId": 'user_id',
+  'points':'loyalty_points',
   "token": 'token_info',
   "phone": "phone_number",
   "address": "address",

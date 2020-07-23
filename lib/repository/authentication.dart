@@ -92,138 +92,14 @@ class AuthRepo {
     return user;
   }
 
-  Future<void> onForegroundNotificationClick(String payload) async {
-    if (payload != null) {
-      var payloadJson = json.decode(payload);
-      if (checkIfDuplicateNotificationOnClick(
-        payloadJson['serverNotificationId'],
-      )) {
-        return;
-      }
-      var redirectPath = payloadJson['redirectPath'];
-      var arguments = payloadJson['arguments'];
-      locator<NavigationService>()
-          .navigateTo(redirectPath, arguments: arguments);
-    }
-  }
-
-  bool checkIfDuplicateNotificationOnClick(String serverNotificationId) {
-    if (onClickServerNotificationIds.contains(serverNotificationId)) {
-      return true;
-    }
-    onClickServerNotificationIds.add(serverNotificationId);
-    return false;
-  }
-
-  void onForegroundNotification(Map<String, dynamic> message) {
-    print(message);
-    var operatingSystem = Platform.operatingSystem;
-    var localNotification = getLocalNotification(
-      flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-      notificationMessage: message,
-      notificationId: notificationId,
-      operatingSystem: operatingSystem,
-    );
-    if (localNotification == null) {
-      logger.i("Operating system not supported!");
-      return;
-    }
-    // if (checkIfDuplicateNotification(localNotification)) {
-    //   return;
-    // }
-
-    localNotification.showNotificationOnTray();
-    notificationId += 1;
-  }
-
-  bool checkIfDuplicateNotification(dynamic localNotification) {
-    var serverNotificationId = localNotification.getServerNotificationId();
-    if (serverNotificationIds.contains(serverNotificationId)) {
-      return true;
-    }
-    serverNotificationIds.add(serverNotificationId);
-    return false;
-  }
-
-  Future<void> onBackgroundNotificationClick(
-    Map<String, dynamic> message,
-  ) async {
-    var operatingSystem = Platform.operatingSystem;
-    var localNotification = getLocalNotification(
-      flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-      notificationMessage: message,
-      notificationId: notificationId,
-      operatingSystem: operatingSystem,
-    );
-    if (localNotification == null) {
-      logger.i("Operating system not supported!");
-      return;
-    }
-    if (checkIfDuplicateNotification(localNotification)) {
-      return;
-    }
-
-    notificationId += 1;
-    var redirectPath = localNotification.getRedirectPath();
-    var arguments = await localNotification.getArguments();
-    locator<NavigationService>().navigateTo(redirectPath, arguments: arguments);
-  }
-
   Future<void> setUpFcm({@required String userId}) async {
-    final androidInitializationSettings = AndroidInitializationSettings(
-      '@drawable/launch_background',
-    );
-    final iosInitializationSettings = IOSInitializationSettings();
-    final initializationSettings = InitializationSettings(
-      androidInitializationSettings,
-      iosInitializationSettings,
-    );
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
-    flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-      onSelectNotification: onForegroundNotificationClick,
-    );
-    _fcm.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        try {
-          var notification = message['notification'];
-          notification = notification.cast<String, dynamic>();
-          print(notification);
-          onForegroundNotification(notification);
-        } catch (e) {
-          print(e);
-        }
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        var notification = message['notification'];
-        await onBackgroundNotificationClick(notification);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        var notification = message['notification'];
-        await onBackgroundNotificationClick(notification);
-      },
-    );
-    if (Platform.isIOS) {
-      _fcm.requestNotificationPermissions(
-        const IosNotificationSettings(
-          sound: true,
-          badge: true,
-          alert: true,
-          provisional: true,
-        ),
-      );
-      _fcm.onIosSettingsRegistered.listen(
-        (IosNotificationSettings settings) {
-          logger.i("Settings registered: $settings");
-        },
-      );
-    }
-
     var firebaseToken = await _fcm.getToken();
 
     if (firebaseToken != null) {
-      await Firestore.instance.collection('usersTokens').document(userId).setData({
+      await Firestore.instance
+          .collection('usersTokens')
+          .document(userId)
+          .setData({
         'user_id': userId,
         'token': firebaseToken,
         'platform':
@@ -231,31 +107,6 @@ class AuthRepo {
       });
       await StorageManager.setItem(KeyNames['fcmToken'], firebaseToken);
     }
-  }
-
-  dynamic getLocalNotification({
-    Map<String, dynamic> notificationMessage,
-    BuildContext context,
-    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
-    String operatingSystem,
-    int notificationId,
-  }) {
-    if (operatingSystem == 'android') {
-      return LocalNotificationAndroid(
-        flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-        notificationMessage: notificationMessage,
-        operatingSystem: operatingSystem,
-        notificationId: notificationId,
-      );
-    } else if (operatingSystem == 'ios') {
-      return LocalNotificationIos(
-        flutterLocalNotificationsPlugin: flutterLocalNotificationsPlugin,
-        notificationMessage: notificationMessage,
-        operatingSystem: operatingSystem,
-        notificationId: notificationId,
-      );
-    }
-    return null;
   }
 
   Future<User> signInWithSmsCode(String smsCode) async {
