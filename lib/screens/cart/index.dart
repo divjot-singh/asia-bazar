@@ -31,12 +31,19 @@ class _CartState extends State<Cart> {
   double packagingCharges = 0;
   double otherCharges = 0;
   double deliveryCharges = 0;
+  bool useLoyaltyPoints = false;
+  double usablePoints = 0;
+  double pointsThreshHold;
   @override
   void initState() {
     BlocProvider.of<UserDatabaseBloc>(context)
         .add(FetchCartItems(callback: fetchItemsCallback));
-    BlocProvider.of<GlobalBloc>(context)
-        .add(FetchSellerInfo(callback: fetchSellerCallback));
+    var state = BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
+    if (state is InfoFetchedState) {
+      fetchSellerCallback(state.sellerInfo);
+    } else
+      BlocProvider.of<GlobalBloc>(context)
+          .add(FetchSellerInfo(callback: fetchSellerCallback));
     super.initState();
   }
 
@@ -47,6 +54,7 @@ class _CartState extends State<Cart> {
         deliveryCharges = info['deliveryCharges'].toDouble();
         packagingCharges = info['packagingCharges'].toDouble();
         otherCharges = info['packagingCharges'].toDouble();
+        pointsThreshHold = info[KeyNames['pointsLimit']].toDouble();
       });
     }
   }
@@ -100,6 +108,8 @@ class _CartState extends State<Cart> {
             return PageErrorView();
           } else if (userState is UserIsUser) {
             var userCart = userState.user['cart'];
+            var points = userState.user[KeyNames['points']];
+            usablePoints = points;
             bool cartValid = cart != null &&
                 userCart.length > 0 &&
                 userCart.length == cart.length;
@@ -123,6 +133,8 @@ class _CartState extends State<Cart> {
             grandTotal =
                 totalCost + deliveryCharges + packagingCharges + otherCharges;
             grandTotal = (grandTotal * 100).ceil() / 100;
+            if (grandTotal < points) usablePoints = grandTotal;
+            if (useLoyaltyPoints) grandTotal -= usablePoints;
             return Scaffold(
               appBar: MyAppBar(
                 hasTransparentBackground: true,
@@ -330,27 +342,46 @@ class _CartState extends State<Cart> {
                                 ],
                               ),
                             ),
-                          Container(
-                            margin: EdgeInsets.only(top: Spacing.space8),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: Spacing.space16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Text(
-                                  L10n().getStr('use loyalty points') +
-                                      ' : ',
-                                  style: theme.textTheme.h4
-                                      .copyWith(color: ColorShades.bastille),
-                                ),
-                                Text(
-                                  '\$ ${otherCharges.toStringAsFixed(2)}',
-                                  style: theme.textTheme.body1Medium
-                                      .copyWith(color: ColorShades.bastille),
-                                ),
-                              ],
+                          if (pointsThreshHold != null &&
+                              pointsThreshHold <= points)
+                            Container(
+                              margin: EdgeInsets.only(top: Spacing.space8),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Row(
+                                      children: <Widget>[
+                                        Checkbox(
+                                          activeColor: ColorShades.greenBg,
+                                          value: useLoyaltyPoints,
+                                          onChanged: (val) {
+                                            setState(() {
+                                              useLoyaltyPoints = val;
+                                            });
+                                          },
+                                        ),
+                                        Text(
+                                          L10n().getStr('use loyalty points') +
+                                              ' : ',
+                                          style: theme.textTheme.h4.copyWith(
+                                              color: ColorShades.bastille),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    (useLoyaltyPoints ? '-' : '') +
+                                        '\$ ${usablePoints.toStringAsFixed(2)}',
+                                    style: theme.textTheme.body1Medium
+                                        .copyWith(color: ColorShades.bastille),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
                           if (grandTotal != totalCost)
                             SizedBox(
                               height: Spacing.space8,
@@ -422,7 +453,17 @@ class _CartState extends State<Cart> {
                                   onPressed: () async {
                                     var result = await Navigator.pushNamed(
                                         context, Constants.CHECKOUT,
-                                        arguments: {'amount': grandTotal});
+                                        arguments: {
+                                          'amount': grandTotal,
+                                          'actualAmount': useLoyaltyPoints
+                                              ? grandTotal + usablePoints
+                                              : grandTotal,
+                                          'areLoyaltyPointsUsed':
+                                              useLoyaltyPoints,
+                                          'pointsUsed': useLoyaltyPoints
+                                              ? usablePoints
+                                              : 0
+                                        });
                                     if (result is Map &&
                                         result['refresh'] == true) {
                                       Navigator.popAndPushNamed(

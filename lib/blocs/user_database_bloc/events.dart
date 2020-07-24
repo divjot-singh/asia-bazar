@@ -71,3 +71,5 @@ class FetchMyOrders extends UserDatabaseEvents {
   DocumentSnapshot startAt;
   FetchMyOrders({this.callback, this.startAt});
 }
+
+class RefreshUser extends UserDatabaseEvents {}

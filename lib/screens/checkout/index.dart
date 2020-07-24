@@ -22,8 +22,13 @@ import 'package:asia/theme/style.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class Checkout extends StatefulWidget {
-  final double amount;
-  Checkout({@required this.amount});
+  final double amount, pointsUsed, actualAmount;
+  final bool areLoyaltyPointsUsed;
+  Checkout(
+      {@required this.amount,
+      this.areLoyaltyPointsUsed = false,
+      this.actualAmount,
+      this.pointsUsed = 0});
   @override
   _CheckoutState createState() => _CheckoutState();
 }
@@ -90,80 +95,84 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Widget getAddressBox() {
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Icon(Icons.location_on, color: ColorShades.greenBg),
-                SizedBox(
-                  width: Spacing.space8,
-                ),
-                Text(
-                  L10n().getStr('checkout.deliverTo') + ' : ',
-                  style: theme.textTheme.body1Bold
-                      .copyWith(color: ColorShades.greenBg),
-                ),
-                Text(
-                  L10n().getStr('profile.address.type.' + address['type']),
-                  style: theme.textTheme.body1Regular
-                      .copyWith(color: ColorShades.greenBg),
-                ),
-                SizedBox(
-                  width: Spacing.space4,
-                ),
-                if (address['is_default'] == true)
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Icon(Icons.location_on, color: ColorShades.greenBg),
+                  SizedBox(
+                    width: Spacing.space8,
+                  ),
                   Text(
-                    '(' + L10n().getStr('address.default') + ')',
-                    style: theme.textTheme.body1Regular.copyWith(
-                        fontStyle: FontStyle.italic,
-                        color: ColorShades.greenBg),
-                  ),
-              ],
-            ),
-            GestureDetector(
-              onTap: () async {
-                dynamic result = await Navigator.pushNamed(
-                    context, Constants.ADDRESS_LIST,
-                    arguments: {'selectView': true});
-                if (result != null && result is Map) {
-                  setState(() {
-                    address = result;
-                  });
-                }
-              },
-              child: Container(
-                  padding: EdgeInsets.symmetric(
-                      vertical: Spacing.space8, horizontal: Spacing.space12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: ColorShades.greenBg),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    L10n().getStr('checkout.change'),
-                    style: theme.textTheme.body2Regular
+                    L10n().getStr('checkout.deliverTo') + ' : ',
+                    style: theme.textTheme.body1Bold
                         .copyWith(color: ColorShades.greenBg),
-                  )),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: Spacing.space8,
-        ),
-        Text(
-          address['address_text'],
-          style:
-              theme.textTheme.body1Regular.copyWith(color: ColorShades.greenBg),
-        )
-      ],
+                  ),
+                  Text(
+                    L10n().getStr('profile.address.type.' + address['type']),
+                    style: theme.textTheme.body1Regular
+                        .copyWith(color: ColorShades.greenBg),
+                  ),
+                  SizedBox(
+                    width: Spacing.space4,
+                  ),
+                  if (address['is_default'] == true)
+                    Text(
+                      '(' + L10n().getStr('address.default') + ')',
+                      style: theme.textTheme.body1Regular.copyWith(
+                          fontStyle: FontStyle.italic,
+                          color: ColorShades.greenBg),
+                    ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () async {
+                  dynamic result = await Navigator.pushNamed(
+                      context, Constants.ADDRESS_LIST,
+                      arguments: {'selectView': true});
+                  if (result != null && result is Map) {
+                    setState(() {
+                      address = result;
+                    });
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.symmetric(
+                        vertical: Spacing.space8, horizontal: Spacing.space12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: ColorShades.greenBg),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      L10n().getStr('checkout.change'),
+                      style: theme.textTheme.body2Regular
+                          .copyWith(color: ColorShades.greenBg),
+                    )),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: Spacing.space8,
+          ),
+          Text(
+            address['address_text'],
+            style: theme.textTheme.body1Regular
+                .copyWith(color: ColorShades.greenBg),
+          )
+        ],
+      ),
     );
   }
 
   Widget getPaymentOptions() {
     return Expanded(
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisSize: MainAxisSize.max,
@@ -195,8 +204,8 @@ class _CheckoutState extends State<Checkout> {
     var userName = currentUser[KeyNames['userName']];
     var orderAddress = address;
     var amount = widget.amount;
-    var orderPaymentMethod = paymentMethodOptions
-        .firstWhere((item) => item['value'] == paymentMethod);
+    var orderPaymentMethod = paymentMethodOptions.firstWhere((item) =>
+        item['value'] == (widget.amount == 0 ? 'points' : paymentMethod));
     Map cartItems = {...currentUser[KeyNames['cart']]};
 
     ///cartItems.removeWhere((key, item) => item['quantity'] < 1);
@@ -205,13 +214,16 @@ class _CheckoutState extends State<Checkout> {
     var orderDetails = {
       'phoneNumber': phoneNumber,
       'address': orderAddress,
-      'amount': amount,
+      'amount':
+          widget.actualAmount != null ? widget.actualAmount : widget.amount,
       'paymentMethod': orderPaymentMethod,
       'cart': cartItems,
       'orderId': orderId,
       'status': KeyNames['orderPlaced'],
       'userId': userId,
-      'points':pointValue!=null ? pointValue * amount : 0
+      'areLoyaltyPointsUsed': widget.areLoyaltyPointsUsed,
+      'pointsUsed': widget.pointsUsed,
+      'points': pointValue != null ? pointValue * amount : 0
     };
     BlocProvider.of<ItemDatabaseBloc>(context).add(
         PlaceOrder(orderDetails: orderDetails, callback: placeOrderCallback));
@@ -281,11 +293,26 @@ class _CheckoutState extends State<Checkout> {
   }
 
   void makePaymentAndPlaceOrder() {
-    if (paymentMethod == 'cod') {
+    if (paymentMethod == 'cod' || widget.amount == 0) {
       placeOrder();
     } else if (paymentMethod == 'razorpay') {
       _razorpay.open(razorpayOptions);
     }
+  }
+
+  Widget getAmountBanner() {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: EdgeInsets.symmetric(vertical: Spacing.space12),
+      color: ColorShades.greenBg,
+      child: Center(
+        child: Text(
+          L10n()
+              .getStr('checkout.amount', {'amount': widget.amount.toString()}),
+          style: theme.textTheme.h4.copyWith(color: ColorShades.white),
+        ),
+      ),
+    );
   }
 
   @override
@@ -318,20 +345,21 @@ class _CheckoutState extends State<Checkout> {
                 }
               },
             ),
-            body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
-              child: Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: Spacing.space24,
-                  ),
-                  getAddressBox(),
-                  SizedBox(
-                    height: Spacing.space16,
-                  ),
-                  getPaymentOptions(),
-                ],
-              ),
+            body: Column(
+              children: <Widget>[
+                SizedBox(
+                  height: Spacing.space24,
+                ),
+                getAddressBox(),
+                SizedBox(
+                  height: Spacing.space16,
+                ),
+                getAmountBanner(),
+                SizedBox(
+                  height: Spacing.space16,
+                ),
+                getPaymentOptions(),
+              ],
             ),
             bottomNavigationBar: BottomAppBar(
               child: Container(

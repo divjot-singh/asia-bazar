@@ -146,6 +146,12 @@ class ItemDatabase {
             'orderRef': ref.documentID
           });
         });
+        if (details['areLoyaltyPointsUsed'] == true &&
+            details['pointsUsed'] != null &&
+            details['pointsUsed'] > 0) {
+          userDabase.updatePoints(
+              userId: userId, points: -details['pointsUsed']);
+        }
         //userDabase.updatePoints(userId: userId, points: details['points']);
         callback(true);
         return;

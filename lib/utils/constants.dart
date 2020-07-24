@@ -3,7 +3,8 @@ import 'package:asia/l10n/l10n.dart';
 const Map KeyNames = {
   "userName": 'user_name',
   "userId": 'user_id',
-  'points':'loyalty_points',
+  'points': 'loyalty_points',
+  "pointsLimit": 'loyalty_point_limit',
   "token": 'token_info',
   "phone": "phone_number",
   "address": "address",
@@ -339,5 +340,9 @@ var paymentOptions = [
   {
     'value': 'razorPay',
     'title': L10n().getStr('checkout.paymentMethod.razorpay'),
+  },
+  {
+    'value': 'points',
+    'title': L10n().getStr('checkout.paymentMethod.points'),
   },
 ];

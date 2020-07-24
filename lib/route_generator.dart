@@ -209,7 +209,12 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) {
           Map<String, dynamic> arguments =
               settings.arguments != null ? settings.arguments : {};
-          return Checkout(amount: arguments['amount']);
+          return Checkout(
+            amount: arguments['amount'],
+            areLoyaltyPointsUsed: arguments['areLoyaltyPointsUsed'] ?? false,
+            pointsUsed: arguments['pointsUsed'] ?? 0,
+            actualAmount: arguments['actualAmount'] ?? arguments['amount'],
+          );
         });
       case Constants.ADD_ADDRESS:
         return MaterialPageRoute(builder: (_) {

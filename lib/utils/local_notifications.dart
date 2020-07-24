@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/local_notification_helper.dart';
+import 'package:asia/utils/navigator_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -163,6 +165,7 @@ dynamic getLocalNotification({
 class NotificationTypes {
   static Map routeMap = {
     'ORDER_UPDATED_NOTIFICATION': Constants.ORDER_DETAILS,
+    'POINTS_UPDATED_NOTIFICATION': Constants.EDIT_PROFILE
   };
   static String fetchNotificationRoute(Map notificationData) {
     Map data = {...notificationData};
@@ -173,6 +176,9 @@ class NotificationTypes {
       params.forEach((key, value) {
         route = route.replaceAll(":$key", value);
       });
+    }
+    if (data['notification_type'] == 'POINTS_UPDATED_NOTIFICATION') {
+      locator<NavigationService>().addUserBlocEvent(RefreshUser());
     }
     return route;
   }

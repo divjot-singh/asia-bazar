@@ -105,7 +105,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               var userState = currentState['userstate'];
               username = userState.user[KeyNames['userName']];
               phone = userState.user[KeyNames['phone']];
-              var points = userState.user[KeyNames['points']];
+              double points = userState.user[KeyNames['points']];
               var addressList = userState.user['address'];
               if (addressList is List) {
                 defaultAddress = addressList
@@ -219,7 +219,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
                     ),
                     SizedBox(height: Spacing.space8),
                     Text(
-                      points.toString(),
+                      points.toStringAsFixed(2),
                       style: theme.textTheme.body1Regular
                           .copyWith(color: ColorShades.bastille),
                     ),

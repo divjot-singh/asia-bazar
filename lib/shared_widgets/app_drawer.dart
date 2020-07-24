@@ -1,3 +1,6 @@
+import 'package:asia/blocs/global_bloc/bloc.dart';
+import 'package:asia/blocs/global_bloc/events.dart';
+import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
@@ -8,7 +11,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
-class AppDrawer extends StatelessWidget {
+class AppDrawer extends StatefulWidget {
+  @override
+  _AppDrawerState createState() => _AppDrawerState();
+}
+
+class _AppDrawerState extends State<AppDrawer> {
+  var pointLimit;
+
+  @override
+  void initState() {
+    var state = BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
+    if (state is InfoFetchedState) {
+      pointLimit = state.sellerInfo[KeyNames['pointsLimit']];
+    } else
+      BlocProvider.of<GlobalBloc>(context)
+          .add(FetchSellerInfo(callback: fetchInfoCallback));
+    super.initState();
+  }
+
+  void fetchInfoCallback(info) {
+    if (info[KeyNames['pointsLimit']] != null) {
+      setState(() {
+        pointLimit = info[KeyNames['pointsLimit']];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
@@ -20,6 +49,7 @@ class AppDrawer extends StatelessWidget {
           if (appState is UserIsUser) {
             user = appState.user;
           }
+          double points = user != null ? user[KeyNames['points']] : 0;
           String username = user != null ? user[KeyNames['userName']] : '';
           return Container(
             color: ColorShades.white,
@@ -36,8 +66,8 @@ class AppDrawer extends StatelessWidget {
                     children: <Widget>[
                       Image.asset(
                         'assets/images/home_logo.png',
-                        height: 70,
-                        width: 70,
+                        height: 50,
+                        width: 50,
                       ),
                       GestureDetector(
                         onTap: () {
@@ -67,8 +97,18 @@ class AppDrawer extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        height: Spacing.space12,
+                        height: Spacing.space8,
                       ),
+                      if (pointLimit != null && points >= pointLimit)
+                        Flexible(
+                          child: Text(
+                            L10n().getStr('drawer.loyaltyPoints', {
+                              'points': points.toStringAsFixed(2),
+                            }),
+                            style: theme.textTheme.body1Regular
+                                .copyWith(color: ColorShades.greenBg),
+                          ),
+                        ),
                     ],
                   ),
                 ),

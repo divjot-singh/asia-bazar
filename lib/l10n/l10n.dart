@@ -62,12 +62,16 @@ Map<String, Map<String, String>> strings = {
     "phoneAuthentication.error.enterValidOTP": "Please enter a valid OTP.",
     "phoneAuthentication.error.didntGetCode": "I didn't get the code",
     "app.loading": "Loading, please wait...",
-    "profile.note":"Note",
-    "profile.loyalty_points.noPoints":"Place your first order with us and win points",
+    "profile.note": "Note",
+    "drawer.loyaltyPoints":
+        "You have earned {points} loyalty points. You can use them while checking out.",
+    "profile.loyalty_points.noPoints":
+        "Place your first order with us and win points",
     "phoneAuthentication.enterCode":
         "Please enter verification code sent to {number}",
     "profile.loyalty_points": "Loyalty points",
-    "profile.loyalty_points.info":"Loyalty points are updated after each order is successfully delivered. You get 1 point for every \$ {value} spent on the orders through this Asia Bazar app.",
+    "profile.loyalty_points.info":
+        "Loyalty points are updated after each order is successfully delivered. You get 1 point for every \$ {value} spent on the orders through this Asia Bazar app.",
     "redirector.userIsAdmin":
         "You are already registered as an admin on Asia Bazar",
     "redirector.userIsAdmin.info":
@@ -141,6 +145,7 @@ Map<String, Map<String, String>> strings = {
     "checkout.placeOrder": "Place order",
     "checkout.paymentMethod.cod": "Cash on delivery",
     "checkout.paymentMethod.razorpay": "Razorpay",
+    "checkout.paymentMethod.points": "Loyalty points",
     "checkout.placingOrder": "Placing order",
     "item.outOfStock": "Out of stock",
     "app.search": "Enter atleast 3 characters to start searching..",
@@ -201,6 +206,7 @@ Map<String, Map<String, String>> strings = {
     "orderDetails.quantity": "Quantity",
     "orderDetails.price": "Price",
     "orderDetails.total": "Total",
+    "checkout.amount": "Total payble amount is \$ {amount}",
     "orderDetails.itemDetails": "Ordered items",
     "orderDetails.returnExchangeWindow":
         "Your return/exchange window will close on",
