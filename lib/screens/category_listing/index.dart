@@ -255,6 +255,7 @@ class _CategoryListingState extends State<CategoryListing> {
               floatingActionButton:
                   user['cart'] != null && user['cart'].length > 0
                       ? FloatingActionButton.extended(
+                          heroTag: 'cartBtn',
                           onPressed: () {
                             Navigator.pushNamed(context, Constants.CART);
                           },
@@ -273,6 +274,7 @@ class _CategoryListingState extends State<CategoryListing> {
                 FloatingActionButtonLocation.centerFloat,
             floatingActionButton: showScrollUp
                 ? FloatingActionButton(
+                    heroTag: 'scrollBtn',
                     onPressed: () {
                       _scrollController.animateTo(0,
                           duration: Duration(
