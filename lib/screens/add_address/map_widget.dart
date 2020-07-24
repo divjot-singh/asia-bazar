@@ -263,6 +263,7 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
 
   Widget mapErrorScreen() {
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
       child: Image.asset('assets/images/location_error.png'),
     );
   }
