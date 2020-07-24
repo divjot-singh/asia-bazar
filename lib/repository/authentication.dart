@@ -1,11 +1,9 @@
-import 'dart:convert';
+
 import 'dart:io';
 
 import 'package:asia/models/user.dart';
 import 'package:asia/services/log_printer.dart';
 import 'package:asia/utils/constants.dart';
-import 'package:asia/utils/local_notifications.dart';
-import 'package:asia/utils/navigator_service.dart';
 import 'package:asia/utils/storage_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

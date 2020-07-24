@@ -105,7 +105,7 @@ class _UpdateProfileState extends State<UpdateProfile> {
               var userState = currentState['userstate'];
               username = userState.user[KeyNames['userName']];
               phone = userState.user[KeyNames['phone']];
-              double points = userState.user[KeyNames['points']];
+              double points = userState.user[KeyNames['points']].toDouble();
               var addressList = userState.user['address'];
               if (addressList is List) {
                 defaultAddress = addressList

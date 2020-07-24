@@ -5,7 +5,9 @@ import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/secondary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
+import 'package:asia/utils/navigator_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -31,16 +33,17 @@ class MapWidget extends StatefulWidget {
   _MapWidgetState createState() => _MapWidgetState();
 }
 
-class _MapWidgetState extends State<MapWidget> {
+class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   GoogleMapController mapController;
   Location location = Location();
   Geolocator locator = Geolocator();
   LocationData currentPosition =
       LocationData.fromMap({'latitude': 20, 'longitude': 77});
   Marker marker;
+  bool _serviceEnabled;
   String addressType;
   GlobalKey key = GlobalKey();
-  bool showLoader = true;
+  bool showLoader = true, showMapError = false;
   FocusNode _focusNode = FocusNode();
   TextEditingController addressController = TextEditingController(text: '');
   Set<Marker> markerSet;
@@ -48,13 +51,15 @@ class _MapWidgetState extends State<MapWidget> {
   void initState() {
     addressType = widget.addressType != null ? widget.addressType : 'home';
     currentPosition = LocationData.fromMap({'latitude': 20, 'longitude': 77});
+    WidgetsBinding.instance.addObserver(this);
     if (widget.selectedLocation != null) {
       currentPosition = LocationData.fromMap({...widget.selectedLocation});
       showLoader = false;
       markerSet = addMarker(
           LatLng(currentPosition.latitude, currentPosition.longitude));
-    } else
+    } else {
       getCurrentLocation();
+    }
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
         Scrollable.ensureVisible(key.currentContext,
@@ -70,63 +75,98 @@ class _MapWidgetState extends State<MapWidget> {
     });
   }
 
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && widget.selectedLocation == null) {
+      getCurrentLocation();
+    }
+  }
+
   getCurrentLocation() async {
     try {
-      var position = await location.getLocation();
+      _serviceEnabled = await location.serviceEnabled();
+      if (!_serviceEnabled) {
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled) {
+          showlocationErrorDialog('SERVICE_STATUS_DISABLED');
+          return;
+        }
+      }
 
+      var permissionStatus = await location.hasPermission();
+      if (permissionStatus == PermissionStatus.denied ||
+          permissionStatus == PermissionStatus.deniedForever) {
+        var permission = await location.requestPermission();
+        if (permission == PermissionStatus.denied) {
+          showlocationErrorDialog('PERMISSION_DENIED');
+          return;
+        } else if (permission == PermissionStatus.deniedForever) {
+          showlocationErrorDialog('PERMISSION_DENIED_NEVER_ASK');
+          return;
+        }
+      }
+
+      var position = await location.getLocation();
+      print(position);
       setState(() {
         currentPosition = position;
         showLoader = false;
+        showMapError = false;
         markerSet = addMarker(
             LatLng(currentPosition.latitude, currentPosition.longitude));
       });
     } catch (e) {
-      try {
-        if (e.code == 'PERMISSION_DENIED_NEVER_ASK' ||
-            e.code == 'PERMISSION_DENIED') {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20)),
-              backgroundColor: ColorShades.red,
-              content: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                alignment: WrapAlignment.center,
-                children: <Widget>[
-                  Text(
-                    L10n().getStr(
-                      "error.${e.code}",
-                    ),
-                    textAlign:TextAlign.center,
-                    style: Theme.of(context).textTheme.body1Bold.copyWith(
-                        color: Theme.of(context).colorScheme.textPrimaryLight,
-                        decoration: TextDecoration.none),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: Spacing.space16),
-                    child: PrimaryButton(
-                      text: L10n().getStr('redirector.goBack'),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ],
+      print(e);
+      showCustomSnackbar(
+          context: context,
+          content: L10n().getStr('profile.address.error'),
+          type: SnackbarType.error);
+    }
+  }
+
+  showlocationErrorDialog(error) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      child: AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: ColorShades.red,
+        content: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.center,
+          children: <Widget>[
+            Text(
+              L10n().getStr(
+                "error.$error",
+              ),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.body1Bold.copyWith(
+                  color: Theme.of(context).colorScheme.textPrimaryLight,
+                  decoration: TextDecoration.none),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: Spacing.space16),
+              child: PrimaryButton(
+                text: L10n().getStr('redirector.goBack'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
             ),
-          ).then((_) {
-            Navigator.pop(context);
-          });
-        }
-      } catch (e) {
-        showCustomSnackbar(
-            context: context,
-            content: L10n().getStr('profile.address.error'),
-            type: SnackbarType.error);
-      }
-    }
+          ],
+        ),
+      ),
+    ).then((_) {
+      setState(() {
+        showMapError = true;
+      });
+    });
   }
 
   sendData() {
@@ -221,6 +261,12 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
+  Widget mapErrorScreen() {
+    return Container(
+      child: Image.asset('assets/images/location_error.png'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -231,7 +277,9 @@ class _MapWidgetState extends State<MapWidget> {
               height: widget.height != null
                   ? widget.height
                   : MediaQuery.of(context).size.height * 0.5,
-              child: showLoader ? TinyLoader() : _mapWidget()),
+              child: showMapError
+                  ? mapErrorScreen()
+                  : showLoader ? TinyLoader() : _mapWidget()),
           SizedBox(
             height: Spacing.space20,
           ),

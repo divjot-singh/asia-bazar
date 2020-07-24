@@ -93,11 +93,15 @@ class LocalNotificationIos extends LocalNotification {
         );
 
   String getTitle() {
-    return notificationMessage['notification']["title"];
+    var data = notificationMessage["extra_data"];
+    Map extraData = {...json.decode(data)};
+    return extraData["title"];
   }
 
   String getBody() {
-    return notificationMessage['notification']["body"];
+    var data = notificationMessage["extra_data"];
+    Map extraData = {...json.decode(data)};
+    return extraData["body"];
   }
 
   String getIcon() {

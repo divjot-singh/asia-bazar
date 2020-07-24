@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Asia Bazar</string>
+	<string>asia_bazar</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -57,9 +57,14 @@
 			</array>
 		</dict>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<true/>
+	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

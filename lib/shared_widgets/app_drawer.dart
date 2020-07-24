@@ -49,7 +49,8 @@ class _AppDrawerState extends State<AppDrawer> {
           if (appState is UserIsUser) {
             user = appState.user;
           }
-          double points = user != null ? user[KeyNames['points']] : 0;
+          double points =
+              user != null ? user[KeyNames['points']].toDouble() : 0.toDouble();
           String username = user != null ? user[KeyNames['userName']] : '';
           return Container(
             color: ColorShades.white,

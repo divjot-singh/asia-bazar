@@ -51,6 +51,8 @@ Map<String, Map<String, String>> strings = {
         "Location permission has been denied. Please allow location access in order to add an address",
     "error.PERMISSION_DENIED":
         "Location permission has been denied. Please allow location access in order to add an address",
+    "error.SERVICE_STATUS_DISABLED":
+        "Location has been disabled. Please enable location access in order to add an address",
     "authentication.enterNumber":
         "Please enter your phone number. We will send you a one time password",
     "input.placeholder": "Enter your message here",

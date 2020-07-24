@@ -19,7 +19,6 @@ import 'package:asia/utils/utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:asia/theme/style.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class Checkout extends StatefulWidget {
   final double amount, pointsUsed, actualAmount;
@@ -40,7 +39,6 @@ class _CheckoutState extends State<Checkout> {
   var currentUser;
   ThemeData theme;
   bool itemsOutOfStock = false;
-  Razorpay _razorpay;
   List paymentMethodOptions;
   double pointValue;
   var orderId;
@@ -50,10 +48,10 @@ class _CheckoutState extends State<Checkout> {
         .add(FetchSellerInfo(callback: fetchInfoCallback));
     paymentMethodOptions = paymentOptions;
     paymentMethod = paymentMethodOptions[0]['value'];
-    _razorpay = Razorpay();
-    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+    // _razorpay = Razorpay();
+    // _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    // _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    // _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     super.initState();
   }
 
@@ -65,26 +63,26 @@ class _CheckoutState extends State<Checkout> {
     }
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    rzpPaymentId = response.paymentId;
-    placeOrder();
-    // showCustomSnackbar(
-    //     context: context, type: SnackbarType.success, content: 'Success');
-  }
+  // void _handlePaymentSuccess(PaymentSuccessResponse response) {
+  //   rzpPaymentId = response.paymentId;
+  //   placeOrder();
+  //   // showCustomSnackbar(
+  //   //     context: context, type: SnackbarType.success, content: 'Success');
+  // }
 
-  void _handlePaymentError(PaymentFailureResponse response) {
-    showCustomSnackbar(
-        context: context, type: SnackbarType.error, content: 'Error');
-  }
+  // void _handlePaymentError(PaymentFailureResponse response) {
+  //   showCustomSnackbar(
+  //       context: context, type: SnackbarType.error, content: 'Error');
+  // }
 
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    showCustomSnackbar(
-        context: context, type: SnackbarType.error, content: 'Wallet');
-  }
+  // void _handleExternalWallet(ExternalWalletResponse response) {
+  //   showCustomSnackbar(
+  //       context: context, type: SnackbarType.error, content: 'Wallet');
+  // }
 
   @override
   void dispose() {
-    _razorpay.clear();
+    //_razorpay.clear();
     super.dispose();
   }
 
@@ -296,7 +294,8 @@ class _CheckoutState extends State<Checkout> {
     if (paymentMethod == 'cod' || widget.amount == 0) {
       placeOrder();
     } else if (paymentMethod == 'razorpay') {
-      _razorpay.open(razorpayOptions);
+      placeOrder();
+      //_razorpay.open(razorpayOptions);
     }
   }
 
