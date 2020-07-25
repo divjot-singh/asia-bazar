@@ -9,6 +9,7 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
 import 'package:asia/shared_widgets/input_box.dart';
+import 'package:asia/shared_widgets/item_cart.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/quantity_updater.dart';
@@ -180,15 +181,11 @@ class _CategoryListingState extends State<CategoryListing> {
                                     ),
                                   ),
                                 ),
-                                // SizedBox(
-                                //   width: Spacing.space8,
-                                // ),
-                                //Text(listing.length.toString()),
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: Spacing.space12,
+                            height: Spacing.space20,
                           ),
                           if (currentState is PartialFetchingState)
                             Expanded(
@@ -218,21 +215,27 @@ class _CategoryListingState extends State<CategoryListing> {
                           else
                             Expanded(
                               child: RefreshIndicator(
-                                color: ColorShades.greenBg,
-                                backgroundColor: ColorShades.smokeWhite,
-                                onRefresh: reloadPage,
-                                child: ListView.builder(
-                                  controller: _scrollController,
-                                  itemCount: listing.length,
-                                  itemBuilder: (context, index) {
-                                    var item = listing[index].data;
-                                    return listItem(
-                                        context: context,
-                                        item: item,
-                                        user: user);
-                                  },
-                                ),
-                              ),
+                                  color: ColorShades.greenBg,
+                                  backgroundColor: ColorShades.smokeWhite,
+                                  onRefresh: reloadPage,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: Spacing.space16),
+                                    child: GridView.builder(
+                                      controller: _scrollController,
+                                      itemCount: listing.length,
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                        maxCrossAxisExtent: 220,
+                                        childAspectRatio: 1,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        var item = listing[index].data;
+                                        return Center(
+                                            child: ItemCard(item: item));
+                                      },
+                                    ),
+                                  )),
                             ),
                           SizedBox(
                             height: Spacing.space8,
@@ -504,51 +507,62 @@ Widget listItem(
                                 },
                               )
                             else
-                              QuantityUpdater(
-                                addHandler: ({int value}) {
-                                  Map currentCartItem = {
-                                    ...cart[item['opc'].toString()]
-                                  };
+                              Expanded(
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: Spacing.space12,
+                                      top: Spacing.space8),
+                                  child: QuantityUpdater(
+                                    addHandler: ({int value}) {
+                                      Map currentCartItem = {
+                                        ...cart[item['opc'].toString()]
+                                      };
 
-                                  currentCartItem['cartQuantity'] =
-                                      value != null
+                                      currentCartItem['cartQuantity'] = value !=
+                                              null
                                           ? value
                                           : currentCartItem['cartQuantity'] + 1;
 
-                                  addItemToCart(currentCartItem);
-                                },
-                                subtractHandler: () {
-                                  Map currentCartItem = {
-                                    ...cart[item['opc'].toString()]
-                                  };
-                                  if (currentCartItem['cartQuantity'] > 1) {
-                                    currentCartItem['cartQuantity'] =
-                                        currentCartItem['cartQuantity'] - 1;
-                                    addItemToCart(currentCartItem);
-                                  } else {
-                                    showCustomLoader(context);
-                                    BlocProvider.of<UserDatabaseBloc>(context)
-                                        .add(RemoveCartItem(
-                                            itemId: currentCartItem['opc']
-                                                .toString(),
-                                            callback: (result) {
-                                              Navigator.pop(context);
-                                              if (!result) {
-                                                showCustomSnackbar(
-                                                    content: L10n().getStr(
-                                                        'profile.address.error'),
-                                                    context: context,
-                                                    type: SnackbarType.error);
-                                              } else {
-                                                if (removeItemHandler != null)
-                                                  removeItemHandler(
-                                                      currentCartItem);
-                                              }
-                                            }));
-                                  }
-                                },
-                                quantity: user['cart'][item['opc'].toString()]
-                                    ['cartQuantity'],
+                                      addItemToCart(currentCartItem);
+                                    },
+                                    subtractHandler: () {
+                                      Map currentCartItem = {
+                                        ...cart[item['opc'].toString()]
+                                      };
+                                      if (currentCartItem['cartQuantity'] > 1) {
+                                        currentCartItem['cartQuantity'] =
+                                            currentCartItem['cartQuantity'] - 1;
+                                        addItemToCart(currentCartItem);
+                                      } else {
+                                        showCustomLoader(context);
+                                        BlocProvider.of<UserDatabaseBloc>(
+                                                context)
+                                            .add(RemoveCartItem(
+                                                itemId: currentCartItem['opc']
+                                                    .toString(),
+                                                callback: (result) {
+                                                  Navigator.pop(context);
+                                                  if (!result) {
+                                                    showCustomSnackbar(
+                                                        content: L10n().getStr(
+                                                            'profile.address.error'),
+                                                        context: context,
+                                                        type:
+                                                            SnackbarType.error);
+                                                  } else {
+                                                    if (removeItemHandler !=
+                                                        null)
+                                                      removeItemHandler(
+                                                          currentCartItem);
+                                                  }
+                                                }));
+                                      }
+                                    },
+                                    quantity: user['cart']
+                                            [item['opc'].toString()]
+                                        ['cartQuantity'],
+                                  ),
+                                ),
                               ),
                           ],
                         ),

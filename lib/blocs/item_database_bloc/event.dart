@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 
 abstract class ItemDatabaseEvents {}
 
-class FetchAllCategories extends ItemDatabaseEvents {}
+class FetchAllCategories extends ItemDatabaseEvents {
+  Function callback;
+  FetchAllCategories({this.callback});
+}
 
 class FetchCategoryListing extends ItemDatabaseEvents {
   String categoryId;
@@ -42,3 +45,7 @@ class PlaceOrder extends ItemDatabaseEvents {
   PlaceOrder({@required this.orderDetails, this.callback});
 }
 
+class FetchHomeItems extends ItemDatabaseEvents {
+  Function callback;
+  FetchHomeItems({this.callback});
+}

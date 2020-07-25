@@ -6,6 +6,7 @@ import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/screens/category_listing/index.dart';
+import 'package:asia/shared_widgets/item_cart.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/deboucer.dart';
@@ -193,14 +194,28 @@ class _SearchItemsState extends State<SearchItems> {
                             ))
                           else
                             Expanded(
-                              child: ListView.builder(
-                                controller: _scrollController,
-                                itemCount: listing.length,
-                                itemBuilder: (context, index) {
-                                  var item = listing[index].data;
-                                  return listItem(
-                                      context: context, item: item, user: user);
-                                },
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: Spacing.space16,
+                                  vertical: Spacing.space20,
+                                ),
+                                child: GridView.builder(
+                                  gridDelegate:
+                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 220,
+                                    childAspectRatio: 1,
+                                  ),
+                                  controller: _scrollController,
+                                  itemCount: listing.length,
+                                  itemBuilder: (context, index) {
+                                    var item = listing[index].data;
+                                    return Center(
+                                      child: ItemCard(
+                                        item: item,
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           SizedBox(

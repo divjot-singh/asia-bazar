@@ -4,6 +4,7 @@ import 'package:asia/screens/address_list/index.dart';
 import 'package:asia/screens/all_search/index.dart';
 import 'package:asia/screens/authentication_screen/authentication_screen.dart';
 import 'package:asia/screens/cart/index.dart';
+import 'package:asia/screens/category_list/index.dart';
 import 'package:asia/screens/category_listing/index.dart';
 import 'package:asia/screens/checkout/index.dart';
 import 'package:asia/screens/home/index.dart';
@@ -108,6 +109,12 @@ class FluroRouter {
             return Redirector();
           },
         );
+      case Constants.DEPARTMENT_LIST:
+        return Handler(
+          handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+            return CategoryList();
+          },
+        );
       default:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
@@ -152,6 +159,11 @@ class FluroRouter {
     router.define(
       Constants.POST_AUTHENTICATION_REDIRECTOR,
       handler: getCommonHandler(Constants.POST_AUTHENTICATION_REDIRECTOR),
+      transitionType: TransitionType.fadeIn,
+    );
+    router.define(
+      Constants.DEPARTMENT_LIST,
+      handler: getCommonHandler(Constants.DEPARTMENT_LIST),
       transitionType: TransitionType.fadeIn,
     );
     router.define(

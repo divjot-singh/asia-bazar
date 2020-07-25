@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 abstract class ItemDatabaseState {
@@ -6,6 +7,7 @@ abstract class ItemDatabaseState {
     'allCategories': ItemUninitialisedState(),
     'searchListing': ItemUninitialisedState(),
     'itemDetails': ItemUninitialisedState(),
+    'homeItems': ItemUninitialisedState(),
   };
 }
 
@@ -38,4 +40,10 @@ class PartialFetchingState {
   List categoryItems;
   String categoryId;
   PartialFetchingState({@required this.categoryItems, this.categoryId});
+}
+
+class HomeItemsFetched {
+  Map data;
+  int lastItem;
+  HomeItemsFetched({@required this.data, this.lastItem});
 }

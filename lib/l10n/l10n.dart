@@ -41,6 +41,9 @@ class L10n {
 
 Map<String, Map<String, String>> strings = {
   "en": {
+    "app.title": "Asia bazar",
+    "tab.search": "Search",
+    "app.categories": "Categories",
     "error.ERROR_INVALID_VERIFICATION_CODE": "Invalid otp",
     "error.invalidPhoneNumber": "Invalid phone number",
     "error.invalidCredential": "Invalid phone number",
@@ -57,6 +60,7 @@ Map<String, Map<String, String>> strings = {
         "Please enter your phone number. We will send you a one time password",
     "input.placeholder": "Enter your message here",
     "phoneAuthentication.resend": "Resend",
+    "departmentList.heading": "Department list",
     "phoneAuthentication.verify": "Verify",
     "phoneAuthentication.verificationFailed": "Verification Failed",
     "phoneAuthentication.error.provideValue": "Please provide a value!",
@@ -135,7 +139,7 @@ Map<String, Map<String, String>> strings = {
     "orderDetails.chooseItems": "Choose items to return/exchange",
     "cart.empty": "There are no items in your cart. Go back and add some!",
     "list.empty": "No items found",
-    "home.search": "Search items",
+    "home.search": "Search Asia Bazar",
     "home.shopByCategory": "Shop by category",
     "category.search": "Search {category}",
     "item.add": "Add",

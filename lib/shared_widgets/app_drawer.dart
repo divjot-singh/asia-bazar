@@ -128,6 +128,19 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
                 ListTile(
                   onTap: () {
+                    Navigator.popAndPushNamed(
+                        context, Constants.DEPARTMENT_LIST);
+                  },
+                  leading: Icon(Icons.list, color: ColorShades.greenBg),
+                  title: Text(
+                      L10n().getStr(
+                        'departmentList.heading',
+                      ),
+                      style: theme.textTheme.h4
+                          .copyWith(color: ColorShades.greenBg)),
+                ),
+                ListTile(
+                  onTap: () {
                     Navigator.popAndPushNamed(context, Constants.CART);
                   },
                   leading:

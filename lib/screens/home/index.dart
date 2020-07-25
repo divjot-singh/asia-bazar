@@ -4,7 +4,11 @@ import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/item_database_bloc/state.dart';
+import 'package:asia/blocs/user_database_bloc/bloc.dart';
+import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
+import 'package:asia/screens/home/appbar.dart';
+import 'package:asia/screens/home/tabview.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/app_drawer.dart';
 import 'package:asia/shared_widgets/firebase_notification_configuration.dart';
@@ -12,6 +16,7 @@ import 'package:asia/shared_widgets/input_box.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,60 +25,65 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   ThemeData theme;
+  DocumentSnapshot lastItem;
+  bool isFetching = false;
+  int currentTabIndex = 0;
+  TabController _controller;
+  ScrollController _scrollController = ScrollController();
   @override
   void initState() {
+    _controller = TabController(vsync: this, length: 2);
+    //_controller.addListener(tabChangeListener);
     ConfigureNotification.configureNotifications();
-
+    BlocProvider.of<ItemDatabaseBloc>(context).add(FetchHomeItems());
     BlocProvider.of<ItemDatabaseBloc>(context).add(FetchAllCategories());
+    _scrollController.addListener(scrollListener);
     BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo());
     super.initState();
   }
 
-  Widget categoryGrid({@required List listing}) {
-    return Expanded(
-      child: GridView.builder(
-        scrollDirection: Axis.vertical,
-        itemCount: listing.length,
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemBuilder: (context, index) {
-          var item = listing[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushNamed(
-                  context,
-                  Constants.CATEGORY_LISTING
-                      .replaceAll(':categoryId', item['id'].toString())
-                      .replaceAll(':categoryName', item['name']));
-            },
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                  horizontal: Spacing.space12, vertical: Spacing.space8),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.contain,
-                    image: AssetImage(
-                        'assets/images/' + item['id'].toString() + '.jpeg')),
-              ),
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                color: ColorShades.white.withOpacity(0.7),
-                child: Center(
-                    child: Text(
-                  item['name'],
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.body1Regular
-                      .copyWith(color: ColorShades.greenBg),
-                )),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+  // void tabChangeListener() {
+  //   if (_controller.index == 1) {
+  //     var previousIndex = _controller.previousIndex;
+  //     var result = Navigator.pushNamed(context, Constants.SEARCH);
+  //     result.then((_) {
+  //       _controller.animateTo(previousIndex);
+  //     });
+  //   }
+  // }
+
+  scrollListener() {
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        isFetching != true &&
+        _controller.index == 0) {
+      fetchMoreItems();
+    }
+  }
+
+  fetchMoreItems() {
+    setState(() {
+      isFetching = true;
+    });
+    BlocProvider.of<ItemDatabaseBloc>(context)
+        .add(FetchHomeItems(callback: (data) {
+      setState(() {
+        isFetching = false;
+      });
+      if (data is Map && data.length == 0) {
+        _scrollController.removeListener(scrollListener);
+      }
+    }));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,61 +91,17 @@ class _HomeScreenState extends State<HomeScreen> {
     theme = Theme.of(context);
     return SafeArea(
       child: Scaffold(
-        backgroundColor: ColorShades.white,
+        backgroundColor: ColorShades.grey50,
         drawer: AppDrawer(),
-        appBar: MyAppBar(
-            hasTransparentBackground: true,
-            title: L10n().getStr('home.title'),
-            hideBackArrow: true,
-            leading: {
-              'icon': Icon(Icons.dehaze),
-              'onTap': (ctx) => {Scaffold.of(ctx).openDrawer()}
-            }),
-        body: Container(
-          child: BlocBuilder<ItemDatabaseBloc, Map>(builder: (context, state) {
-            var currentState = state['allCategories'];
-            if (currentState is GlobalFetchingState) {
-              return PageFetchingViewWithLightBg();
-            } else if (currentState is GlobalErrorState) {
-              return PageErrorView();
-            } else if (currentState is AllCategoriesFetchedState) {
-              var listing = currentState.categories;
-
-              return Container(
-                padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.space16, vertical: Spacing.space20),
-                child: Column(
-                  children: <Widget>[
-                    InputBox(
-                      onChanged: (_) {},
-                      onTap: () {
-                        Navigator.pushNamed(context, Constants.SEARCH);
-                      },
-                      hideShadow: true,
-                      hintText: L10n().getStr('home.search'),
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: ColorShades.greenBg,
-                      ),
-                    ),
-                    SizedBox(
-                      height: Spacing.space20,
-                    ),
-                    Text(
-                      L10n().getStr('home.shopByCategory'),
-                      style: theme.textTheme.h4
-                          .copyWith(color: ColorShades.greenBg),
-                    ),
-                    SizedBox(
-                      height: Spacing.space20,
-                    ),
-                    categoryGrid(listing: listing),
-                  ],
-                ),
-              );
-            }
-            return Container();
-          }),
+        body: NestedScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          controller: _scrollController,
+          headerSliverBuilder: (context, boxIsScrolled) {
+            return [
+              HomeAppBar(tabController: _controller, isScrolled: boxIsScrolled)
+            ];
+          },
+          body: TabView(isFetching: isFetching, tabController: _controller),
         ),
       ),
     );

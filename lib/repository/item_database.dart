@@ -15,15 +15,17 @@ class ItemDatabase {
   }
 
   Future<List> fetchCategoryListing(
-      {@required String categoryId, @required DocumentSnapshot startAt}) async {
-    var limit = 50;
+      {@required String categoryId,
+      @required DocumentSnapshot startAt,
+      int limit = 50}) async {
     QuerySnapshot snapshot;
     var returnValue;
     if (startAt == null) {
       snapshot = await inventoryRef
           .document(categoryId)
           .collection('items')
-          .orderBy('opc')
+          .orderBy('quantity')
+          .where('quantity', isGreaterThan: 0)
           .limit(limit)
           .getDocuments();
       returnValue = snapshot.documents;
@@ -31,7 +33,8 @@ class ItemDatabase {
       snapshot = await inventoryRef
           .document(categoryId)
           .collection('items')
-          .orderBy('opc')
+          .orderBy('quantity')
+          .where('quantity', isGreaterThan: 0)
           .startAfterDocument(startAt)
           .limit(limit)
           .getDocuments();
@@ -216,6 +219,33 @@ class ItemDatabase {
       return null;
     } catch (e) {
       print(e);
+      return null;
+    }
+  }
+
+  Future<Map> fetchHomeItems({List categories}) async {
+    if (categories.length == 0)
+      return {
+        'data': [],
+      };
+    var itemLimit = 5;
+    Map data = {};
+    try {
+      for (var i = 0; i < categories.length; i++) {
+        var categoryId = categories[i].data;
+        QuerySnapshot itemData = await inventoryRef
+            .document(categoryId['id'].toString())
+            .collection('items')
+            .limit(itemLimit)
+            .getDocuments();
+        data[categoryId['id'].toString()] = itemData.documents;
+      }
+
+      return {
+        'lastItem': categories[categories.length - 1].data['id'],
+        'data': data
+      };
+    } catch (e) {
       return null;
     }
   }

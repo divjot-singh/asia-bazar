@@ -57,6 +57,7 @@ class Constants {
   static const SEARCH = 'user/search';
   static const ORDER_ITEM_DETAILS =
       'user/order_details/:orderId/item_details/:editView';
+  static const DEPARTMENT_LIST = 'user/departments';
 }
 
 const List<Map<String, String>> Countries = [

@@ -8,6 +8,7 @@ class ColorShades {
   static const Color navy = const Color(0xff001a79);
   static const Color marble = const Color(0xffffffff);
   static const Color smokeWhite = const Color(0xfff9f9f9);
+  static const Color grey50 = const Color(0xfff2f3f5);
   static const Color grey100 = const Color(0xffd9dfee);
   static const Color grey200 = const Color(0xffb1bad4);
   static const Color grey300 = const Color(0xff647093);
@@ -216,6 +217,10 @@ class Shadows {
   static get inputLight => BoxShadow(
         color: ColorShades.darkGreenBg,
         offset: Offset(-1, 1),
+        blurRadius: 6,
+      );
+  static get noOffsetShadow => BoxShadow(
+        color: ColorShades.grey200,
         blurRadius: 6,
       );
 }
