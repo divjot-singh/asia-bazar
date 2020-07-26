@@ -140,7 +140,7 @@ class ItemDatabase {
         details.remove('cart');
         details['cartItems'] = itemsOrdered;
         var orderId = details['orderId'];
-        details['timestamp'] = Timestamp.now();
+        details['timestamp'] = Timestamp.fromDate(DateTime.now().toUtc());
         DocumentReference ref = await orderRef.add(details);
         cart.forEach((key, item) async {
           await orderedItems.add({

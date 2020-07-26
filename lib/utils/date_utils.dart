@@ -11,7 +11,7 @@ date in seconds
 
 class DateFormatter {
   static formatWithTime(String epoch) {
-    DateTime dateObj = DateTime.fromMillisecondsSinceEpoch(int.parse(epoch));
+    DateTime dateObj = DateTime.fromMillisecondsSinceEpoch(int.parse(epoch)).toLocal();
     var date = DateFormat('dd MMM, yyyy').add_jm().format(dateObj);
     return date;
   }

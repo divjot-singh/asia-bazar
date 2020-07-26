@@ -224,7 +224,7 @@ class RouteGenerator {
           return Checkout(
             amount: arguments['amount'],
             areLoyaltyPointsUsed: arguments['areLoyaltyPointsUsed'] ?? false,
-            pointsUsed: arguments['pointsUsed'] ?? 0,
+            pointsUsed: arguments['pointsUsed'].toDouble() ?? 0,
             actualAmount: arguments['actualAmount'] ?? arguments['amount'],
           );
         });
