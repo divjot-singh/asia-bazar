@@ -25,7 +25,7 @@ class CategoryList extends StatelessWidget {
           ),
           body: Container(
               margin: EdgeInsets.only(top: Spacing.space12),
-              child: CategoryBody())),
+              child: Expanded(child: CategoryBody()))),
     );
   }
 }
@@ -94,10 +94,8 @@ class CategoryBody extends StatelessWidget {
           return PageErrorView();
         } else if (currentState is AllCategoriesFetchedState) {
           var listing = currentState.categories;
-          return Expanded(
-            child: CategoryGrid(
-              listing: listing,
-            ),
+          return CategoryGrid(
+            listing: listing,
           );
         }
         return Container();
