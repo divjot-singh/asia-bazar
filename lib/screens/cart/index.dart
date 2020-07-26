@@ -109,7 +109,7 @@ class _CartState extends State<Cart> {
           } else if (userState is UserIsUser) {
             var userCart = userState.user['cart'];
             var points = userState.user[KeyNames['points']];
-            usablePoints = points;
+            usablePoints = points.toDouble();
             bool cartValid = cart != null &&
                 userCart.length > 0 &&
                 userCart.length == cart.length;
@@ -167,34 +167,33 @@ class _CartState extends State<Cart> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
+                                        PrimaryButton(
+                                            text: L10n()
+                                                .getStr('confirmation.yes'),
+                                            onPressed: () {
+                                              showCustomLoader(context);
+                                              BlocProvider.of<UserDatabaseBloc>(
+                                                      context)
+                                                  .add(EmptyCart(
+                                                      callback: (result) {
+                                                if (result) {
+                                                  Navigator.pop(context);
+                                                  Navigator.pop(context);
+                                                } else {
+                                                  showCustomSnackbar(
+                                                      context: context,
+                                                      type: SnackbarType.error,
+                                                      content: L10n().getStr(
+                                                          'profile.address.error'));
+                                                }
+                                              }));
+                                            }),
                                         SecondaryButton(
                                           hideShadow: true,
                                           padding: EdgeInsets.symmetric(
                                               horizontal: Spacing.space16,
                                               vertical: Spacing.space12),
                                           noWidth: true,
-                                          text:
-                                              L10n().getStr('confirmation.yes'),
-                                          onPressed: () {
-                                            showCustomLoader(context);
-                                            BlocProvider.of<UserDatabaseBloc>(
-                                                    context)
-                                                .add(EmptyCart(
-                                                    callback: (result) {
-                                              if (result) {
-                                                Navigator.pop(context);
-                                                Navigator.pop(context);
-                                              } else {
-                                                showCustomSnackbar(
-                                                    context: context,
-                                                    type: SnackbarType.error,
-                                                    content: L10n().getStr(
-                                                        'profile.address.error'));
-                                              }
-                                            }));
-                                          },
-                                        ),
-                                        PrimaryButton(
                                           text: L10n()
                                               .getStr('confirmation.cancel'),
                                           onPressed: () {

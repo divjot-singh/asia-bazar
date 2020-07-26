@@ -238,7 +238,7 @@ class ItemDatabase {
             .collection('items')
             .limit(itemLimit)
             .getDocuments();
-        data[categoryId['id'].toString()] = itemData.documents;
+        data[categoryId['name'].toString()] = itemData.documents;
       }
 
       return {

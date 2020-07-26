@@ -11,10 +11,12 @@ class HomeAppBar extends StatelessWidget {
   final TabController tabController;
   final bool isScrolled;
   HomeAppBar({@required this.tabController, this.isScrolled = false});
+  final FocusNode _focusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
-
+    if (_focusNode.hasFocus) _focusNode.unfocus();
     return SliverAppBar(
       backgroundColor: Theme.of(context).colorScheme.disabled,
       pinned: true,
@@ -81,6 +83,7 @@ class HomeAppBar extends StatelessWidget {
                   onTap: () {
                     Navigator.pushNamed(context, Constants.SEARCH);
                   },
+                  focusNode: _focusNode,
                   hideShadow: true,
                   hintText: L10n().getStr('home.search'),
                   prefixIcon: Icon(

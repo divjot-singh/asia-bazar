@@ -25,7 +25,7 @@ class CategoryList extends StatelessWidget {
           ),
           body: Container(
               margin: EdgeInsets.only(top: Spacing.space12),
-              child: Expanded(child: CategoryBody()))),
+              child: CategoryBody())),
     );
   }
 }

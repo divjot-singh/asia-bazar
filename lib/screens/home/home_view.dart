@@ -38,9 +38,11 @@ class _HomeViewState extends State<HomeView> {
         return SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              ...data.values.map((categoryList) {
+              ...data.keys.map((categoryKey) {
+                var categoryList = data[categoryKey];
                 return CategoryTile(
                   items: categoryList,
+                  name: categoryKey,
                 );
               }).toList(),
               if (widget.isFetching)
@@ -63,12 +65,13 @@ class _HomeViewState extends State<HomeView> {
 
 class CategoryTile extends StatelessWidget {
   final List items;
-  CategoryTile({this.items});
+  final String name;
+  CategoryTile({this.items, this.name});
   @override
   Widget build(BuildContext context) {
     if (items.length == 0) return Container();
     ThemeData theme = Theme.of(context);
-    var categoryName = items[0].data['dept_name'];
+    var categoryName = name;
     return Container(
       margin: EdgeInsets.only(bottom: Spacing.space8),
       decoration: BoxDecoration(
