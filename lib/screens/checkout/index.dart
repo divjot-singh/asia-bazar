@@ -168,6 +168,8 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Widget getPaymentOptions() {
+    var options = [...paymentMethodOptions];
+    options.removeWhere((item) => item['value'] == 'points');
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
@@ -186,7 +188,7 @@ class _CheckoutState extends State<Checkout> {
             ),
             Expanded(
               child: CheckboxList(
-                items: paymentMethodOptions,
+                items: options,
                 selectedValue: paymentMethod,
                 changeHandler: paymentChangeHandler,
               ),
