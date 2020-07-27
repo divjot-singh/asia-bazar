@@ -90,7 +90,7 @@ class CategoryTile extends StatelessWidget {
                       theme.textTheme.h4.copyWith(color: ColorShades.bastille),
                 ),
               ),
-              GestureDetector(
+              InkWell(
                 onTap: () {
                   Navigator.pushNamed(
                       context,
@@ -101,18 +101,16 @@ class CategoryTile extends StatelessWidget {
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
                     Text(
                       L10n().getStr('editProfile.more'),
                       style: theme.textTheme.body2Regular
                           .copyWith(color: ColorShades.neon),
                     ),
-                    SizedBox(
-                      width: Spacing.space8,
-                    ),
                     Icon(
                       Icons.keyboard_arrow_right,
-                      size: 16,
+                      size: 24,
                       color: ColorShades.neon,
                     ),
                   ],
