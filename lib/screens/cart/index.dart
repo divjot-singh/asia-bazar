@@ -90,7 +90,7 @@ class _CartState extends State<Cart> {
 
   void removeItemHandler(item) {
     setState(() {
-      cart.remove(item['opc'].toString());
+      cart.remove(item['item_id'].toString());
     });
   }
 
@@ -117,7 +117,7 @@ class _CartState extends State<Cart> {
               totalCost = 0;
               cart.forEach((key, item) {
                 item['cartQuantity'] =
-                    userCart[item['opc'].toString()]['cartQuantity'];
+                    userCart[item['item_id'].toString()]['cartQuantity'];
                 if (item['cost'] == null ||
                     (item['cost'] is String) &&
                         item['cost'].trim().length == 0) {

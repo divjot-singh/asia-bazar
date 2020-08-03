@@ -51,7 +51,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
     List allItems = items.map((item) {
       var cartItem = item['orderData'].data['itemDetails'];
       return {
-        'id': cartItem['opc'].toString(),
+        'id': cartItem['item_id'].toString(),
         'price': cartItem['price'],
         'returnQuantity': cartItem['cartQuantity'],
         'item': item
@@ -78,7 +78,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
     var returnedQuantity;
     if (selectedItems != null && widget.editView) {
       var selectedCartItem = selectedItems.firstWhere(
-          (item) => item['id'] == listItem['opc'].toString(),
+          (item) => item['id'] == listItem['item_id'].toString(),
           orElse: () => {});
       returnedQuantity = selectedCartItem['returnQuantity'] != null
           ? selectedCartItem['returnQuantity']
@@ -363,7 +363,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
         return {
           'price': item['price'],
           'returnQuantity': item['returnQuantity'],
-          'opc': item['id'].toString(),
+          'item_id': item['id'].toString(),
         };
       });
       var orderRef = selectedItems[0]['item']['orderData'].data['orderRef'];
@@ -431,7 +431,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
                                   ? selectedItems.firstWhere(
                                       (item) =>
                                           item['id'] ==
-                                          cartItem['opc'].toString(),
+                                          cartItem['item_id'].toString(),
                                       orElse: () => null)
                                   : {};
                               int availableQuantity =
@@ -482,7 +482,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
                                                         if (selected) {
                                                           selectedItems.add({
                                                             'id':
-                                                                cartItem['opc']
+                                                                cartItem['item_id']
                                                                     .toString(),
                                                             'price': cartItem[
                                                                 'price'],
@@ -504,7 +504,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
                                                               (item) =>
                                                                   item['id'] ==
                                                                   cartItem[
-                                                                          'opc']
+                                                                          'item_id']
                                                                       .toString());
                                                           setState(() {
                                                             selectedItems =

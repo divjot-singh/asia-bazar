@@ -45,6 +45,8 @@ class CategoryGrid extends StatelessWidget {
         var item = listing[index];
         return GestureDetector(
           onTap: () {
+            print(item['id']);
+            print(item['name']);
             Navigator.pushNamed(
                 context,
                 Constants.CATEGORY_LISTING
@@ -58,7 +60,7 @@ class CategoryGrid extends StatelessWidget {
               image: DecorationImage(
                   fit: BoxFit.fitHeight,
                   image: AssetImage(
-                      'assets/images/' + item['id'].toString() + '.jpeg')),
+                      'assets/images/' + index.toString() + '.jpeg')),
             ),
             child: Container(
               height: MediaQuery.of(context).size.height,

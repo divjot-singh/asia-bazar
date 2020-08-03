@@ -56,7 +56,7 @@ class ItemDatabase {
       snapshot = await inventoryRef
           .document(categoryId)
           .collection('items')
-          .orderBy('opc')
+          .orderBy('item_id')
           .limit(limit)
           .getDocuments();
       returnValue = snapshot.documents;
@@ -64,7 +64,7 @@ class ItemDatabase {
       snapshot = await inventoryRef
           .document(categoryId)
           .collection('items')
-          .orderBy('opc')
+          .orderBy('item_id')
           .where('tokens', arrayContains: query)
           .limit(limit)
           .getDocuments();
@@ -85,7 +85,7 @@ class ItemDatabase {
       if (startAt != null) {
         snapshot = await _firestore
             .collectionGroup('items')
-            .orderBy('opc')
+            .orderBy('item_id')
             .where('tokens', arrayContains: query)
             .limit(limit)
             .startAfterDocument(startAt)
@@ -93,7 +93,7 @@ class ItemDatabase {
       } else {
         snapshot = await _firestore
             .collectionGroup('items')
-            .orderBy('opc')
+            .orderBy('item_id')
             .where('tokens', arrayContains: query)
             .limit(limit)
             .getDocuments();
@@ -121,7 +121,7 @@ class ItemDatabase {
         var decrementValue = item['cartQuantity'];
         decrementValue *= -1;
         var ref = inventoryRef
-            .document(item['categoryId'])
+            .document(item['category_id'])
             .collection('items')
             .document(key);
         try {
@@ -180,9 +180,9 @@ class ItemDatabase {
         var key = cartKeys.keys.toList()[i];
         var value = cartKeys[key];
         var snapshot = await inventoryRef
-            .document(value['categoryId'])
+            .document(value['category_id'])
             .collection('items')
-            .document(value['opc'])
+            .document(value['item_id'])
             .get();
         items[key] = snapshot.data;
       }

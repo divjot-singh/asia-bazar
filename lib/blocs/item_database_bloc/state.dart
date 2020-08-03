@@ -44,6 +44,6 @@ class PartialFetchingState {
 
 class HomeItemsFetched {
   Map data;
-  int lastItem;
+  String lastItem;
   HomeItemsFetched({@required this.data, this.lastItem});
 }

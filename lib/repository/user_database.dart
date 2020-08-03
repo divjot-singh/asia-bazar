@@ -191,9 +191,9 @@ class UserDatabase {
         await userRef.collection('entries').document(userId).get();
     try {
       DocumentSnapshot itemSnapshot = await inventoryRef
-          .document(item['categoryId'])
+          .document(item['category_id'])
           .collection('items')
-          .document(item['opc'])
+          .document(item['item_id'])
           .get();
       if (itemSnapshot.data['quantity'] >= item['cartQuantity']) {
         if (userData.data != null) {
@@ -201,7 +201,7 @@ class UserDatabase {
           if (cart == null) {
             cart = {};
           }
-          cart[item['opc']] = item;
+          cart[item['item_id']] = item;
           await userRef
               .collection('entries')
               .document(userId)

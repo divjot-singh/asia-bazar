@@ -404,12 +404,12 @@ Widget listItem(
                       GestureDetector(
                         onTap: () {
                           Map currentCartItem = {
-                            ...cart[item['opc'].toString()]
+                            ...cart[item['item_id'].toString()]
                           };
                           showCustomLoader(context);
                           BlocProvider.of<UserDatabaseBloc>(context)
                               .add(RemoveCartItem(
-                                  itemId: currentCartItem['opc'].toString(),
+                                  itemId: currentCartItem['item_id'].toString(),
                                   callback: (result) {
                                     Navigator.pop(context);
                                     if (!result) {
@@ -493,15 +493,15 @@ Widget listItem(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             if (user['cart'] == null ||
-                                user['cart'][item['opc'].toString()] == null)
+                                user['cart'][item['item_id'].toString()] == null)
                               PrimaryButton(
                                 text: L10n().getStr('item.add'),
                                 onPressed: () {
                                   var currentCartItem = {
                                     'price': item['cost'],
                                     'cartQuantity': 1,
-                                    'categoryId': item['categoryId'].toString(),
-                                    'opc': item['opc'].toString()
+                                    'category_id': item['category_id'].toString(),
+                                    'item_id': item['item_id'].toString()
                                   };
                                   addItemToCart(currentCartItem);
                                 },
@@ -515,7 +515,7 @@ Widget listItem(
                                   child: QuantityUpdater(
                                     addHandler: ({int value}) {
                                       Map currentCartItem = {
-                                        ...cart[item['opc'].toString()]
+                                        ...cart[item['item_id'].toString()]
                                       };
 
                                       currentCartItem['cartQuantity'] = value !=
@@ -527,7 +527,7 @@ Widget listItem(
                                     },
                                     subtractHandler: () {
                                       Map currentCartItem = {
-                                        ...cart[item['opc'].toString()]
+                                        ...cart[item['item_id'].toString()]
                                       };
                                       if (currentCartItem['cartQuantity'] > 1) {
                                         currentCartItem['cartQuantity'] =
@@ -538,7 +538,7 @@ Widget listItem(
                                         BlocProvider.of<UserDatabaseBloc>(
                                                 context)
                                             .add(RemoveCartItem(
-                                                itemId: currentCartItem['opc']
+                                                itemId: currentCartItem['item_id']
                                                     .toString(),
                                                 callback: (result) {
                                                   Navigator.pop(context);
@@ -559,7 +559,7 @@ Widget listItem(
                                       }
                                     },
                                     quantity: user['cart']
-                                            [item['opc'].toString()]
+                                            [item['item_id'].toString()]
                                         ['cartQuantity'],
                                   ),
                                 ),

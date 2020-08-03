@@ -171,20 +171,23 @@ class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
       }
     } else if (event is FetchHomeItems) {
       try {
-        var startAt = state['homeItems'] is HomeItemsFetched
-            ? state['homeItems'].lastItem + 1
-            : 0;
-        var categoryLimit = 3;
-        var previousState = state['homeItems'];
-        if (startAt == 0) {
-          state['homeItems'] = GlobalFetchingState();
-          yield {...state};
-        }
         List categories;
         if (state['allCategories'] is AllCategoriesFetchedState) {
           categories = [...state['allCategories'].categories];
         } else {
           categories = [...await itemDatabase.fetchAllCategories()];
+        }
+        var startAt = 0;
+        if (state['homeItems'] is HomeItemsFetched) {
+          var currentCat = categories.map((item) => item.data).toList();
+          var lastItemIndex = currentCat.indexWhere((item) => item['id'] == state['homeItems'].lastItem);
+          startAt = lastItemIndex + 1;
+        }
+        var categoryLimit = 3;
+        var previousState = state['homeItems'];
+        if (startAt == 0) {
+          state['homeItems'] = GlobalFetchingState();
+          yield {...state};
         }
         int endAt = ((startAt + categoryLimit) <= categories.length)
             ? (startAt + categoryLimit)

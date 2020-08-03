@@ -124,8 +124,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   Widget build(BuildContext context) {
     ThemeData theme = Theme.of(context);
 
-
-
     double viewportHeight = MediaQuery.of(context).size.height -
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).viewInsets.bottom;

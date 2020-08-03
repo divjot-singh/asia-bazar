@@ -57,10 +57,10 @@ class _ItemCardState extends State<ItemCard> {
         if (currentState is UserIsUser) {
           var user = currentState.user;
           var cart = user['cart'];
-          bool itemInCart = cart[item['opc'].toString()] != null;
+          bool itemInCart = cart[item['item_id'].toString()] != null;
           int cartQuantity = 0;
           if (itemInCart) {
-            cartQuantity = cart[item['opc'].toString()]['cartQuantity'];
+            cartQuantity = cart[item['item_id'].toString()]['cartQuantity'];
           }
           return GestureDetector(
             onTap: () {
@@ -100,8 +100,8 @@ class _ItemCardState extends State<ItemCard> {
                                 var currentCartItem = {
                                   'price': item['cost'],
                                   'cartQuantity': 1,
-                                  'categoryId': item['categoryId'].toString(),
-                                  'opc': item['opc'].toString()
+                                  'category_id': item['category_id'].toString(),
+                                  'item_id': item['item_id'].toString()
                                 };
                                 addItemToCart(currentCartItem);
                               } else {
@@ -208,11 +208,11 @@ class _ItemCardState extends State<ItemCard> {
                       padding: EdgeInsets.only(left: 1, right: 1, top: 1),
                       child: QuantityUpdater(
                         quantity: cartQuantity,
-                        minQuantity: 0,
+                        minQuantity: 1,
                         maxQuantity: 50,
                         addHandler: ({int value}) {
                           Map currentCartItem = {
-                            ...cart[item['opc'].toString()]
+                            ...cart[item['item_id'].toString()]
                           };
 
                           currentCartItem['cartQuantity'] = value != null
@@ -226,7 +226,7 @@ class _ItemCardState extends State<ItemCard> {
                         },
                         subtractHandler: () {
                           Map currentCartItem = {
-                            ...cart[item['opc'].toString()]
+                            ...cart[item['item_id'].toString()]
                           };
                           if (currentCartItem['cartQuantity'] > 1) {
                             currentCartItem['cartQuantity'] =
@@ -234,9 +234,10 @@ class _ItemCardState extends State<ItemCard> {
                             addItemToCart(currentCartItem);
                           } else {
                             showCustomLoader(context);
-                            BlocProvider.of<UserDatabaseBloc>(context)
-                                .add(RemoveCartItem(
-                                    itemId: currentCartItem['opc'].toString(),
+                            BlocProvider.of<UserDatabaseBloc>(context).add(
+                                RemoveCartItem(
+                                    itemId:
+                                        currentCartItem['item_id'].toString(),
                                     callback: (result) {
                                       Navigator.pop(context);
                                       if (!result) {

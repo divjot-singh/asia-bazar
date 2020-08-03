@@ -97,7 +97,7 @@ class CategoryTile extends StatelessWidget {
                       Constants.CATEGORY_LISTING
                           .replaceAll(":categoryName", categoryName)
                           .replaceAll(":categoryId",
-                              items[0].data['categoryId'].toString()));
+                              items[0].data['category_id'].toString()));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
