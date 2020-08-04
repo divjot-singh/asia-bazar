@@ -14,6 +14,7 @@ import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/quantity_updater.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
+import 'package:asia/shared_widgets/speech_recognition.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/deboucer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:asia/theme/style.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
 class CategoryListing extends StatefulWidget {
@@ -39,8 +41,14 @@ class _CategoryListingState extends State<CategoryListing> {
   var scrollHeight = 0;
   TextEditingController _textController = TextEditingController();
   bool showScrollUp = false;
+  bool _speechRecognitionAvailable = false;
+  bool _isListening = false;
+
+  SpeechRecognition _speech;
+  String _currentLocale = 'en_US';
   @override
   void initState() {
+    checkForPermissions();
     BlocProvider.of<ItemDatabaseBloc>(context)
         .add(FetchCategoryListing(categoryId: widget.categoryId));
     _scrollController.addListener(scrollListener);
@@ -48,8 +56,80 @@ class _CategoryListingState extends State<CategoryListing> {
     super.initState();
   }
 
+  checkForPermissions() async {
+    var status = await Permission.microphone.isGranted;
+    if (status) {
+      activateSpeechRecognizer();
+    } else {
+      var isPermanentlyDenied = await Permission.microphone.isPermanentlyDenied;
+      if (!isPermanentlyDenied) {
+        PermissionStatus newStatus = await Permission.microphone.request();
+        if (newStatus == PermissionStatus.granted) {
+          activateSpeechRecognizer();
+        }
+      }
+    }
+  }
+
+  void activateSpeechRecognizer() {
+    print('_MyAppState.activateSpeechRecognizer... ');
+    _speech = new SpeechRecognition();
+    _speech.setAvailabilityHandler(onSpeechAvailability);
+    _speech.setCurrentLocaleHandler(onCurrentLocale);
+    _speech.setRecognitionStartedHandler(onRecognitionStarted);
+    _speech.setRecognitionResultHandler(onRecognitionResult);
+    _speech.setRecognitionCompleteHandler(onRecognitionComplete);
+    _speech.activate().then((res) {
+      setState(() => _speechRecognitionAvailable = res);
+    });
+  }
+
+  void start() => _speech.listen(locale: _currentLocale).then((result) {
+        setState(() => _isListening = true);
+        startListening();
+        print('_MyAppState.start => result ${result}');
+      });
+
+  void cancel() =>
+      _speech.cancel().then((result) => setState(() => _isListening = false));
+
+  void stop() => _speech.stop().then((result) {
+        print(result);
+        setState(() => _isListening = false);
+      });
+
+  void onSpeechAvailability(bool result) {
+    if (!result) {
+      _speech.cancel();
+    }
+    setState(() => _speechRecognitionAvailable = result);
+  }
+
+  void onCurrentLocale(String locale) {
+    print('_MyAppState.onCurrentLocale... $locale');
+    setState(() => _currentLocale = locale);
+  }
+
+  void onRecognitionStarted() => setState(() => _isListening = true);
+
+  void onRecognitionResult(String text) {
+    print(text);
+  }
+
+  void onRecognitionComplete(text) {
+    if (text.length > 0) {
+      _textController.text = text;
+      _textController.selection =
+          TextSelection.fromPosition(TextPosition(offset: text.length));
+      searchItems(text);
+    }
+    setState(() => _isListening = false);
+  }
+
   @override
   void dispose() {
+    if(_speech != null)
+    _speech.cancel();
     _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
     _debouncer = null;
@@ -104,6 +184,13 @@ class _CategoryListingState extends State<CategoryListing> {
         });
       }
     }
+  }
+
+  startListening() {
+    if (_isListening)
+      Future.delayed(Duration(seconds: 5), () {
+        stop();
+      });
   }
 
   Future<void> reloadPage() async {
@@ -171,7 +258,24 @@ class _CategoryListingState extends State<CategoryListing> {
                                               _textController.text = '';
                                             },
                                           )
-                                        : null,
+                                        : _speechRecognitionAvailable
+                                            ? InkWell(
+                                                onTap: () {
+                                                  if (_isListening) {
+                                                    stop();
+                                                  } else {
+                                                    start();
+                                                  }
+                                                },
+                                                child: Icon(
+                                                  Icons.mic,
+                                                  color: _isListening
+                                                      ? ColorShades.greenBg
+                                                      : ColorShades.redOrange,
+                                                  size: 24,
+                                                ),
+                                              )
+                                            : null,
                                     hideShadow: true,
                                     hintText: L10n().getStr('category.search',
                                         {'category': widget.categoryName}),
@@ -187,6 +291,16 @@ class _CategoryListingState extends State<CategoryListing> {
                           SizedBox(
                             height: Spacing.space20,
                           ),
+                          if (_isListening) ...[
+                            Text(
+                              L10n().getStr('app.listening'),
+                              style: theme.textTheme.h2
+                                  .copyWith(color: ColorShades.greenBg),
+                            ),
+                            SizedBox(
+                              height: Spacing.space20,
+                            ),
+                          ],
                           if (currentState is PartialFetchingState)
                             Expanded(
                                 child: Center(
@@ -493,14 +607,16 @@ Widget listItem(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: <Widget>[
                             if (user['cart'] == null ||
-                                user['cart'][item['item_id'].toString()] == null)
+                                user['cart'][item['item_id'].toString()] ==
+                                    null)
                               PrimaryButton(
                                 text: L10n().getStr('item.add'),
                                 onPressed: () {
                                   var currentCartItem = {
                                     'price': item['cost'],
                                     'cartQuantity': 1,
-                                    'category_id': item['category_id'].toString(),
+                                    'category_id':
+                                        item['category_id'].toString(),
                                     'item_id': item['item_id'].toString()
                                   };
                                   addItemToCart(currentCartItem);
@@ -538,8 +654,9 @@ Widget listItem(
                                         BlocProvider.of<UserDatabaseBloc>(
                                                 context)
                                             .add(RemoveCartItem(
-                                                itemId: currentCartItem['item_id']
-                                                    .toString(),
+                                                itemId:
+                                                    currentCartItem['item_id']
+                                                        .toString(),
                                                 callback: (result) {
                                                   Navigator.pop(context);
                                                   if (!result) {

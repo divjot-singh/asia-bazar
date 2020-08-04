@@ -361,6 +361,8 @@ PODS:
   - nanopb/encode (0.3.9011)
   - path_provider_linux (0.0.1):
     - Flutter
+  - "permission_handler (5.0.1+1)":
+    - Flutter
   - PromisesObjC (1.2.8)
   - Protobuf (3.11.4)
   - shared_preferences (0.0.1):
@@ -370,6 +372,8 @@ PODS:
   - shared_preferences_macos (0.0.1):
     - Flutter
   - shared_preferences_web (0.0.1):
+    - Flutter
+  - speech_recognition (0.3.0):
     - Flutter
   - url_launcher (0.0.1):
     - Flutter
@@ -403,10 +407,12 @@ DEPENDENCIES:
   - location_permissions (from `.symlinks/plugins/location_permissions/ios`)
   - location_web (from `.symlinks/plugins/location_web/ios`)
   - path_provider_linux (from `.symlinks/plugins/path_provider_linux/ios`)
+  - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_linux (from `.symlinks/plugins/shared_preferences_linux/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
   - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
+  - speech_recognition (from `.symlinks/plugins/speech_recognition/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_linux (from `.symlinks/plugins/url_launcher_linux/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
@@ -489,6 +495,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/location_web/ios"
   path_provider_linux:
     :path: ".symlinks/plugins/path_provider_linux/ios"
+  permission_handler:
+    :path: ".symlinks/plugins/permission_handler/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   shared_preferences_linux:
@@ -497,6 +505,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_macos/ios"
   shared_preferences_web:
     :path: ".symlinks/plugins/shared_preferences_web/ios"
+  speech_recognition:
+    :path: ".symlinks/plugins/speech_recognition/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   url_launcher_linux:
@@ -556,12 +566,14 @@ SPEC CHECKSUMS:
   location_web: b94e7433cfe28c0f7c8923c2ee482824b32e55a7
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
+  permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
   Protobuf: 176220c526ad8bd09ab1fb40a978eac3fef665f7
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   shared_preferences_linux: afefbfe8d921e207f01ede8b60373d9e3b566b78
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
   shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
+  speech_recognition: b5319aace06c3633c0547de44899f6e0bf8b2168
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   url_launcher_linux: ac237cb7a8058736e4aae38bdbcc748a4b394cc0
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313

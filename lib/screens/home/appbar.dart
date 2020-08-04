@@ -47,6 +47,12 @@ class _HomeAppBarState extends State<HomeAppBar> {
     }
   }
 
+  @override
+  void dispose() {
+    if (_speech != null) _speech.cancel();
+    super.dispose();
+  }
+
   void activateSpeechRecognizer() {
     print('_MyAppState.activateSpeechRecognizer... ');
     _speech = new SpeechRecognition();
@@ -134,6 +140,7 @@ class _HomeAppBarState extends State<HomeAppBar> {
                             Constants.SEARCH.replaceAll(
                                 ":listening", _islistening.toString()))
                         .then((_) {
+                      _focusNode.unfocus();
                       setState(() {
                         _islistening = false;
                       });

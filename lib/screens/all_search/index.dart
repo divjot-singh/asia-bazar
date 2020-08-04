@@ -33,7 +33,6 @@ class _SearchItemsState extends State<SearchItems> {
   bool _speechRecognitionAvailable = false;
   bool _isListening = false;
 
-  String transcription = '';
   SpeechRecognition _speech;
   String _currentLocale = 'en_US';
   Debouncer _debouncer = Debouncer();
@@ -59,7 +58,6 @@ class _SearchItemsState extends State<SearchItems> {
         _isListening = res;
         if (res) {
           start();
-          startListening();
         }
       }
       setState(() => _speechRecognitionAvailable = res);
@@ -68,6 +66,7 @@ class _SearchItemsState extends State<SearchItems> {
 
   @override
   void dispose() {
+    _speech.cancel();
     _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
     _debouncer = null;
@@ -89,11 +88,12 @@ class _SearchItemsState extends State<SearchItems> {
 
   void start() => _speech.listen(locale: _currentLocale).then((result) {
         setState(() => _isListening = true);
+        startListening();
         print('_MyAppState.start => result ${result}');
       });
 
   void cancel() =>
-      _speech.cancel().then((result) => setState(() => _isListening = result));
+      _speech.cancel().then((result) => setState(() => _isListening = false));
 
   void stop() => _speech.stop().then((result) {
         print(result);
@@ -217,23 +217,24 @@ class _SearchItemsState extends State<SearchItems> {
                                   setState(() {});
                                 },
                               )
-                            : InkWell(
-                                onTap: () {
-                                  if (_isListening) {
-                                    stop();
-                                  } else {
-                                    start();
-                                    startListening();
-                                  }
-                                },
-                                child: Icon(
-                                  Icons.mic,
-                                  color: _isListening
-                                      ? ColorShades.greenBg
-                                      : ColorShades.redOrange,
-                                  size: 24,
-                                ),
-                              ),
+                            : _speechRecognitionAvailable
+                                ? InkWell(
+                                    onTap: () {
+                                      if (_isListening) {
+                                        stop();
+                                      } else {
+                                        start();
+                                      }
+                                    },
+                                    child: Icon(
+                                      Icons.mic,
+                                      color: _isListening
+                                          ? ColorShades.greenBg
+                                          : ColorShades.redOrange,
+                                      size: 24,
+                                    ),
+                                  )
+                                : null,
                         border: OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
