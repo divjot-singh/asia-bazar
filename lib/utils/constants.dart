@@ -54,7 +54,7 @@ class Constants {
   static const CATEGORY_LISTING = 'user/category/:categoryName/:categoryId';
   static const CHECKOUT = 'user/checkout';
   static const ORDER_DETAILS = 'user/order_details/:orderId';
-  static const SEARCH = 'user/search';
+  static const SEARCH = 'user/search/:listening';
   static const ORDER_ITEM_DETAILS =
       'user/order_details/:orderId/item_details/:editView';
   static const DEPARTMENT_LIST = 'user/departments';

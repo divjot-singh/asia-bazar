@@ -8,6 +8,7 @@ import 'package:asia/l10n/l10n.dart';
 import 'package:asia/screens/category_listing/index.dart';
 import 'package:asia/shared_widgets/item_cart.dart';
 import 'package:asia/shared_widgets/page_views.dart';
+import 'package:asia/shared_widgets/speech_recognition.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/deboucer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
 class SearchItems extends StatefulWidget {
+  final bool listening;
+  SearchItems({this.listening = false});
   @override
   _SearchItemsState createState() => _SearchItemsState();
 }
@@ -27,12 +30,40 @@ class _SearchItemsState extends State<SearchItems> {
   var scrollHeight = 0;
   bool showScrollUp = false;
   bool isFetching = false;
+  bool _speechRecognitionAvailable = false;
+  bool _isListening = false;
+
+  String transcription = '';
+  SpeechRecognition _speech;
+  String _currentLocale = 'en_US';
   Debouncer _debouncer = Debouncer();
   @override
   void initState() {
     _scrollController.addListener(scrollListener);
     searchItems('');
+
+    activateSpeechRecognizer();
     super.initState();
+  }
+
+  void activateSpeechRecognizer() {
+    print('_MyAppState.activateSpeechRecognizer... ');
+    _speech = new SpeechRecognition();
+    _speech.setAvailabilityHandler(onSpeechAvailability);
+    _speech.setCurrentLocaleHandler(onCurrentLocale);
+    _speech.setRecognitionStartedHandler(onRecognitionStarted);
+    _speech.setRecognitionResultHandler(onRecognitionResult);
+    _speech.setRecognitionCompleteHandler(onRecognitionComplete);
+    _speech.activate().then((res) {
+      if (widget.listening) {
+        _isListening = res;
+        if (res) {
+          start();
+          startListening();
+        }
+      }
+      setState(() => _speechRecognitionAvailable = res);
+    });
   }
 
   @override
@@ -54,6 +85,45 @@ class _SearchItemsState extends State<SearchItems> {
         isFetching != true) {
       _fetchMoreItems();
     }
+  }
+
+  void start() => _speech.listen(locale: _currentLocale).then((result) {
+        setState(() => _isListening = true);
+        print('_MyAppState.start => result ${result}');
+      });
+
+  void cancel() =>
+      _speech.cancel().then((result) => setState(() => _isListening = result));
+
+  void stop() => _speech.stop().then((result) {
+        print(result);
+        setState(() => _isListening = false);
+      });
+
+  void onSpeechAvailability(bool result) =>
+      setState(() => _speechRecognitionAvailable = result);
+
+  void onCurrentLocale(String locale) {
+    print('_MyAppState.onCurrentLocale... $locale');
+    setState(() => _currentLocale = locale);
+  }
+
+  void onRecognitionStarted() => setState(() => _isListening = true);
+
+  void onRecognitionResult(String text) {
+    print(text);
+  }
+
+  void onRecognitionComplete(text) {
+    print('lll');
+    print(text);
+    if (text.length > 0) {
+      _textController.text = text;
+      _textController.selection =
+          TextSelection.fromPosition(TextPosition(offset: text.length));
+      searchItems(text);
+    }
+    setState(() => _isListening = false);
   }
 
   _fetchMoreItems() {
@@ -90,6 +160,13 @@ class _SearchItemsState extends State<SearchItems> {
     });
   }
 
+  startListening() {
+    if (_isListening)
+      Future.delayed(Duration(seconds: 5), () {
+        stop();
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
     theme = Theme.of(context);
@@ -97,7 +174,6 @@ class _SearchItemsState extends State<SearchItems> {
       child: BlocBuilder<UserDatabaseBloc, Map>(builder: (context, state) {
         var currentState = state['userstate'];
         if (currentState is UserIsUser) {
-          var user = currentState.user;
           return Scaffold(
             backgroundColor: ColorShades.white,
             body: Column(
@@ -138,9 +214,26 @@ class _SearchItemsState extends State<SearchItems> {
                                 ),
                                 onPressed: () {
                                   _textController.text = '';
+                                  setState(() {});
                                 },
                               )
-                            : null,
+                            : InkWell(
+                                onTap: () {
+                                  if (_isListening) {
+                                    stop();
+                                  } else {
+                                    start();
+                                    startListening();
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.mic,
+                                  color: _isListening
+                                      ? ColorShades.greenBg
+                                      : ColorShades.redOrange,
+                                  size: 24,
+                                ),
+                              ),
                         border: OutlineInputBorder(borderSide: BorderSide.none),
                         focusedBorder:
                             OutlineInputBorder(borderSide: BorderSide.none),
@@ -152,6 +245,12 @@ class _SearchItemsState extends State<SearchItems> {
                 SizedBox(
                   height: Spacing.space16,
                 ),
+                if (_isListening)
+                  Text(
+                    L10n().getStr('app.listening'),
+                    style:
+                        theme.textTheme.h2.copyWith(color: ColorShades.greenBg),
+                  ),
                 BlocBuilder<ItemDatabaseBloc, Map>(builder: (context, state) {
                   var currentState = state['searchListing'];
                   if (currentState is GlobalFetchingState) {

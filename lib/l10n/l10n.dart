@@ -41,7 +41,8 @@ class L10n {
 
 Map<String, Map<String, String>> strings = {
   "en": {
-    "app.title": "Asia bazar",
+    "app.title": "Asia bazaar",
+    "app.listening": "Listening...",
     "tab.search": "Search",
     "app.categories": "Categories",
     "error.ERROR_INVALID_VERIFICATION_CODE": "Invalid otp",

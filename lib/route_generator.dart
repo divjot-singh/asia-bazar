@@ -51,7 +51,13 @@ class FluroRouter {
       case Constants.SEARCH:
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-            return SearchItems();
+            bool listening = (params['listening'][0] == 'true');
+            print(listening);
+            print(params['listening'][0]);
+            print(params['listening'][0] == 'true');
+            return SearchItems(
+              listening: listening,
+            );
           },
         );
       case Constants.CART:
