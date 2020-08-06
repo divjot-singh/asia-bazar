@@ -34,22 +34,22 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This application doesnt need apple music. You may disable it.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This application doesnt need calendar. You may disable it.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This application doesnt need contacts. You may disable it.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This application needs to access your microphone</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This application doesnt need motion usage. You may disable it.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This application needs the speech recognition permission</string>
-		<key>NSContactsUsageDescription</key>
-<string>This application doesnt need contacts. You may disable it.</string>
-<key>NSCalendarsUsageDescription</key>
-<string>This application doesnt need calendar. You may disable it.</string>
-<key>NSAppleMusicUsageDescription</key>
-<string>This application doesnt need apple music. You may disable it.</string>
-<key>NSMotionUsageDescription</key>
-<string>This application doesnt need motion usage. You may disable it.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
