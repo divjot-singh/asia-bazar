@@ -128,8 +128,7 @@ class _CategoryListingState extends State<CategoryListing> {
 
   @override
   void dispose() {
-    if(_speech != null)
-    _speech.cancel();
+    if (_speech != null) _speech.cancel();
     _scrollController.removeListener(scrollListener);
     _scrollController.dispose();
     _debouncer = null;
@@ -188,7 +187,7 @@ class _CategoryListingState extends State<CategoryListing> {
 
   startListening() {
     if (_isListening)
-      Future.delayed(Duration(seconds: 5), () {
+      Future.delayed(Duration(seconds: 3), () {
         stop();
       });
   }

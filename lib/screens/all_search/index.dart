@@ -162,7 +162,7 @@ class _SearchItemsState extends State<SearchItems> {
 
   startListening() {
     if (_isListening)
-      Future.delayed(Duration(seconds: 5), () {
+      Future.delayed(Duration(seconds: 3), () {
         stop();
       });
   }
