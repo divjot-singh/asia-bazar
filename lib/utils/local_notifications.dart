@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/local_notification_helper.dart';
@@ -169,11 +170,14 @@ dynamic getLocalNotification({
 class NotificationTypes {
   static Map routeMap = {
     'ORDER_UPDATED_NOTIFICATION': Constants.ORDER_DETAILS,
-    'POINTS_UPDATED_NOTIFICATION': Constants.EDIT_PROFILE
+    'POINTS_UPDATED_NOTIFICATION': Constants.EDIT_PROFILE,
   };
   static String fetchNotificationRoute(Map notificationData) {
     Map data = {...notificationData};
     String route = routeMap[data['notification_type']];
+    if(data['notification_type'] == 'INFO_UPDATED_NOTIFICATION'){
+      locator<NavigationService>().addGlobalBlocEvent(FetchSellerInfo(force: true));
+    }
     if (route == null) return null;
     if (data['parameters'] is Map) {
       Map params = data['parameters'];

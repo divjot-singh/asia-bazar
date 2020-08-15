@@ -141,12 +141,12 @@ class ItemDatabase {
         details['cartItems'] = itemsOrdered;
         var orderId = details['orderId'];
         details['timestamp'] = Timestamp.fromDate(DateTime.now().toUtc());
-        DocumentReference ref = await orderRef.add(details);
+        await orderRef.document(orderId).setData(details);
         cart.forEach((key, item) async {
           await orderedItems.add({
             'itemDetails': item,
             'orderId': orderId,
-            'orderRef': ref.documentID
+            'orderRef': orderId
           });
         });
         if (details['areLoyaltyPointsUsed'] == true &&
@@ -246,6 +246,25 @@ class ItemDatabase {
         'data': data
       };
     } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Map> fetchItemFromBarcode(String code) async {
+    try {
+      QuerySnapshot itemData = await _firestore
+          .collectionGroup('items')
+          .orderBy('item_id')
+          .where('bar_codes', arrayContains: code)
+          .limit(1)
+          .getDocuments();
+      if (itemData.documents.length > 0) {
+        return itemData.documents[0].data;
+      } else {
+        return {};
+      }
+    } catch (e) {
+      print(e);
       return null;
     }
   }

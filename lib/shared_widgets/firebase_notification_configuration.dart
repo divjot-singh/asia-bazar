@@ -80,8 +80,21 @@ class ConfigureNotification {
       print("Operating system not supported!");
       return;
     }
-
-    localNotification.showNotificationOnTray();
+    var messageData = message['data']['extra_data'];
+    bool isSilent = false;
+    if (messageData is String) {
+      try {
+        var extraData = json.decode(messageData);
+        isSilent = extraData['silent'];
+      } catch (e) {
+        print(e);
+      }
+    }
+    if (!isSilent)
+      localNotification.showNotificationOnTray();
+    else {
+      localNotification.getRedirectPath();
+    }
     notificationId += 1;
   }
 

@@ -10,7 +10,7 @@ class GlobalBloc extends Bloc<GlobalEvents, Map> {
   @override
   Stream<Map> mapEventToState(GlobalEvents event) async* {
     if (event is FetchSellerInfo) {
-      if (state['sellerInfo'] != InfoFetchedState) {
+      if (state['sellerInfo'] is! InfoFetchedState || event.force) {
         var info = await _globalRepo.fetchSellerInfo();
         if (event.callback != null) {
           event.callback(info);
@@ -18,7 +18,8 @@ class GlobalBloc extends Bloc<GlobalEvents, Map> {
         state['sellerInfo'] = InfoFetchedState(sellerInfo: info);
         yield {...state};
       } else {
-        event.callback(state['sellerInfo'].sellerInfo);
+        if (event.callback != null)
+          event.callback(state['sellerInfo'].sellerInfo);
       }
     }
   }

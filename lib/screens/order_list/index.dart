@@ -218,9 +218,11 @@ class _OrderListState extends State<OrderList> {
                         SizedBox(
                           width: Spacing.space8,
                         ),
-                        Text(timeString,
-                            style: theme.textTheme.body1Regular
-                                .copyWith(color: ColorShades.greenBg))
+                        Flexible(
+                          child: Text(timeString,
+                              style: theme.textTheme.body1Regular
+                                  .copyWith(color: ColorShades.greenBg)),
+                        )
                       ],
                     ),
                   ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class GlobalState {
-  static Map globalState = {'sellerinfo': GlobalUninitialisedState()};
+  static Map globalState = {'sellerInfo': GlobalUninitialisedState()};
 }
 
 class GlobalErrorState extends GlobalState {
