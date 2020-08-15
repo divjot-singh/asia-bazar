@@ -209,6 +209,7 @@ Map<String, Map<String, String>> strings = {
     "orderDetails.otherCharges": "Other charges",
     "orderDetails.deliveryCharges": "Delivery charges",
     "orderDetails.packagingCharges": "Packaging charges",
+    "orderDetails.additionalCharges":"Additional charges",
     "orderItems.heading": "Order items",
     "orderDetails.quantity": "Quantity",
     "orderDetails.price": "Price",

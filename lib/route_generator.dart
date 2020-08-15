@@ -91,12 +91,14 @@ class FluroRouter {
         return Handler(
           handlerFunc: (BuildContext context, Map<String, dynamic> params) {
             var orderId = params['orderId'][0];
-            var editView = params['editView'][0] == "true";
+            String amount = params['amount'][0];
+            //var editView = params['editView'][0] == "true";
             return BlocProvider.value(
                 value: BlocHolder().getClubDetailsBloc(orderId),
                 child: OrderItemDetails(
                   orderId: orderId,
-                  editView: editView,
+                  editView: false,
+                  amount: double.parse(amount),
                 ));
           },
         );

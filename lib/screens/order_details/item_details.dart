@@ -21,7 +21,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class OrderItemDetails extends StatefulWidget {
   final bool editView;
   final String orderId;
-  OrderItemDetails({@required this.orderId, this.editView = false});
+  final double amount;
+  OrderItemDetails(
+      {@required this.orderId, this.editView = false, this.amount});
 
   @override
   _OrderItemDetailsState createState() => _OrderItemDetailsState();
@@ -31,9 +33,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
   ThemeData theme;
   double grandTotal = 0;
   double totalCost = 0;
-  double packagingCharges = 0;
-  double otherCharges = 0;
-  double deliveryCharges = 0;
+
   List selectedItems;
   bool selected = true;
   var currentUser;
@@ -42,8 +42,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
   void initState() {
     BlocProvider.of<OrderDetailsBloc>(context).add(
         FetchOrderItems(orderId: widget.orderId, callback: fetchItemsCallback));
-    BlocProvider.of<GlobalBloc>(context)
-        .add(FetchSellerInfo(callback: fetchSellerCallback));
+
     super.initState();
   }
 
@@ -60,16 +59,6 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
     setState(() {
       selectedItems = [...allItems];
     });
-  }
-
-  fetchSellerCallback(info) {
-    if (info is Map) {
-      setState(() {
-        deliveryCharges = info['deliveryCharges'].toDouble();
-        packagingCharges = info['packagingCharges'].toDouble();
-        otherCharges = info['packagingCharges'].toDouble();
-      });
-    }
   }
 
   Widget itemTile(item) {
@@ -90,7 +79,7 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
     var itemTotal = cartItem['price'] * returnedQuantity;
     itemTotal = ((itemTotal * 100).ceil() / 100);
     totalCost += itemTotal;
-    grandTotal = totalCost + deliveryCharges + otherCharges + packagingCharges;
+    grandTotal = widget.amount;
     totalCost = ((totalCost * 100).ceil() / 100);
     grandTotal = ((grandTotal * 100).ceil() / 100);
 
@@ -221,66 +210,22 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
           ],
         ),
       ),
-      if (deliveryCharges > 0)
+      if (grandTotal != totalCost)
         SizedBox(
           height: Spacing.space16,
         ),
-      if (deliveryCharges > 0)
+      if (grandTotal != totalCost)
         Padding(
           padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(
-                L10n().getStr('orderDetails.deliveryCharges') + ' : ',
+                L10n().getStr('orderDetails.additionalCharges') + ' : ',
                 style: theme.textTheme.h4.copyWith(color: ColorShades.bastille),
               ),
               Text(
-                '\$ ${deliveryCharges.toStringAsFixed(2)}',
-                style: theme.textTheme.body1Medium
-                    .copyWith(color: ColorShades.bastille),
-              ),
-            ],
-          ),
-        ),
-      if (packagingCharges > 0)
-        SizedBox(
-          height: Spacing.space16,
-        ),
-      if (packagingCharges > 0)
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                L10n().getStr('orderDetails.packagingCharges') + ' : ',
-                style: theme.textTheme.h4.copyWith(color: ColorShades.bastille),
-              ),
-              Text(
-                '\$ ${packagingCharges.toStringAsFixed(2)}',
-                style: theme.textTheme.body1Medium
-                    .copyWith(color: ColorShades.bastille),
-              ),
-            ],
-          ),
-        ),
-      if (otherCharges > 0)
-        SizedBox(
-          height: Spacing.space16,
-        ),
-      if (otherCharges > 0)
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(
-                L10n().getStr('orderDetails.otherCharges') + ' : ',
-                style: theme.textTheme.h4.copyWith(color: ColorShades.bastille),
-              ),
-              Text(
-                '\$ ${otherCharges.toStringAsFixed(2)}',
+                '\$ ${(grandTotal - totalCost).toStringAsFixed(2)}',
                 style: theme.textTheme.body1Medium
                     .copyWith(color: ColorShades.bastille),
               ),
@@ -481,9 +426,9 @@ class _OrderItemDetailsState extends State<OrderItemDetails> {
                                                       onChanged: (selected) {
                                                         if (selected) {
                                                           selectedItems.add({
-                                                            'id':
-                                                                cartItem['item_id']
-                                                                    .toString(),
+                                                            'id': cartItem[
+                                                                    'item_id']
+                                                                .toString(),
                                                             'price': cartItem[
                                                                 'price'],
                                                             'returnQuantity':

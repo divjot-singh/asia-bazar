@@ -42,11 +42,6 @@ class _OrderDetailsState extends State<OrderDetails> {
   void initState() {
     BlocProvider.of<OrderDetailsBloc>(context)
         .add(FetchOrderDetails(orderId: widget.orderId));
-    BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo(callback: (info){
-      setState(() {
-        
-      });
-    }));
     super.initState();
   }
 
@@ -294,9 +289,15 @@ class _OrderDetailsState extends State<OrderDetails> {
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamed(
-                        context,
-                        Constants.ORDER_ITEM_DETAILS
-                            .replaceAll(":orderId", widget.orderId));
+                      context,
+                      Constants.ORDER_ITEM_DETAILS
+                          .replaceAll(":orderId", widget.orderId)
+                          .replaceAll(
+                              ":amount",
+                              details['finalAmount'] != null
+                                  ? details['finalAmount'].toString()
+                                  : details['amount'].toString()),
+                    );
                   },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -328,11 +329,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   Widget detailsBody(details) {
     bool showLifeCycle = statusChronology.indexOf(details['status']) < 3 &&
         statusChronology.indexOf(details['status']) > -1;
-    var globalBlocState =
-        BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
-    if (globalBlocState is InfoFetchedState) {
-      sellerPhoneNumber = globalBlocState.sellerInfo['phoneNumber'];
-    }
+
     // bool delivered = statusChronology.indexOf(details['status']) > 2;
     // var noCancellationOrders = [
     //   KeyNames['orderDelivered'],
@@ -358,13 +355,17 @@ class _OrderDetailsState extends State<OrderDetails> {
     // // bool cancellationAvailable =
     // //     !(noCancellationOrders.indexOf(details['status']) > -1);
     var optionsList = [];
-    if (sellerPhoneNumber != null)
-      optionsList.add({
-        'onTap': () {
-          contactSeller(context: context, phoneNumber: sellerPhoneNumber);
-        },
-        'text': L10n().getStr('orderDetails.contactSeller')
-      });
+    optionsList.add({
+      'onTap': () {
+        var globalBlocState =
+            BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
+        if (globalBlocState is InfoFetchedState) {
+          sellerPhoneNumber = globalBlocState.sellerInfo['phoneNumber'];
+        }
+        contactSeller(context: context, phoneNumber: sellerPhoneNumber);
+      },
+      'text': L10n().getStr('orderDetails.contactSeller')
+    });
     bool showCashBanner = details['paymentMethod']['value'] == 'cod' &&
         statusChronology.indexOf(details['status']) == 2;
     // if (cancellationAvailable)

@@ -56,7 +56,7 @@ class Constants {
   static const ORDER_DETAILS = 'user/order_details/:orderId';
   static const SEARCH = 'user/search/:listening';
   static const ORDER_ITEM_DETAILS =
-      'user/order_details/:orderId/item_details/:editView';
+      'user/order_details/:orderId/item_details/:amount';
   static const DEPARTMENT_LIST = 'user/departments';
 }
 
