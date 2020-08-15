@@ -12,17 +12,12 @@ class OrderDatabaseRepo {
       bool addListener = true}) async {
     var returnValue;
     try {
-      QuerySnapshot snapshot = await orderRef
-          .where('orderId', isEqualTo: orderId)
-          .where('userId', isEqualTo: userId)
-          .limit(1)
-          .getDocuments();
-      DocumentSnapshot order =
-          snapshot.documents.length > 0 ? snapshot.documents[0] : {};
-      returnValue = order.data;
+      DocumentSnapshot snapshot = await orderRef.document(orderId).get();
+
+      returnValue = snapshot.data;
       if (addListener) {
         Stream<DocumentSnapshot> snapshotStream =
-            orderRef.document(order.documentID).snapshots();
+            orderRef.document(orderId).snapshots();
         returnValue = snapshotStream;
       }
       return returnValue;

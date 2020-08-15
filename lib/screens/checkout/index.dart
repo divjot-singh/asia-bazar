@@ -1,5 +1,6 @@
 import 'package:asia/blocs/global_bloc/bloc.dart';
 import 'package:asia/blocs/global_bloc/events.dart';
+import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
 import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
@@ -40,12 +41,13 @@ class _CheckoutState extends State<Checkout> {
   ThemeData theme;
   bool itemsOutOfStock = false;
   List paymentMethodOptions;
-  double pointValue;
+  double pointValue = 0;
   var orderId;
   @override
   void initState() {
-    BlocProvider.of<GlobalBloc>(context)
-        .add(FetchSellerInfo(callback: fetchInfoCallback));
+    BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo(callback: (info) {
+      setState(() {});
+    }));
     paymentMethodOptions = paymentOptions;
     paymentMethod = paymentMethodOptions[0]['value'];
     // _razorpay = Razorpay();
@@ -55,13 +57,13 @@ class _CheckoutState extends State<Checkout> {
     super.initState();
   }
 
-  fetchInfoCallback(info) {
-    if (info['loyalty_point_value'] != null) {
-      setState(() {
-        pointValue = info['loyalty_point_value'];
-      });
-    }
-  }
+  // fetchInfoCallback(info) {
+  //   if (info['loyalty_point_value'] != null) {
+  //     setState(() {
+  //       pointValue = info['loyalty_point_value'];
+  //     });
+  //   }
+  // }
 
   // void _handlePaymentSuccess(PaymentSuccessResponse response) {
   //   rzpPaymentId = response.paymentId;
@@ -200,6 +202,11 @@ class _CheckoutState extends State<Checkout> {
   }
 
   void placeOrder() async {
+    var globalBlocState =
+        BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
+    if (globalBlocState is InfoFetchedState) {
+      pointValue = globalBlocState.sellerInfo['loyalty_point_value'];
+    }
     var phoneNumber = currentUser[KeyNames['phone']];
     var userName = currentUser[KeyNames['userName']];
     var orderAddress = address;

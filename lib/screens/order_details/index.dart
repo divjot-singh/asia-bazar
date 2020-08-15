@@ -42,18 +42,21 @@ class _OrderDetailsState extends State<OrderDetails> {
   void initState() {
     BlocProvider.of<OrderDetailsBloc>(context)
         .add(FetchOrderDetails(orderId: widget.orderId));
-    BlocProvider.of<GlobalBloc>(context)
-        .add(FetchSellerInfo(callback: fetchInfoCallback));
+    BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo(callback: (info){
+      setState(() {
+        
+      });
+    }));
     super.initState();
   }
 
-  void fetchInfoCallback(data) {
-    if (data is Map && data['phoneNumber'] != null) {
-      setState(() {
-        sellerPhoneNumber = data['phoneNumber'];
-      });
-    }
-  }
+  // void fetchInfoCallback(data) {
+  //   if (data is Map && data['phoneNumber'] != null) {
+  //     setState(() {
+  //       sellerPhoneNumber = data['phoneNumber'];
+  //     });
+  //   }
+  // }
 
   Widget getHeader(Map details) {
     var imageUrl;
@@ -325,6 +328,11 @@ class _OrderDetailsState extends State<OrderDetails> {
   Widget detailsBody(details) {
     bool showLifeCycle = statusChronology.indexOf(details['status']) < 3 &&
         statusChronology.indexOf(details['status']) > -1;
+    var globalBlocState =
+        BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
+    if (globalBlocState is InfoFetchedState) {
+      sellerPhoneNumber = globalBlocState.sellerInfo['phoneNumber'];
+    }
     // bool delivered = statusChronology.indexOf(details['status']) > 2;
     // var noCancellationOrders = [
     //   KeyNames['orderDelivered'],
