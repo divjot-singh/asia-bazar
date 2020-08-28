@@ -2,12 +2,12 @@ import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/input_box.dart';
+import 'package:asia/shared_widgets/speech_recognition.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:speech_recognition/speech_recognition.dart';
 
 class HomeAppBar extends StatefulWidget {
   final TabController tabController;

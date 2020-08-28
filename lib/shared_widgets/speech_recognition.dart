@@ -27,7 +27,7 @@ class SpeechRecognition {
   VoidCallback recognitionStartedHandler;
 
   StringResultHandler recognitionCompleteHandler;
-  
+
   VoidCallback errorHandler;
 
   /// ask for speech  recognizer permission
@@ -39,7 +39,7 @@ class SpeechRecognition {
 
   /// cancel speech
   Future cancel() => _channel.invokeMethod("speech.cancel");
-  
+
   /// stop listening
   Future stop() => _channel.invokeMethod("speech.stop");
 
@@ -50,7 +50,7 @@ class SpeechRecognition {
         availabilityHandler(call.arguments);
         break;
       case "speech.onCurrentLocale":
-        currentLocaleHandler(call.arguments);
+        if (currentLocaleHandler != null) currentLocaleHandler(call.arguments);
         break;
       case "speech.onSpeech":
         recognitionResultHandler(call.arguments);
@@ -87,6 +87,6 @@ class SpeechRecognition {
 
   void setCurrentLocaleHandler(StringResultHandler handler) =>
       currentLocaleHandler = handler;
-  
+
   void setErrorHandler(VoidCallback handler) => errorHandler = handler;
 }
