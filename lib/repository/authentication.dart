@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:asia/models/user.dart';
@@ -34,6 +33,7 @@ class AuthRepo {
           callback(AuthCallbackType.completed, authCredential);
         }),
         verificationFailed: (AuthException authException) {
+          print(authException.message);
           callback(AuthCallbackType.failed, authException);
         },
         codeSent: (String verificationId, [int forceResendingToken]) {

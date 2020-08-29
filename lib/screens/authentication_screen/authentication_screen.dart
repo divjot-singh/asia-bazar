@@ -42,6 +42,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   verifyPhoneNumberCallback(authenticationState, [data]) {
+    print(authenticationState);
+    print(data);
     if (authenticationState == AuthCallbackType.completed) {
       alreadyLoggedIn();
     } else if (authenticationState == AuthCallbackType.codeSent) {
