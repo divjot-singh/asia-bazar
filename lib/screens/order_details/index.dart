@@ -1,5 +1,4 @@
 import 'package:asia/blocs/global_bloc/bloc.dart';
-import 'package:asia/blocs/global_bloc/events.dart';
 import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/order_bloc/bloc.dart';
 import 'package:asia/blocs/order_bloc/event.dart';

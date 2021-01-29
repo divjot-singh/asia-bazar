@@ -87,7 +87,7 @@ class _CategoryListingState extends State<CategoryListing> {
   void start() => _speech.listen(locale: _currentLocale).then((result) {
         setState(() => _isListening = true);
         startListening();
-        print('_MyAppState.start => result ${result}');
+        print('_MyAppState.start => result $result');
       });
 
   void cancel() =>

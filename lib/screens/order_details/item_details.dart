@@ -1,5 +1,4 @@
-import 'package:asia/blocs/global_bloc/bloc.dart';
-import 'package:asia/blocs/global_bloc/events.dart';
+
 import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/order_bloc/bloc.dart';
 import 'package:asia/blocs/order_bloc/event.dart';
@@ -8,7 +7,6 @@ import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
-import 'package:asia/shared_widgets/checkbox_list.dart';
 import 'package:asia/shared_widgets/custom_dialog.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/primary_button.dart';

@@ -203,6 +203,7 @@ Map<String, Map<String, String>> strings = {
     "orderDetails.placedOn": "Placed on",
     "orderDetails.deliveredOn": "Delivered on",
     "orderDetails.paymentMethod": "Payment method",
+    "paymentScreen.header":"Payments",
     "orderDetails.orderAmount": "Total amount",
     "app.seeDetails": "See details",
     "orderDetails.cartTotal": "Cart total",

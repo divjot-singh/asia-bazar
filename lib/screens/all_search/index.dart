@@ -5,7 +5,6 @@ import 'package:asia/blocs/item_database_bloc/state.dart';
 import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
-import 'package:asia/screens/category_listing/index.dart';
 import 'package:asia/shared_widgets/item_cart.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/speech_recognition.dart';
@@ -89,7 +88,7 @@ class _SearchItemsState extends State<SearchItems> {
   void start() => _speech.listen(locale: _currentLocale).then((result) {
         setState(() => _isListening = true);
         startListening();
-        print('_MyAppState.start => result ${result}');
+        print('_MyAppState.start => result $result');
       });
 
   void cancel() =>

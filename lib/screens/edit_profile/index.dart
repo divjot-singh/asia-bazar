@@ -68,7 +68,7 @@ class _EditProfileState extends State<EditProfile>
         actions: <Widget>[
           GestureDetector(
             child: IconButton(
-              onPressed: (){},
+              onPressed: () {},
               icon: Icon(
                 Icons.search,
                 color: Colors.white,

@@ -1,6 +1,5 @@
 import 'package:asia/blocs/global_bloc/state.dart';
 import 'package:asia/blocs/item_database_bloc/bloc.dart';
-import 'package:asia/blocs/item_database_bloc/event.dart';
 import 'package:asia/blocs/item_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/item_cart.dart';
