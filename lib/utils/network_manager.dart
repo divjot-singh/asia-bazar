@@ -14,7 +14,7 @@ class NetworkManager {
   static String className = 'NetworkManager';
   static final logger = getLogger(className);
 
-  static var apiUrl = URLS['API_URL'];
+  static var apiUrl = URLS['api_url'];
   static Future _makeRequest(
     String url,
     String type,
@@ -41,7 +41,6 @@ class NetworkManager {
       );
       Map<String, String> headers = {
         "content-type": "application/x-www-form-urlencoded",
-        'Authorization': 'Bearer ' + data['token']
       };
       if (type == 'POST') {
         response = await client.post(url, body: data, headers: headers);
@@ -52,7 +51,7 @@ class NetworkManager {
 
       if (response.statusCode >= 200 && response.statusCode < 400) {
         responseBody = convert.jsonDecode(response.body);
-
+        return responseBody;
         if (responseBody["success"]) {
           Logger().d(responseBody['data']);
           return responseBody['data'];

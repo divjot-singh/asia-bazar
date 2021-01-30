@@ -114,7 +114,6 @@ class _SearchItemsState extends State<SearchItems> {
   }
 
   void onRecognitionComplete(text) {
-    print('lll');
     print(text);
     if (text.length > 0) {
       _textController.text = text;

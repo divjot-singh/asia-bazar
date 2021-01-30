@@ -252,8 +252,8 @@ class RouteGenerator {
           Map<String, dynamic> arguments =
               settings.arguments != null ? settings.arguments : {};
           return PaymentScreen(
-            amount: double.parse(arguments['amount'].toString()),
-          );
+              amount: double.parse(arguments['amount'].toString()),
+              paymentMethod: arguments['paymentMethod'].toString());
         });
       default:
         return FluroRouter.router.generator(settings);

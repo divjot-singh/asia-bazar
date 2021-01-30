@@ -7,10 +7,14 @@ import 'package:asia/blocs/user_database_bloc/bloc.dart';
 import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
+import 'package:asia/repository/payment_repo.dart';
+import 'package:asia/screens/checkout/bankAccountMode.dart';
+import 'package:asia/screens/checkout/creditCardMode.dart';
 import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/checkbox_list.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
 import 'package:asia/shared_widgets/custom_dialog.dart';
+import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/primary_button.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/utils/constants.dart';
@@ -39,52 +43,47 @@ class _CheckoutState extends State<Checkout> {
   String paymentMethod;
   var currentUser;
   ThemeData theme;
-  bool itemsOutOfStock = false;
-  List paymentMethodOptions;
+
+  bool itemsOutOfStock = false, allowPop = true;
+  List paymentMethodOptions, additionalPaymentMethods = [];
   double pointValue = 0;
   var orderId;
+  bool loadingPaymentMethods = true;
+  String transactionId;
   @override
   void initState() {
     BlocProvider.of<GlobalBloc>(context).add(FetchSellerInfo(callback: (info) {
       setState(() {});
     }));
+    fetchPaymentProfiles();
     paymentMethodOptions = paymentOptions;
     paymentMethod = paymentMethodOptions[0]['value'];
-    // _razorpay = Razorpay();
-    // _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
-    // _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
-    // _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     super.initState();
   }
 
-  // fetchInfoCallback(info) {
-  //   if (info['loyalty_point_value'] != null) {
-  //     setState(() {
-  //       pointValue = info['loyalty_point_value'];
-  //     });
-  //   }
-  // }
+  fetchPaymentProfiles() async {
+    var userState =
+        BlocProvider.of<UserDatabaseBloc>(context).state['userstate'];
+    if (userState is UserIsUser) {
+      String paymentId = userState.user[KeyNames['customerPaymentId']];
+      var response =
+          await PaymentRepository.fetchPaymentProfiles(paymentId: paymentId);
+      setState(() {
+        loadingPaymentMethods = false;
+      });
+      if (response['success'] == true) {
+        var modesList = response['data'].toList();
 
-  // void _handlePaymentSuccess(PaymentSuccessResponse response) {
-  //   rzpPaymentId = response.paymentId;
-  //   placeOrder();
-  //   // showCustomSnackbar(
-  //   //     context: context, type: SnackbarType.success, content: 'Success');
-  // }
-
-  // void _handlePaymentError(PaymentFailureResponse response) {
-  //   showCustomSnackbar(
-  //       context: context, type: SnackbarType.error, content: 'Error');
-  // }
-
-  // void _handleExternalWallet(ExternalWalletResponse response) {
-  //   showCustomSnackbar(
-  //       context: context, type: SnackbarType.error, content: 'Wallet');
-  // }
+        setState(() {
+          additionalPaymentMethods = modesList;
+          paymentMethod = modesList[0]['customerPaymentProfileId'];
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
-    //_razorpay.clear();
     super.dispose();
   }
 
@@ -170,8 +169,35 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Widget getPaymentOptions() {
-    var options = [...paymentMethodOptions];
-    options.removeWhere((item) => item['value'] == 'points');
+    if (loadingPaymentMethods) {
+      return Padding(
+        padding: const EdgeInsets.only(top: Spacing.space32),
+        child: PageFetchingViewWithLightBg(),
+      );
+    }
+    var additionalMethods = additionalPaymentMethods.map((mode) {
+      Map paymentModeObject = {};
+      paymentModeObject['value'] = mode['customerPaymentProfileId'];
+      if (mode['payment'] != null) {
+        if (mode['payment']['bankAccount'] != null) {
+          paymentModeObject['widget'] = BankAccountPaymentMode(
+            paymentMode: mode['payment']['bankAccount'],
+            isExpanded: paymentMethod == mode['customerPaymentProfileId'],
+          );
+        } else if (mode['payment']['creditCard'] != null) {
+          paymentModeObject['widget'] = CreditCardMode(
+            paymentMode: mode['payment']['creditCard'],
+          );
+        } else {
+          paymentModeObject = null;
+        }
+      } else {
+        paymentModeObject = null;
+      }
+      return paymentModeObject;
+    });
+    var options = [...additionalMethods, ...paymentMethodOptions];
+    options.removeWhere((item) => item == null || item['value'] == 'points');
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
@@ -201,7 +227,7 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 
-  void placeOrder() async {
+  void placeOrder({dynamic currentPaymentMethod}) async {
     var globalBlocState =
         BlocProvider.of<GlobalBloc>(context).state['sellerInfo'];
     if (globalBlocState is InfoFetchedState) {
@@ -211,8 +237,49 @@ class _CheckoutState extends State<Checkout> {
     var userName = currentUser[KeyNames['userName']];
     var orderAddress = address;
     var amount = widget.amount;
-    var orderPaymentMethod = paymentMethodOptions.firstWhere((item) =>
-        item['value'] == (widget.amount == 0 ? 'points' : paymentMethod));
+    var orderPaymentMethod;
+    if (currentPaymentMethod != null) {
+      orderPaymentMethod = {};
+      orderPaymentMethod['value'] = currentPaymentMethod['type'];
+      if (currentPaymentMethod['type'] == 'card') {
+        String cardDetails = currentPaymentMethod['cardNumber'],
+            maskedString =
+                cardDetails.replaceRange(0, cardDetails.length - 4, 'XXXX');
+        orderPaymentMethod['title'] = 'Card- $maskedString';
+      } else if (currentPaymentMethod['type'] == 'bank') {
+        String bankDetails = currentPaymentMethod['accountNo'],
+            maskedString =
+                bankDetails.replaceRange(0, bankDetails.length - 4, 'XXXX');
+        orderPaymentMethod['title'] = 'Bank account- $maskedString';
+      }
+    } else {
+      var options = [...paymentMethodOptions, ...additionalPaymentMethods];
+      orderPaymentMethod = options.firstWhere((item) {
+        if (item['customerPaymentProfileId'] != null) {
+          return item['customerPaymentProfileId'] == paymentMethod;
+        } else {
+          return item['value'] ==
+              (widget.amount == 0 ? 'points' : paymentMethod);
+        }
+      }, orElse: () => null);
+      if (orderPaymentMethod['value'] == null) {
+        var value, title;
+        if (orderPaymentMethod['payment'] != null) {
+          if (orderPaymentMethod['payment']['creditCard'] != null) {
+            value = 'creditCard';
+            title =
+                'Card- ${orderPaymentMethod['payment']['creditCard']['cardNumber']}';
+          } else if (orderPaymentMethod['payment']['bankAccount'] != null) {
+            value = 'bankAccount';
+            title =
+                'Bank account- ${orderPaymentMethod['payment']['bankAccount']['accountNumber']}';
+          }
+        }
+        orderPaymentMethod = {};
+        orderPaymentMethod['title'] = title;
+        orderPaymentMethod['value'] = value;
+      }
+    }
     Map cartItems = {...currentUser[KeyNames['cart']]};
 
     ///cartItems.removeWhere((key, item) => item['quantity'] < 1);
@@ -232,6 +299,9 @@ class _CheckoutState extends State<Checkout> {
       'pointsUsed': widget.pointsUsed,
       'points': pointValue != null ? pointValue * amount : 0
     };
+    if (transactionId != null) {
+      orderDetails['transactionId'] = transactionId;
+    }
     BlocProvider.of<ItemDatabaseBloc>(context).add(
         PlaceOrder(orderDetails: orderDetails, callback: placeOrderCallback));
     showCustomLoader(context, text: L10n().getStr('checkout.placingOrder'));
@@ -293,18 +363,70 @@ class _CheckoutState extends State<Checkout> {
   }
 
   void processRefund() async {
-    if (paymentMethod == 'razorpay' && rzpPaymentId != null) {
-      var refundUrl = URLS['refund_url'].replaceAll(':paymentId', rzpPaymentId);
-      await NetworkManager.post(url: refundUrl, sendCredentials: false);
+    if (paymentMethod != 'cod' && transactionId != null) {
+      var response =
+          await PaymentRepository.voidTransaction(transactionId: transactionId);
+      if (response['success'] == true) {
+        showCustomSnackbar(
+            type: SnackbarType.success,
+            context: context,
+            content: L10n().getStr('payments.refundSuccess'));
+      } else {
+        showCustomSnackbar(
+            type: SnackbarType.error,
+            context: context,
+            duration: 2,
+            content: L10n().getStr('payments.refundFailed'));
+      }
     }
   }
 
-  void makePaymentAndPlaceOrder() {
+  void makePaymentFromPaymentProfile() async {
+    if (currentUser != null) {
+      var customerId = currentUser[KeyNames['customerPaymentId']];
+      Map<String, String> paymentData = {};
+      paymentData['customerProfileId'] = customerId;
+      paymentData['customerPaymentProfileId'] = paymentMethod;
+      paymentData['amount'] = widget.amount.toString();
+      setState(() {
+        allowPop = false;
+      });
+      showCustomLoader(context,
+          text: L10n().getStr('payments.makingPayment'),
+          willPop: () async => false);
+      dynamic response = await PaymentRepository.makePaymentFromPaymentProfile(
+          paymentData: paymentData);
+      Navigator.pop(context);
+      if (response['success'] == true) {
+        transactionId = response['transactionId'];
+        placeOrder();
+      } else {
+        setState(() {
+          allowPop = true;
+        });
+        showCustomSnackbar(
+            type: SnackbarType.error,
+            context: context,
+            content: response['message'] != null
+                ? response['message']
+                : L10n().getStr('payments.error'));
+      }
+    }
+  }
+
+  void makePaymentAndPlaceOrder() async {
     if (paymentMethod == 'cod' || widget.amount == 0) {
       placeOrder();
-    } else if (paymentMethod == 'razorpay') {
-      placeOrder();
-      //_razorpay.open(razorpayOptions);
+    } else if (paymentMethod == 'newBank' || paymentMethod == 'newCard') {
+      dynamic result = await Navigator.pushNamed(
+          context, Constants.MAKE_PAYMENT,
+          arguments: {'amount': widget.amount, 'paymentMethod': paymentMethod});
+      if (result is Map && result['success'] == true) {
+        transactionId = result['transactionId'];
+        placeOrder(currentPaymentMethod: result['paymentData']);
+      }
+    } else {
+      makePaymentFromPaymentProfile();
     }
   }
 
@@ -334,55 +456,58 @@ class _CheckoutState extends State<Checkout> {
         if (address == null)
           address =
               addressList.firstWhere((item) => item['is_default'] == true);
-        return SafeArea(
-          child: Scaffold(
-            appBar: MyAppBar(
-              hasTransparentBackground: true,
-              title: L10n().getStr('checkout.checkout'),
-              leading: {
-                'icon': Align(
-                  alignment: Alignment.center,
-                  child: Icon(Icons.arrow_back, color: ColorShades.green),
-                ),
-                'onTap': (context) {
-                  if (itemsOutOfStock) {
-                    Navigator.pop(context, {'refresh': true});
-                  } else {
-                    Navigator.pop(context);
+        return WillPopScope(
+          onWillPop: allowPop ? null : () async => false,
+          child: SafeArea(
+            child: Scaffold(
+              appBar: MyAppBar(
+                hasTransparentBackground: true,
+                title: L10n().getStr('checkout.checkout'),
+                leading: {
+                  'icon': Align(
+                    alignment: Alignment.center,
+                    child: Icon(Icons.arrow_back, color: ColorShades.green),
+                  ),
+                  'onTap': (context) {
+                    if (itemsOutOfStock) {
+                      Navigator.pop(context, {'refresh': true});
+                    } else {
+                      Navigator.pop(context);
+                    }
                   }
-                }
-              },
-            ),
-            body: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: Spacing.space24,
-                ),
-                getAddressBox(),
-                SizedBox(
-                  height: Spacing.space16,
-                ),
-                getAmountBanner(),
-                SizedBox(
-                  height: Spacing.space16,
-                ),
-                getPaymentOptions(),
-              ],
-            ),
-            bottomNavigationBar: BottomAppBar(
-              child: Container(
-                height: 70,
-                padding: EdgeInsets.symmetric(
-                    horizontal: Spacing.space16, vertical: Spacing.space12),
-                decoration: BoxDecoration(
-                    color: ColorShades.white, boxShadow: [Shadows.cardLight]),
-                child: PrimaryButton(
-                  text: L10n().getStr('checkout.placeOrder'),
-                  disabled: !(currentUser[KeyNames['cart']] is Map &&
-                      currentUser[KeyNames['cart']].length > 0),
-                  onPressed: () {
-                    makePaymentAndPlaceOrder();
-                  },
+                },
+              ),
+              body: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: Spacing.space24,
+                  ),
+                  getAddressBox(),
+                  SizedBox(
+                    height: Spacing.space16,
+                  ),
+                  getAmountBanner(),
+                  SizedBox(
+                    height: Spacing.space16,
+                  ),
+                  getPaymentOptions(),
+                ],
+              ),
+              bottomNavigationBar: BottomAppBar(
+                child: Container(
+                  height: 70,
+                  padding: EdgeInsets.symmetric(
+                      horizontal: Spacing.space16, vertical: Spacing.space12),
+                  decoration: BoxDecoration(
+                      color: ColorShades.white, boxShadow: [Shadows.cardLight]),
+                  child: PrimaryButton(
+                    text: L10n().getStr('checkout.placeOrder'),
+                    disabled: !(currentUser[KeyNames['cart']] is Map &&
+                        currentUser[KeyNames['cart']].length > 0),
+                    onPressed: () {
+                      makePaymentAndPlaceOrder();
+                    },
+                  ),
                 ),
               ),
             ),

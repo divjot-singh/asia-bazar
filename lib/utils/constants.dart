@@ -19,12 +19,11 @@ const Map KeyNames = {
   'orderReturnRequested': 'returnRequested',
   'orderReturnApproved': 'returnApproved',
   'orderReturnRejected': 'returnRejected',
+  "customerPaymentId": "paymentCustomerId"
 };
 
 const Map URLS = {
-  'api_url': '',
-  'refund_url':
-      'https://rzp_test_Y2WNi4hdVKh0Px:u5baLA8VYXRDmTlGIIbi0aUT@razorpay.com/v1/payments/:paymentId/refund',
+  'api_url': 'http://192.168.1.6:3030',
 };
 
 // const StatusIcons = {
@@ -340,8 +339,12 @@ var paymentOptions = [
     'title': L10n().getStr('checkout.paymentMethod.cod'),
   },
   {
-    'value': 'razorPay',
-    'title': L10n().getStr('checkout.paymentMethod.razorpay'),
+    'value': 'newBank',
+    'title': L10n().getStr('checkout.paymentMethod.newBank'),
+  },
+  {
+    'value': 'newCard',
+    'title': L10n().getStr('checkout.paymentMethod.newCard'),
   },
   {
     'value': 'points',

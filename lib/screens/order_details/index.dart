@@ -138,17 +138,6 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget returnExchangeBanner(details) {
-    // Timestamp timestamp = details['deliveryTimestamp'] != null
-    //     ? details['deliveryTimestamp']
-    //     : details['timestamp'];
-    // DateTime time =
-    //     DateTime.fromMillisecondsSinceEpoch(timestamp.millisecondsSinceEpoch);
-    // time = time.add(Duration(days: ORDER_RETURN_THRESHOLD_IN_DAYS));
-    // String timeToShow =
-    //     DateFormatter.formatWithTime(time.millisecondsSinceEpoch.toString());
-    // if (!returnAvailable)
-    //   return Container();
-    // else
     return Container(
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.only(bottom: Spacing.space12),
@@ -329,30 +318,6 @@ class _OrderDetailsState extends State<OrderDetails> {
     bool showLifeCycle = statusChronology.indexOf(details['status']) < 3 &&
         statusChronology.indexOf(details['status']) > -1;
 
-    // bool delivered = statusChronology.indexOf(details['status']) > 2;
-    // var noCancellationOrders = [
-    //   KeyNames['orderDelivered'],
-    //   KeyNames['orderCancelled'],
-    //   KeyNames['orderReturnApproved'],
-    //   KeyNames['orderReturnRejected']
-    // ];
-
-    // // Timestamp timestamp = details['deliveryTimestamp'] != null
-    // //     ? details['deliveryTimestamp']
-    // //     : details['timestamp'];
-    // // if (timestamp != null && delivered) {
-    // //   var today = DateTime.now().millisecondsSinceEpoch;
-    // //   var diff = DateFormatter.findDifferenceMilliSeconds(
-    // //       today, timestamp.millisecondsSinceEpoch);
-    // //   if (diff['days'] != null &&
-    // //       diff['days'] < ORDER_RETURN_THRESHOLD_IN_DAYS) {
-    // //     returnAvailable = true;
-    // //   } else
-    // //     returnAvailable = false;
-    // // } else
-    // //   returnAvailable = false;
-    // // bool cancellationAvailable =
-    // //     !(noCancellationOrders.indexOf(details['status']) > -1);
     var optionsList = [];
     optionsList.add({
       'onTap': () {
@@ -367,24 +332,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     });
     bool showCashBanner = details['paymentMethod']['value'] == 'cod' &&
         statusChronology.indexOf(details['status']) == 2;
-    // if (cancellationAvailable)
-    //   optionsList.add({
-    //     'onTap': () {
-    //       //do something
-    //     },
-    //     'text': L10n().getStr('orderDetails.requestCancellation')
-    //   });
-    // if (returnAvailable)
-    //   optionsList.add({
-    //     'onTap': () {
-    //       Navigator.pushNamed(
-    //           context,
-    //           Constants.ORDER_ITEM_DETAILS
-    //               .replaceAll(":orderId", widget.orderId)
-    //               .replaceAll(":editView", "true"));
-    //     },
-    //     'text': L10n().getStr('orderDetails.returnExchange')
-    //   });
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: ColorShades.white,

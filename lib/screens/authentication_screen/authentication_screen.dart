@@ -42,8 +42,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
   }
 
   verifyPhoneNumberCallback(authenticationState, [data]) {
-    print(authenticationState);
-    print(data);
     if (authenticationState == AuthCallbackType.completed) {
       alreadyLoggedIn();
     } else if (authenticationState == AuthCallbackType.codeSent) {
@@ -185,7 +183,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 });
               },
               beforeTextPaste: (text) {
-                print('jee');
                 if (text.length > 6 || int.parse(text) == null) {
                   return false;
                 }
@@ -293,7 +290,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                         keyboardAppearance: Brightness.light,
                         hintText: 'XXXXX XXXXX',
                         validator: (value) {
-                          print('validator');
                           if (value.length > 0 && int.tryParse(value) == null ||
                               value.length < 6 ||
                               value.length > 14) {

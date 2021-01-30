@@ -71,11 +71,14 @@ class _CheckboxListState extends State<CheckboxList> {
                 SizedBox(
                   width: Spacing.space12,
                 ),
-                Text(
-                  item['title'],
-                  style:
-                      theme.textTheme.h4.copyWith(color: ColorShades.greenBg),
-                ),
+                if (item['widget'] != null)
+                  item['widget']
+                else
+                  Text(
+                    item['title'],
+                    style:
+                        theme.textTheme.h4.copyWith(color: ColorShades.greenBg),
+                  ),
               ],
             ),
           ),

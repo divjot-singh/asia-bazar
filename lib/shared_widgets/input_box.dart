@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/theme/style.dart';
+import 'package:flutter/services.dart';
 
 // Usage
 
@@ -12,15 +13,17 @@ import 'package:asia/theme/style.dart';
 
 class InputBox extends StatelessWidget {
   String hintText, value, label;
-  final Function validator, onChanged, onFieldSubmitted, onTap;
-  final bool disabled, autovalidate;
+  final Function validator, onChanged, onFieldSubmitted, onTap, onSaved;
+  final bool disabled, autovalidate, obscureText;
   final TextInputType keyboardType;
   final FocusNode focusNode;
+  final AutovalidateMode autovalidateMode;
   final int maxLength;
   final margin, labelColor;
   final suffixIcon, maxLines, prefixIcon;
   final keyboardAppearance;
   final bool hideShadow;
+  final List<TextInputFormatter> inputFormatters;
   TextEditingController controller;
   InputBox(
       {this.label,
@@ -31,7 +34,10 @@ class InputBox extends StatelessWidget {
       this.hideShadow = false,
       this.disabled = false,
       this.autovalidate = false,
+      this.autovalidateMode,
+      this.obscureText = false,
       this.value,
+      this.inputFormatters,
       this.keyboardType = TextInputType.text,
       this.onFieldSubmitted,
       this.focusNode,
@@ -40,9 +46,10 @@ class InputBox extends StatelessWidget {
       this.suffixIcon,
       this.prefixIcon,
       this.onTap,
+      this.onSaved,
       this.maxLines = 1,
       this.keyboardAppearance,
-      @required this.onChanged});
+      this.onChanged});
   @override
   Widget build(BuildContext context) {
     var colorScheme = Theme.of(context).colorScheme;
@@ -80,9 +87,13 @@ class InputBox extends StatelessWidget {
               initialValue: value,
               enabled: !disabled,
               keyboardAppearance: keyboardAppearance,
+              onSaved: onSaved,
               controller:
                   controller != null && value == null ? controller : null,
+              inputFormatters: inputFormatters,
+              obscureText: obscureText,
               autovalidate: autovalidate,
+              autovalidateMode: autovalidateMode,
               keyboardType: keyboardType,
               maxLength: maxLength != null ? maxLength : null,
               focusNode: focusNode != null ? focusNode : null,

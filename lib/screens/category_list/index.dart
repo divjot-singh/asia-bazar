@@ -45,8 +45,6 @@ class CategoryGrid extends StatelessWidget {
         var item = listing[index];
         return GestureDetector(
           onTap: () {
-            print(item['id']);
-            print(item['name']);
             Navigator.pushNamed(
                 context,
                 Constants.CATEGORY_LISTING
