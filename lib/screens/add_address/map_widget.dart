@@ -41,7 +41,7 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   bool _serviceEnabled;
   String addressType;
   GlobalKey key = GlobalKey();
-  bool showLoader = true, showMapError = false;
+  bool showLoader = true, showMapError = false, showingError = false;
   FocusNode _focusNode = FocusNode();
   TextEditingController addressController = TextEditingController(text: '');
   Set<Marker> markerSet;
@@ -81,7 +81,9 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && widget.selectedLocation == null) {
+    if (state == AppLifecycleState.resumed &&
+        widget.selectedLocation == null &&
+        !showingError) {
       getCurrentLocation();
     }
   }
@@ -129,6 +131,9 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
   }
 
   showlocationErrorDialog(error) {
+    setState(() {
+      showingError = true;
+    });
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -278,7 +283,9 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
                   : MediaQuery.of(context).size.height * 0.5,
               child: showMapError
                   ? mapErrorScreen()
-                  : showLoader ? TinyLoader() : _mapWidget()),
+                  : showLoader
+                      ? TinyLoader()
+                      : _mapWidget()),
           SizedBox(
             height: Spacing.space20,
           ),

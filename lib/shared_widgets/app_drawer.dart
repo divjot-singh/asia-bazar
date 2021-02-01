@@ -199,20 +199,6 @@ class _AppDrawerState extends State<AppDrawer> {
                   color: ColorShades.greenBg,
                   thickness: 1,
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.popAndPushNamed(context, Constants.MAKE_PAYMENT,
-                        arguments: {'amount': 10});
-                  },
-                  leading: Icon(Icons.add_location, color: ColorShades.greenBg),
-                  title: Text('Payments',
-                      style: theme.textTheme.h4
-                          .copyWith(color: ColorShades.greenBg)),
-                ),
-                Divider(
-                  color: ColorShades.greenBg,
-                  thickness: 1,
-                ),
                 Expanded(
                   child: Align(
                     alignment: Alignment.bottomLeft,

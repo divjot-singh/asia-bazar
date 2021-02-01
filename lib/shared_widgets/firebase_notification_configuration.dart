@@ -80,12 +80,14 @@ class ConfigureNotification {
       print("Operating system not supported!");
       return;
     }
-    var messageData = message['data']['extra_data'];
+    var messageData = message['data'] == null
+        ? message['extra_data']
+        : message['data']['extra_data'];
     bool isSilent = false;
     if (messageData is String) {
       try {
         var extraData = json.decode(messageData);
-        isSilent = extraData['silent'];
+        isSilent = extraData['silent'] == true;
       } catch (e) {
         print(e);
       }
