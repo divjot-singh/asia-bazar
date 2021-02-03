@@ -171,12 +171,14 @@ class NotificationTypes {
   static Map routeMap = {
     'ORDER_UPDATED_NOTIFICATION': Constants.ORDER_DETAILS,
     'POINTS_UPDATED_NOTIFICATION': Constants.EDIT_PROFILE,
+    'REFUND_STATUS_NOTIFICATION': Constants.ORDER_DETAILS
   };
   static String fetchNotificationRoute(Map notificationData) {
     Map data = {...notificationData};
     String route = routeMap[data['notification_type']];
-    if(data['notification_type'] == 'INFO_UPDATED_NOTIFICATION'){
-      locator<NavigationService>().addGlobalBlocEvent(FetchSellerInfo(force: true));
+    if (data['notification_type'] == 'INFO_UPDATED_NOTIFICATION') {
+      locator<NavigationService>()
+          .addGlobalBlocEvent(FetchSellerInfo(force: true));
     }
     if (route == null) return null;
     if (data['parameters'] is Map) {

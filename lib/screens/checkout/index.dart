@@ -503,7 +503,8 @@ class _CheckoutState extends State<Checkout> {
                   child: PrimaryButton(
                     text: L10n().getStr('checkout.placeOrder'),
                     disabled: !(currentUser[KeyNames['cart']] is Map &&
-                        currentUser[KeyNames['cart']].length > 0),
+                            currentUser[KeyNames['cart']].length > 0) ||
+                        loadingPaymentMethods,
                     onPressed: () {
                       makePaymentAndPlaceOrder();
                     },

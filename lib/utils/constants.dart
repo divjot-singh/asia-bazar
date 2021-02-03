@@ -24,6 +24,7 @@ const Map KeyNames = {
 
 const Map URLS = {
   'api_url': 'https://substantivedebate.xyz',
+  //'api_url': 'http://192.168.1.6:3030'
 };
 
 // const StatusIcons = {

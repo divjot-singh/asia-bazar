@@ -49,6 +49,7 @@ class _AppState extends State<App> {
 
             return MaterialApp(
               title: 'Asia Bazar',
+              debugShowCheckedModeBanner: false,
               theme: appTheme(),
               navigatorKey: locator<NavigationService>().navigatorKey,
               navigatorObservers: [routeObserver],

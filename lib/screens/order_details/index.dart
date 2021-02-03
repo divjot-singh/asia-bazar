@@ -157,6 +157,28 @@ class _OrderDetailsState extends State<OrderDetails> {
     );
   }
 
+  Widget refundBanner(details) {
+    String text = details['refundStatus'] == true
+        ? L10n().getStr('payments.refundSuccess')
+        : L10n().getStr('payments.refundFailed');
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(bottom: Spacing.space12),
+      color: ColorShades.greenBg,
+      padding: EdgeInsets.symmetric(
+        horizontal: Spacing.space16,
+        vertical: Spacing.space12,
+      ),
+      child: Center(
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.h3.copyWith(color: ColorShades.white),
+        ),
+      ),
+    );
+  }
+
   Widget orderInfo(details) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: Spacing.space16),
@@ -332,7 +354,8 @@ class _OrderDetailsState extends State<OrderDetails> {
     });
     bool showCashBanner = details['paymentMethod']['value'] == 'cod' &&
         statusChronology.indexOf(details['status']) == 2;
-
+    bool showRefundBanner = details['paymentMethod']['value'] != 'cod' &&
+        details['status'] == KeyNames['orderRejected'];
     return SafeArea(
       child: Scaffold(
         backgroundColor: ColorShades.white,
@@ -377,6 +400,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                   height: Spacing.space12,
                 ),
                 if (showCashBanner) returnExchangeBanner(details),
+                if (showRefundBanner) refundBanner(details),
                 if (showLifeCycle) orderLifecycle(details),
                 orderInfo(details),
               ],
