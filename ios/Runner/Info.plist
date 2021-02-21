@@ -41,11 +41,11 @@
 	<key>NSContactsUsageDescription</key>
 	<string>This application doesnt need contacts. You may disable it.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
+	<string>This location access is required for the user to add the address where the order will be delivered</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This location access is required for sender to locate the user and navigate to the specified address</string>
+	<string>This location access is required for the user to add the address where the order will be delivered</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This application needs to access your microphone</string>
+	<string>This application needs to access your microphone to allow you to search products using voice recognition</string>
 	<key>NSMotionUsageDescription</key>
 	<string>This application doesnt need motion usage. You may disable it.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
@@ -64,8 +64,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
