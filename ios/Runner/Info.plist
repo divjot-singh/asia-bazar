@@ -41,9 +41,9 @@
 	<key>NSContactsUsageDescription</key>
 	<string>This application doesnt need contacts. You may disable it.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This location access is required for the user to add the address where the order will be delivered</string>
+	<string>Enabling this will allow Asia Bazar to locate your address and deliver your order to that location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This location access is required for the user to add the address where the order will be delivered</string>
+	<string>Enabling this will allow Asia Bazar to locate your address and deliver your order to that location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This application needs to access your microphone to allow you to search products using voice recognition</string>
 	<key>NSMotionUsageDescription</key>
