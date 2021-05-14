@@ -55,10 +55,11 @@ class CategoryGrid extends StatelessWidget {
             margin: EdgeInsets.symmetric(
                 horizontal: Spacing.space12, vertical: Spacing.space8),
             decoration: BoxDecoration(
-              image: DecorationImage(
-                  fit: BoxFit.fitHeight,
-                  image: AssetImage(
-                      'assets/images/' + index.toString() + '.jpeg')),
+              image: item['thumb_url'] != null
+                  ? DecorationImage(
+                      fit: BoxFit.fitHeight,
+                      image: NetworkImage(item['thumb_url'].toString()))
+                  : null,
             ),
             child: Container(
               height: MediaQuery.of(context).size.height,
