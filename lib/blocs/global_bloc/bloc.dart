@@ -4,6 +4,8 @@ import 'package:asia/repository/global_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GlobalBloc extends Bloc<GlobalEvents, Map> {
+  GlobalBloc(Map initialState) : super(initialState);
+
   @override
   Map get initialState => GlobalState.globalState;
   GlobalRepo _globalRepo = GlobalRepo();

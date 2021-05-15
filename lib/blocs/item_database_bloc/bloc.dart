@@ -8,6 +8,8 @@ import 'package:asia/utils/storage_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ItemDatabaseBloc extends Bloc<ItemDatabaseEvents, Map> {
+  ItemDatabaseBloc(Map initialState) : super(initialState);
+
   @override
   Map get initialState => UserDatabaseState.userstate;
   ItemDatabase itemDatabase = ItemDatabase();

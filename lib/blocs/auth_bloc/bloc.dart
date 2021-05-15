@@ -5,6 +5,8 @@ import 'package:asia/repository/authentication.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthenticationEvents, AuthenticationState> {
+  AuthBloc(AuthenticationState initialState) : super(initialState);
+
   @override
   AuthenticationState get initialState => UnAuthenticatedState();
   final authrepo = AuthRepo();

@@ -17,6 +17,7 @@ import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/shared_widgets/speech_recognition.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/deboucer.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -487,13 +488,21 @@ Widget listItem(
       ),
       child: Row(
         children: <Widget>[
-          Image.network(
-            item['image_url'] != null
-                ? item['image_url']
-                : 'https://dummyimage.com/600x400/ffffff/000000.png&text=Image+not+available',
-            height: 100,
-            width: 100,
-          ),
+          item['image_url'] != null
+              ? CachedNetworkImage(
+                  imageUrl: item['image_url'],
+                  height: 100,
+                  width: 100,
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) =>
+                      Image.asset('assets/image_unavailable.jpeg'),
+                )
+              // ? Image.network(
+              //     item['image_url'],
+              //     height: 100,
+              //     width: 100,
+              //   )
+              : Image.asset('assets/image_unavailable.jpeg'),
           SizedBox(
             width: Spacing.space12,
           ),

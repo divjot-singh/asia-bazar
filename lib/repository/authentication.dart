@@ -5,7 +5,7 @@ import 'package:asia/services/log_printer.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/storage_manager.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as FirebaseAuthImport;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -13,8 +13,9 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 enum AuthCallbackType { completed, failed, codeSent, timeout }
 
 class AuthRepo {
-  static FirebaseAuth _auth = FirebaseAuth.instance;
-  static FirebaseMessaging _fcm = FirebaseMessaging();
+  static FirebaseAuthImport.FirebaseAuth _auth =
+      FirebaseAuthImport.FirebaseAuth.instance;
+  static FirebaseMessaging _fcm = FirebaseMessaging.instance;
   static final logger = getLogger('AuthRepo');
   static List<String> serverNotificationIds = [];
   int notificationId = 0;
@@ -28,11 +29,13 @@ class AuthRepo {
     _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: Duration(seconds: 30),
-        verificationCompleted: ((AuthCredential authCredential) async {
+        verificationCompleted:
+            ((FirebaseAuthImport.PhoneAuthCredential authCredential) async {
           await _verificationComplete(authCredential);
           callback(AuthCallbackType.completed, authCredential);
         }),
-        verificationFailed: (AuthException authException) {
+        verificationFailed:
+            (FirebaseAuthImport.FirebaseAuthException authException) {
           print(authException.message);
           callback(AuthCallbackType.failed, authException);
         },
@@ -46,7 +49,8 @@ class AuthRepo {
         });
   }
 
-  Future<User> _verificationComplete(AuthCredential authCredential) async {
+  Future<User> _verificationComplete(
+      FirebaseAuthImport.PhoneAuthCredential authCredential) async {
     _authCredential = authCredential;
     var authResult = await _auth.signInWithCredential(authCredential);
     logger.i(authResult);
@@ -54,7 +58,7 @@ class AuthRepo {
   }
 
   Future<User> checkIfUserLoggedIn() async {
-    FirebaseUser firebaseUser = await _auth.currentUser();
+    FirebaseAuthImport.User firebaseUser = _auth.currentUser;
     if (firebaseUser == null) {
       return null;
     } else {
@@ -63,16 +67,16 @@ class AuthRepo {
     }
   }
 
-  Future<User> setupUserData(FirebaseUser firebaseUser) async {
+  Future<User> setupUserData(FirebaseAuthImport.User firebaseUser) async {
     var user;
     try {
-      IdTokenResult tokenResult = await firebaseUser.getIdToken(refresh: true);
+      String tokenResult = await firebaseUser.getIdToken(true);
       user = User(
           userId: firebaseUser.uid,
           userName: firebaseUser.displayName,
           phoneNumber: firebaseUser.phoneNumber,
           cart: null,
-          firebaseToken: tokenResult.token);
+          firebaseToken: tokenResult);
     } catch (error) {
       user = User(
         userId: firebaseUser.uid,
@@ -94,21 +98,25 @@ class AuthRepo {
     var firebaseToken = await _fcm.getToken();
 
     if (firebaseToken != null) {
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection('usersTokens')
-          .document(userId)
-          .setData({
+          .doc(userId)
+          .set({
         'user_id': userId,
         'token': firebaseToken,
-        'platform':
-            Platform.isIOS ? 'ios' : Platform.isAndroid ? 'android' : 'web'
+        'platform': Platform.isIOS
+            ? 'ios'
+            : Platform.isAndroid
+                ? 'android'
+                : 'web'
       });
       await StorageManager.setItem(KeyNames['fcmToken'], firebaseToken);
     }
   }
 
   Future<User> signInWithSmsCode(String smsCode) async {
-    AuthCredential authCredential = PhoneAuthProvider.getCredential(
+    FirebaseAuthImport.AuthCredential authCredential =
+        FirebaseAuthImport.PhoneAuthProvider.credential(
       smsCode: smsCode,
       verificationId: _verificationId,
     );

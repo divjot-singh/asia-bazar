@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 enum UserType { Admin, User, New }
 
 class UserDatabase {
-  static Firestore _firestore = Firestore.instance;
+  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static CollectionReference userDatabase = _firestore.collection('users');
   static DocumentReference userRef =
-      _firestore.collection('users').document('user');
+      _firestore.collection('users').doc('user');
   static DocumentReference adminRef =
-      _firestore.collection('users').document('admin');
+      _firestore.collection('users').doc('admin');
   static CollectionReference inventoryRef = _firestore.collection('inventory');
   Future<UserDatabaseState> checkIfAdminOrUser(
       {@required String userId}) async {
     try {
-      var adminData = adminRef.collection('entries').document(userId);
+      var adminData = adminRef.collection('entries').doc(userId);
       DocumentSnapshot snapshot = await adminData.get();
       if (snapshot.data == null) {
         dynamic userSnapshot = await getUser(userId: userId);
@@ -45,11 +45,11 @@ class UserDatabase {
       @required Map address}) async {
     await addAddress(userId: userId, address: address);
     DocumentSnapshot snapshot =
-        await userRef.collection('entries').document(userId).get();
+        await userRef.collection('entries').doc(userId).get();
     if (snapshot.data != null) {
       await userRef
           .collection('entries')
-          .document(userId)
+          .doc(userId)
           .updateData({KeyNames['userName']: username});
     }
   }

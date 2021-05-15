@@ -7,6 +7,7 @@ import 'package:asia/shared_widgets/app_bar.dart';
 import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/theme/style.dart';
 import 'package:asia/utils/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -58,7 +59,11 @@ class CategoryGrid extends StatelessWidget {
               image: item['thumb_url'] != null
                   ? DecorationImage(
                       fit: BoxFit.fitHeight,
-                      image: NetworkImage(item['thumb_url'].toString()))
+                      image: CachedNetworkImageProvider(
+                        item['thumb_url'],
+                      )
+                      //image: NetworkImage(item['thumb_url'].toString()),
+                      )
                   : null,
             ),
             child: Container(

@@ -7,6 +7,8 @@ import 'package:asia/utils/storage_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OrderDetailsBloc extends Bloc<OrderEvent, Map> {
+  OrderDetailsBloc(Map initialState) : super(initialState);
+
   @override
   Map get initialState => OrderState.orderState;
 

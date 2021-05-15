@@ -3,15 +3,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 
 class ItemDatabase {
-  static Firestore _firestore = Firestore.instance;
+  static FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static CollectionReference categoryRef = _firestore.collection('categories');
   static CollectionReference inventoryRef = _firestore.collection('inventory');
   static CollectionReference orderRef = _firestore.collection('orders');
   static CollectionReference orderedItems = _firestore.collection('orderItems');
   static UserDatabase userDabase = UserDatabase();
   Future<List> fetchAllCategories() async {
-    QuerySnapshot snapshot = await categoryRef.getDocuments();
-    return snapshot.documents;
+    QuerySnapshot snapshot = await categoryRef.get();
+    return snapshot.docs;
   }
 
   Future<List> fetchCategoryListing(
@@ -22,23 +22,23 @@ class ItemDatabase {
     var returnValue;
     if (startAt == null) {
       snapshot = await inventoryRef
-          .document(categoryId)
+          .doc(categoryId)
           .collection('items')
           .orderBy('quantity')
           .where('quantity', isGreaterThan: 0)
           .limit(limit)
-          .getDocuments();
-      returnValue = snapshot.documents;
+          .get();
+      returnValue = snapshot.docs;
     } else {
       snapshot = await inventoryRef
-          .document(categoryId)
+          .doc(categoryId)
           .collection('items')
           .orderBy('quantity')
           .where('quantity', isGreaterThan: 0)
           .startAfterDocument(startAt)
           .limit(limit)
-          .getDocuments();
-      returnValue = snapshot.documents == null ? {} : snapshot.documents;
+          .get();
+      returnValue = snapshot.docs == null ? {} : snapshot.docs;
     }
 
     if (returnValue != null) return [...returnValue];
@@ -54,22 +54,22 @@ class ItemDatabase {
     var returnValue;
     if (query.length == 0) {
       snapshot = await inventoryRef
-          .document(categoryId)
+          .doc(categoryId)
           .collection('items')
           .orderBy('item_id')
           .limit(limit)
-          .getDocuments();
-      returnValue = snapshot.documents;
+          .get();
+      returnValue = snapshot.docs;
     } else {
       snapshot = await inventoryRef
-          .document(categoryId)
+          .doc(categoryId)
           .collection('items')
           .orderBy('item_id')
           .where('tokens', arrayContains: query)
           .limit(limit)
-          .getDocuments();
-      returnValue = snapshot.documents;
-      returnValue = snapshot.documents == null ? {} : snapshot.documents;
+          .get();
+      returnValue = snapshot.docs;
+      returnValue = snapshot.docs == null ? {} : snapshot.docs;
     }
 
     if (returnValue != null) return [...returnValue];
@@ -89,17 +89,17 @@ class ItemDatabase {
             .where('tokens', arrayContains: query)
             .limit(limit)
             .startAfterDocument(startAt)
-            .getDocuments();
+            .get();
       } else {
         snapshot = await _firestore
             .collectionGroup('items')
             .orderBy('item_id')
             .where('tokens', arrayContains: query)
             .limit(limit)
-            .getDocuments();
+            .get();
       }
-      returnValue = snapshot.documents;
-      returnValue = snapshot.documents == null ? {} : snapshot.documents;
+      returnValue = snapshot.docs;
+      returnValue = snapshot.docs == null ? {} : snapshot.docs;
       if (returnValue != null) return [...returnValue];
       return null;
     }
@@ -121,12 +121,12 @@ class ItemDatabase {
         var decrementValue = item['cartQuantity'];
         decrementValue *= -1;
         var ref = inventoryRef
-            .document(item['category_id'])
+            .doc(item['category_id'])
             .collection('items')
-            .document(key);
+            .doc(key);
         try {
           print('wiriting' + ref.path.toString());
-          batchWrite.updateData(
+          batchWrite.update(
               ref, {'quantity': FieldValue.increment(decrementValue)});
         } catch (e) {
           print('update error');
@@ -141,13 +141,10 @@ class ItemDatabase {
         details['cartItems'] = itemsOrdered;
         var orderId = details['orderId'];
         details['timestamp'] = Timestamp.fromDate(DateTime.now().toUtc());
-        await orderRef.document(orderId).setData(details);
+        await orderRef.doc(orderId).set(details);
         cart.forEach((key, item) async {
-          await orderedItems.add({
-            'itemDetails': item,
-            'orderId': orderId,
-            'orderRef': orderId
-          });
+          await orderedItems.add(
+              {'itemDetails': item, 'orderId': orderId, 'orderRef': orderId});
         });
         if (details['areLoyaltyPointsUsed'] == true &&
             details['pointsUsed'] != null &&
@@ -180,9 +177,9 @@ class ItemDatabase {
         var key = cartKeys.keys.toList()[i];
         var value = cartKeys[key];
         var snapshot = await inventoryRef
-            .document(value['category_id'])
+            .doc(value['category_id'])
             .collection('items')
-            .document(value['item_id'])
+            .doc(value['item_id'])
             .get();
         items[key] = snapshot.data;
       }
@@ -203,16 +200,16 @@ class ItemDatabase {
             .orderBy('timestamp', descending: true)
             .where('userId', isEqualTo: userId)
             .limit(limit)
-            .getDocuments();
-        returnValue = snapshot.documents;
+            .get();
+        returnValue = snapshot.docs;
       } else {
         snapshot = await orderRef
             .orderBy('timestamp', descending: true)
             .where('userId', isEqualTo: userId)
             .startAfterDocument(startAt)
             .limit(limit)
-            .getDocuments();
-        returnValue = snapshot.documents == null ? {} : snapshot.documents;
+            .get();
+        returnValue = snapshot.docs == null ? {} : snapshot.docs;
       }
 
       if (returnValue != null) return [...returnValue];
@@ -234,11 +231,11 @@ class ItemDatabase {
       for (var i = 0; i < categories.length; i++) {
         var categoryId = categories[i].data;
         QuerySnapshot itemData = await inventoryRef
-            .document(categoryId['id'].toString())
+            .doc(categoryId['id'].toString())
             .collection('items')
             .limit(itemLimit)
-            .getDocuments();
-        data[categoryId['name'].toString()] = itemData.documents;
+            .get();
+        data[categoryId['name'].toString()] = itemData.docs;
       }
 
       return {
@@ -257,9 +254,9 @@ class ItemDatabase {
           .orderBy('item_id')
           .where('bar_codes', arrayContains: code)
           .limit(1)
-          .getDocuments();
-      if (itemData.documents.length > 0) {
-        return itemData.documents[0].data;
+          .get();
+      if (itemData.docs.length > 0) {
+        return itemData.docs[0].data();
       } else {
         return {};
       }

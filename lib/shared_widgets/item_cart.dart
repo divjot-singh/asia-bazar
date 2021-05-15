@@ -6,6 +6,7 @@ import 'package:asia/shared_widgets/customLoader.dart';
 import 'package:asia/shared_widgets/quantity_updater.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -86,10 +87,19 @@ class _ItemCardState extends State<ItemCard> {
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
                                     fit: BoxFit.fill,
-                                    image: NetworkImage(item['image_url'] !=
-                                            null
-                                        ? item['image_url']
-                                        : 'https://dummyimage.com/600x400/ffffff/000000.png&text=Image+not+available'))),
+                                    image: item['image_url'] != null
+                                        ? CachedNetworkImage(
+                                            imageUrl: item['image_url'],
+                                            placeholder: (context, url) =>
+                                                CircularProgressIndicator(),
+                                            errorWidget: (context, url,
+                                                    error) =>
+                                                Image.asset(
+                                                    'assets/image_unavailable.jpeg'),
+                                          )
+                                        //? NetworkImage(item['image_url'])
+                                        : AssetImage(
+                                            'assets/image_unavailable.jpeg'))),
                           ),
                           SizedBox(
                             width: Spacing.space8,
