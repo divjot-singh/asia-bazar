@@ -3,9 +3,11 @@ import 'package:asia/blocs/user_database_bloc/events.dart';
 import 'package:asia/blocs/user_database_bloc/state.dart';
 import 'package:asia/l10n/l10n.dart';
 import 'package:asia/shared_widgets/customLoader.dart';
+import 'package:asia/shared_widgets/page_views.dart';
 import 'package:asia/shared_widgets/quantity_updater.dart';
 import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/theme/style.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -79,18 +81,41 @@ class _ItemCardState extends State<ItemCard> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Container(
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                image: DecorationImage(
-                                    fit: BoxFit.fill,
-                                    image: NetworkImage(item['image_url'] !=
-                                            null
-                                        ? item['image_url']
-                                        : 'https://dummyimage.com/600x400/ffffff/000000.png&text=Image+not+available'))),
-                          ),
+                          item['image_url'] != null
+                              ? CachedNetworkImage(
+                                  imageUrl: item['image_url'],
+                                  imageBuilder: (context, imageProvider) =>
+                                      Container(
+                                    height: 100,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.fill,
+                                      ),
+                                    ),
+                                  ),
+                                  placeholder: (context, url) => Container(
+                                      height: 100,
+                                      width: 100,
+                                      child: Center(child: TinyLoader())),
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset(
+                                          'assets/images/image_unavailable.jpeg'),
+                                )
+                              : Container(
+                                  height: 100,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    image: DecorationImage(
+                                      image: AssetImage(
+                                          'assets/images/image_unavailable.jpeg'),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                ),
                           SizedBox(
                             width: Spacing.space8,
                           ),

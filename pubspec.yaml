@@ -35,7 +35,7 @@ dependencies:
   shared_preferences: ^0.5.6+3
   http_interceptor: ^0.2.0
   flutter_sim_country_code: ^0.0.3
-  flutter_svg: 0.18.0
+  flutter_svg: 0.19.3
   devicelocale: ^0.2.3
   flutter_localizations:
     sdk: flutter
@@ -60,6 +60,7 @@ dependencies:
       url: https://github.com/webeverde/speech_recognition.git
       ref: master
   permission_handler: ^5.0.1+1
+  cached_network_image: 2.3.0
 
 flutter_icons:
   android: true
