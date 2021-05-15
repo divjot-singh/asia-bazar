@@ -197,8 +197,9 @@ Widget getAddressCard(
                           arguments: {'address': address, 'isEdit': true});
                     } else if (value == 'delete') {
                       showDialog(
-                          context: context,
-                          child: Container(
+                        context: context,
+                        builder: (context) {
+                          return Container(
                             child: AlertDialog(
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20)),
@@ -235,7 +236,9 @@ Widget getAddressCard(
                                 )
                               ],
                             ),
-                          ));
+                          );
+                        },
+                      );
                     } else if (value == 'set_default') {
                       showCustomLoader(context);
                       BlocProvider.of<UserDatabaseBloc>(context)

@@ -65,33 +65,35 @@ Future<Type> showCustomDialog(
   return showDialog(
     context: context,
     barrierDismissible: false,
-    child: Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-          decoration: BoxDecoration(
-              color: ColorShades.marble,
-              borderRadius: BorderRadius.circular(20)),
-          padding: EdgeInsets.all(Spacing.space16),
-          child: Wrap(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    heading,
-                    style: theme.textTheme.h4
-                        .copyWith(color: theme.colorScheme.textPrimaryDark),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child:
-                        Icon(Icons.close, color: ColorShades.greenBg, size: 24),
-                  ),
-                ],
-              ),
-              child
-            ],
-          )),
-    ),
+    builder: (context) {
+      return Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+            decoration: BoxDecoration(
+                color: ColorShades.marble,
+                borderRadius: BorderRadius.circular(20)),
+            padding: EdgeInsets.all(Spacing.space16),
+            child: Wrap(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      heading,
+                      style: theme.textTheme.h4
+                          .copyWith(color: theme.colorScheme.textPrimaryDark),
+                    ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Icon(Icons.close,
+                          color: ColorShades.greenBg, size: 24),
+                    ),
+                  ],
+                ),
+                child
+              ],
+            )),
+      );
+    },
   );
 }

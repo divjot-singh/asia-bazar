@@ -137,34 +137,37 @@ class _MapWidgetState extends State<MapWidget> with WidgetsBindingObserver {
     showDialog(
       context: context,
       barrierDismissible: false,
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: ColorShades.red,
-        content: Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          alignment: WrapAlignment.center,
-          children: <Widget>[
-            Text(
-              L10n().getStr(
-                "error.$error",
+      builder: (context) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: ColorShades.red,
+          content: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              Text(
+                L10n().getStr(
+                  "error.$error",
+                ),
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.body1Bold.copyWith(
+                    color: Theme.of(context).colorScheme.textPrimaryLight,
+                    decoration: TextDecoration.none),
               ),
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.body1Bold.copyWith(
-                  color: Theme.of(context).colorScheme.textPrimaryLight,
-                  decoration: TextDecoration.none),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: Spacing.space16),
-              child: PrimaryButton(
-                text: L10n().getStr('redirector.goBack'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+              Padding(
+                padding: EdgeInsets.only(top: Spacing.space16),
+                child: PrimaryButton(
+                  text: L10n().getStr('redirector.goBack'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     ).then((_) {
       setState(() {
         showMapError = true;
