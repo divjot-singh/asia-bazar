@@ -17,7 +17,6 @@ import 'package:asia/shared_widgets/snackbar.dart';
 import 'package:asia/shared_widgets/speech_recognition.dart';
 import 'package:asia/utils/constants.dart';
 import 'package:asia/utils/deboucer.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -488,38 +487,27 @@ Widget listItem(
       ),
       child: Row(
         children: <Widget>[
-          item['image_url'] != null
-              ? CachedNetworkImage(
-                  imageUrl: item['image_url'],
-                  imageBuilder: (context, imageProvider) => Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                  placeholder: (context, url) => Container(
-                      height: 100,
-                      width: 100,
-                      child: Center(child: TinyLoader())),
-                  errorWidget: (context, url, error) =>
-                      Image.asset('assets/images/image_unavailable.jpeg'),
-                )
-              : Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/image_unavailable.jpeg'),
+          Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: ColorShades.white,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: item['image_url'] != null
+                  ? FadeInImage.assetNetwork(
                       fit: BoxFit.fill,
-                    ),
-                  ),
-                ),
+                      placeholder: 'assets/images/loader.gif',
+                      image: item['image_url'].replaceAll('http', 'https'),
+                      imageErrorBuilder: (context, object, stackTrace) {
+                        return Image.asset(
+                            'assets/images/image_unavailable.jpeg');
+                      })
+                  : AssetImage('assets/images/image_unavailable.jpeg'),
+            ),
+          ),
           SizedBox(
             width: Spacing.space12,
           ),
