@@ -224,6 +224,9 @@ class _CardPaymentState extends State<CardPayment> {
                   _paymentCard.month.toString() + _paymentCard.year.toString();
               data['cardCode'] = _paymentCard.cvv.toString();
               data['type'] = 'card';
+              if (_paymentCard.month < 10) {
+                data['expiryDate'] = '0' + data['expiryDate'];
+              }
               widget.onSubmitData(data);
             },
           ),
