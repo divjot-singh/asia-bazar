@@ -505,7 +505,7 @@ Widget listItem(
                         return Image.asset(
                             'assets/images/image_unavailable.jpeg');
                       })
-                  : AssetImage('assets/images/image_unavailable.jpeg'),
+                  : Image.asset('assets/images/image_unavailable.jpeg'),
             ),
           ),
           SizedBox(
