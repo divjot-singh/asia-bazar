@@ -143,11 +143,8 @@ class ItemDatabase {
         details['timestamp'] = Timestamp.fromDate(DateTime.now().toUtc());
         await orderRef.document(orderId).setData(details);
         cart.forEach((key, item) async {
-          await orderedItems.add({
-            'itemDetails': item,
-            'orderId': orderId,
-            'orderRef': orderId
-          });
+          await orderedItems.add(
+              {'itemDetails': item, 'orderId': orderId, 'orderRef': orderId});
         });
         if (details['areLoyaltyPointsUsed'] == true &&
             details['pointsUsed'] != null &&
@@ -236,6 +233,8 @@ class ItemDatabase {
         QuerySnapshot itemData = await inventoryRef
             .document(categoryId['id'].toString())
             .collection('items')
+            .orderBy('quantity')
+            .where('quantity', isGreaterThan: 0)
             .limit(itemLimit)
             .getDocuments();
         data[categoryId['name'].toString()] = itemData.documents;

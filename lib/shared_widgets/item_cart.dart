@@ -92,11 +92,10 @@ class _ItemCardState extends State<ItemCard> {
                                   ? FadeInImage.assetNetwork(
                                       fit: BoxFit.fill,
                                       placeholder: 'assets/images/loader.gif',
-                                      image: item['image_url']
-                                          .replaceAll('http', 'https'),
+                                      image: item['image_url'],
                                     )
                                   : Image.asset(
-                                      'assets/images/image_unavailable.jpeg'),
+                                      'assets/images/not-available.jpeg'),
                             ),
                           ),
                           SizedBox(

@@ -500,12 +500,12 @@ Widget listItem(
                   ? FadeInImage.assetNetwork(
                       fit: BoxFit.fill,
                       placeholder: 'assets/images/loader.gif',
-                      image: item['image_url'].replaceAll('http', 'https'),
+                      image: item['image_url'],
                       imageErrorBuilder: (context, object, stackTrace) {
                         return Image.asset(
-                            'assets/images/image_unavailable.jpeg');
+                            'assets/images/not-available.jpeg');
                       })
-                  : Image.asset('assets/images/image_unavailable.jpeg'),
+                  : Image.asset('assets/images/not-available.jpeg'),
             ),
           ),
           SizedBox(
